@@ -20,6 +20,7 @@ export default function DadoAnimationScreen({ route, navigation }) {
             autoPlay={true}
             source={require('../animations/18179-touzidice1.json')}
             loop={false}
+            duration={5000}
             onAnimationFinish={navigateBack} />
         </>
       );
@@ -32,6 +33,7 @@ export default function DadoAnimationScreen({ route, navigation }) {
             autoPlay={true}
             source={require('../animations/18180-touzidice2.json')}
             loop={false}
+            duration={5000}
             onAnimationFinish={navigateBack} />
         </>
       );
@@ -44,6 +46,7 @@ export default function DadoAnimationScreen({ route, navigation }) {
             autoPlay={true}
             source={require('../animations/18181-touzidice3.json')}
             loop={false}
+            duration={5000}
             onAnimationFinish={navigateBack} />
         </>
       );
@@ -56,6 +59,7 @@ export default function DadoAnimationScreen({ route, navigation }) {
             autoPlay={true}
             source={require('../animations/18182-touzidice4.json')}
             loop={false}
+            duration={5000}
             onAnimationFinish={navigateBack} />
         </>
       );
@@ -68,6 +72,7 @@ export default function DadoAnimationScreen({ route, navigation }) {
             autoPlay={true}
             source={require('../animations/18183-touzidice5.json')}
             loop={false}
+            duration={5000}
             onAnimationFinish={navigateBack} />
         </>
       );
@@ -80,6 +85,7 @@ export default function DadoAnimationScreen({ route, navigation }) {
             autoPlay={true}
             source={require('../animations/18184-touzidice6.json')}
             loop={false}
+            duration={5000}
             onAnimationFinish={navigateBack} />
         </>
       );
