@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MINCRIX</string>
+    <string name="facebook_app_id">272251513857973</string> <string name="fb_login_protocol_scheme">fb272251513857973</string>
+
+</resources>
