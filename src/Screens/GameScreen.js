@@ -1,6 +1,6 @@
-import React, { useRef,useEffect, } from 'react';
+import React, { useRef } from 'react';
 import { Layout, Button, Card, Text,Modal } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback } from 'react-native';
+import { ScrollView, StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, BackHandler  } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 function getRandomInt(min, max) {
@@ -31,18 +31,6 @@ export default function GameScreen({ navigation }) {
   const moveAnim = useRef(new Animated.Value(0)).current;
   const myScroll = React.useRef();
   const scrollAnimation = useRef(new Animated.Value(0));
-
-  
-
-  const moveToPlace =()=>{
-    Animated.timing(moveAnim, {
-      toValue: 100,
-      duration: 2000,
-      useNativeDriver: true
-    }).start();
-    
-    //myScroll.current.scrollTo({ x: 0, y: 50 , animated: true})
-  };
 
   const [visible, setVisible] = React.useState(false);    
   
@@ -79,8 +67,7 @@ export default function GameScreen({ navigation }) {
 //crear la variable aleatoria aqui y pasarsela a la animacion 
     setVisible(false);
     let number = getRandomInt(1, 7);  
-    Position = Position  + number;
-    //console.log("Posicion: " + Position);
+    Position = Position  + number;    
     navigation.navigate('DadoAnimation',  {dadoResult: number});
   };
 
@@ -165,6 +152,53 @@ export default function GameScreen({ navigation }) {
         <Animatable.View style={styles.vOrange}  animation="swing" iterationDelay={8000} iterationCount="infinite"> 
         <Text style={styles.text} category='h5'> 12 </Text>         
         </Animatable.View>  
+
+        <Animatable.View style={styles.vPink}  animation="pulse" iterationDelay={5000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 13</Text>         
+        </Animatable.View>     
+
+        <Animatable.View style={styles.vBlue}  animation="shake" iterationDelay={3000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 14 </Text>         
+        </Animatable.View>    
+
+        <Animatable.View style={styles.vPurple}  animation="tada" iterationDelay={1000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 15 </Text>         
+        </Animatable.View>  
+        
+        <Animatable.View style={styles.vGreen}  animation="bounce" iterationDelay={6000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 16 </Text>         
+        </Animatable.View>  
+        
+        <Animatable.View style={styles.vBlack}  animation="wobble" iterationDelay={4000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 17 </Text>         
+        </Animatable.View>  
+
+        <Animatable.View style={styles.vOrange}  animation="swing" iterationDelay={8000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 18 </Text>         
+        </Animatable.View>  
+        <Animatable.View style={styles.vPink}  animation="pulse" iterationDelay={5000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 19</Text>         
+        </Animatable.View>     
+
+        <Animatable.View style={styles.vBlue}  animation="shake" iterationDelay={3000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 20 </Text>         
+        </Animatable.View>    
+
+        <Animatable.View style={styles.vPurple}  animation="tada" iterationDelay={1000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 21 </Text>         
+        </Animatable.View>  
+        
+        <Animatable.View style={styles.vGreen}  animation="bounce" iterationDelay={6000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 22 </Text>         
+        </Animatable.View>  
+        
+        <Animatable.View style={styles.vBlack}  animation="wobble" iterationDelay={4000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 23 </Text>         
+        </Animatable.View>  
+
+        <Animatable.View style={styles.vOrange}  animation="swing" iterationDelay={8000} iterationCount="infinite"> 
+        <Text style={styles.text} category='h5'> 24 </Text>         
+        </Animatable.View>  
                         
       </ImageBackground>
     </Animated.ScrollView>
@@ -196,7 +230,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderRadius: 20,    
-    backgroundColor: '#FE6AB4',
+    backgroundColor: '#ff6699',
     borderColor: '#ffffff',
            
     borderWidth: 6,
@@ -206,7 +240,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderRadius: 20,
-    backgroundColor: '#0080FF',
+    backgroundColor: '#00ffff',
     borderColor: '#ffffff',            
     borderWidth: 6,    
     //right:40,        
@@ -215,16 +249,25 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderRadius: 20,
-    backgroundColor: '#82059B',
+    backgroundColor: '#9900ff',
     borderColor: '#ffffff',        
     borderWidth: 6,    
     //left: 30,      
-  },   
+  },  
+  vRed: {
+    height: 100,
+    width: 100,
+    borderRadius: 20,
+    backgroundColor: '#ff0000',
+    borderColor: '#ffffff',        
+    borderWidth: 6,    
+    //left: 30,      
+  },    
   vGreen: {
     height: 100,
     width: 100,
     borderRadius: 20,
-    backgroundColor: '#07EA0B',
+    backgroundColor: '#00ff00',
     borderColor: '#ffffff',      
     borderWidth: 6,    
     //left: 100,      
