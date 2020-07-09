@@ -11,6 +11,7 @@ import MenuScreen from './MenuScreen';
 import NotificationScreen from './NotificationScreen';
 import DadoAnimationScreen from './DadoAnimationScreen';
 import LogginScreen from './LoginScreen';
+import WelcomeScreen from './WelcomeScreen';
 
 const TabNav = createBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -67,7 +68,7 @@ function gameNavigator() {
 
 function loginNavigator() {
 
-  const [tokenLog, setTokenLog] = useState(null);
+  const [tokenLog, setTokenLog] = useState(null);  
 
   const getData = async () => {
     try {
@@ -75,7 +76,7 @@ function loginNavigator() {
       if (value !== null) {
         // value previously stored
         setTokenLog(value);
-      }
+      }      
     } catch (e) {
       // error reading value
       console.log('Mk1:' + error)
@@ -83,6 +84,7 @@ function loginNavigator() {
   }
 
   getData();
+  
   return (
     <NavigationContainer>
       <StatusBar backgroundColor="#1a2138" barStyle='light-content' />
@@ -99,10 +101,10 @@ function loginNavigator() {
               },
             }}
           />
+          <LoginStack.Screen name='Welcome' component={WelcomeScreen}  />
           <LoginStack.Screen name='Game' component={TabNavigator}  />
         </LoginStack.Navigator>
       ) : (
-
         <TabNavigator/>)}
     </NavigationContainer>
   );

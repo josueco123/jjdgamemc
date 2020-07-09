@@ -1,66 +1,74 @@
-import React, { useEffect, useState }  from 'react';
-import { Layout, Text, Input, Button} from '@ui-kitten/components';
+import React, {useState} from 'react';
+import { Layout, Text, Card, Avatar } from '@ui-kitten/components';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 export default  function ProfileScreen({ navigation }) {
  
-  const [radicacion, setRadicacion] = useState('');
-  const [demandante, setDemandante] = useState('');
-  const [demandado, setDemandado] = useState('');
-  const [juzgado, setJuzgado] = useState(''); 
-  
-  const saveInWeb = () => {
-    fetch('https://mywebsite.com/endpoint/', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        _token: '',
-        radicacion: radicacion,
-        demandante: demandante,
-        demandado: demandado,
-        juzgado: juzgado,
+  const [avatar, setAvatar] = useState(null);
+  const [name, setName] = useState('');
 
-      })
-    }).then((response) => response.json())
-    //If response is in json then in success
-    .then((responseJson) => {
-        //alert(JSON.stringify(responseJson));
-        console.log(responseJson);
-    })
-    //If response is not in json then in error
-    .catch((error) => {
-      //alert(JSON.stringify(error));
-      console.error("mistake: "+error);;
-    });
+  const getData = async () => {
+    try {
+      const valuename = await AsyncStorage.getItem('username')
+      if(valuename !== null) {
+        // value previously stored
+        setName(valuename);        
+      }
+
+      const valueavatar = await AsyncStorage.getItem('avatar')
+      if(valueavatar !== null) {
+        // value previously stored
+        setAvatar(valueavatar);      
+      }
+      
+    } catch(e) {
+      // error reading value
+    }
   }
-        
+    
+  getData();
+
+  const Header = (props) => (
+    <View {...props}>
+       {avatar == null ? (
+       <Avatar size='giant' source={require('../assets/comic.png')}/>
+       ) :(
+        <Avatar size='giant' source={{uri: avatar}}/>
+       )}
+        <Text category='h6'>{name}</Text>
+    </View>
+  );
+  
     return (
-      <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} level="3">
-        <Text category='h1'>Profile Screen</Text>
-        <Input
-          placeholder='Place your Text'
-          value={radicacion}
-          onChangeText={nextValue => setRadicacion(nextValue)}
-          />
-          <Input
-          placeholder='Place your Text'
-          value={demandante}
-          onChangeText={nextValue => setDemandante(nextValue)}
-          />
-          <Input
-          placeholder='Place your Text'
-          value={demandado}
-          onChangeText={nextValue => setDemandado(nextValue)}
-          />
-          <Input
-          placeholder='Place your Text'
-          value={juzgado}
-          onChangeText={nextValue => setJuzgado(nextValue)}
-          />
-          <Button onPress={saveInWeb}>enviar</Button>
+      
+      <ScrollView>
+      <Layout style={styles.topContainer} level="1">
+      
+        <Card style={styles.card} header={Header}>
+          <Text>With Header</Text>
+        </Card>
+        
       </Layout>
+      </ScrollView>
     );
   }
+
+  const styles = StyleSheet.create({
+    topContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    card: {
+      flex: 1,
+      margin: 2,
+    },
+    footerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    },
+    footerControl: {
+      marginHorizontal: 2,
+    },
+  });

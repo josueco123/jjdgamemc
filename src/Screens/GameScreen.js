@@ -71,9 +71,13 @@ export default function GameScreen({ navigation }) {
     navigation.navigate('DadoAnimation',  {dadoResult: number});
   };
 
-  return (
-    
-    <Animated.ScrollView ref={myScroll}>
+  return (    
+    <>
+    <Layout style={styles.layout} level='1'>
+        <Text style={styles.text} category='h5'>El Juego</Text>
+      </Layout>
+    <Animated.ScrollView ref={myScroll}>      
+
       <ImageBackground source={require('../assets/back.png')} style={styles.image}> 
 
       <Modal
@@ -202,7 +206,7 @@ export default function GameScreen({ navigation }) {
                         
       </ImageBackground>
     </Animated.ScrollView>
-    
+    </>
   );
 }
 
@@ -210,6 +214,12 @@ const styles = StyleSheet.create({
   container: {
       flex: 1,
       alignItems: 'center',        
+  },
+  layout:{
+    height: 40,
+  },
+  text:{
+    left:40,
   },
   card: {
     margin: 1,
