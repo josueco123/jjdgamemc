@@ -78,7 +78,7 @@ export default function LoginScreen({ navigation }) {
     );
   }
 
-  //guardar datos se session localmente
+  //guardar datos se session localmente si el usuario ya se encuentra registrado 
   const storeData = async (value) => {
 
     try {

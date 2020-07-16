@@ -13,6 +13,8 @@ import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
+import com.imagepicker.ImagePickerPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;   
 
 public class MainApplication extends Application implements ReactApplication {
 

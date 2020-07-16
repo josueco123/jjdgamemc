@@ -28,7 +28,7 @@ export default  function NotificationScreen({ navigation }) {
     //If response is not in json then in error
     .catch((error) => {
       //alert(JSON.stringify(error));
-      console.log("mistake: "+ error);;
+      console.log("mistake: "+ error);
     });
   }
       
