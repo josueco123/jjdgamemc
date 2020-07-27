@@ -1,7 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Layout, Button, Card, Text, Modal, Icon } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, OverflowMenu, BackHandler } from 'react-native';
+import { ScrollView, StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, Alert, BackHandler } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-community/async-storage';
+import PushNotification from 'react-native-push-notification';
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -13,28 +16,60 @@ let test = true;
 
 export default function GameScreen({ navigation }) {
 
-  const [visible, setVisible] = useState(false);  
+  const mesaginpush = () =>{
+    
+      
+    useEffect(() => {
+      messaging().onMessage(async remoteMessage => {
+        console.log(JSON.stringify(remoteMessage))
+
+        PushNotification.localNotification({
+          /* Android Only Properties */
+          id: remoteMessage.id,  
+          ignoreInForeground: false,      
+          //smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"     
+          vibrate: true, // (optional) default: true
+          vibration: 1000, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
+                      
+          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+            
+          /* iOS and Android properties */
+          title: remoteMessage.title, // (optional)
+          message: remoteMessage.body, // (required)
+          playSound: true,// (optional) default: true
+          soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+          
+        });
+
+      });
+      
+    });
+  }
+
+  mesaginpush();
+
+  const [visible, setVisible] = useState(false);
 
   const cardHeader = (props) => (
     <View {...props}>
       <Text category='h6'>Reto 😻</Text>
     </View>
-  );  
-  
+  );
 
   const cardFooter = (props) => (
     <View {...props} style={[props.style, styles.footerContainer]}>
-      <Button size='small' onPress={navigateAnimation}>
+      <Button size='small' onPress={getUserState}>
         Tirar Dado
         </Button>
-     
+
     </View>
   );
 
   const moveAnim = useRef(new Animated.Value(0)).current;
   const myScroll = useRef();
-  const scrollAnimation = useRef(new Animated.Value(0));  
+  const scrollAnimation = useRef(new Animated.Value(0));
 
+const moveFicha = () =>{
 
   if (lastPosition < Position) {
 
@@ -47,7 +82,7 @@ export default function GameScreen({ navigation }) {
     })
 
     Animated.timing(scrollAnimation.current, {
-      toValue: 80 * Position,
+      toValue: 100 * Position,
       duration: 10000,
       useNativeDriver: true,
       easing: Easing.linear,
@@ -63,19 +98,49 @@ export default function GameScreen({ navigation }) {
     console.log("Posicion: " + Position);
     lastPosition = Position;
   }
+}   
+
+  const getUserState = async () => {
 
 
-  const navigateAnimation = () => {
-    //crear la variable aleatoria aqui y pasarsela a la animacion 
-    setVisible(false);
-    let number = getRandomInt(1, 7);
-    Position = Position + number;
-    navigation.navigate('DadoAnimation', { dadoResult: number });
-  };
+    try {
+
+      const mail = await AsyncStorage.getItem('email');
+
+      fetch('https://mincrix.com/usergamestate/' + mail)
+        .then((response) => response.json())
+        .then((json) => {
+          //que vamos hacer con el resultado despues de obtener el estado de usuario
+          if (json.estado.toString() == "1") {
+
+            setVisible(false);
+            let number = getRandomInt(1, 7);
+            Position = Position + number;
+            navigation.navigate('DadoAnimation', { dadoResult: number });
+            moveFicha();
+
+          } else {
+
+            Alert.alert(
+              "¡Espera!",
+              "No puedes tirar el dado hasta que el reto sea aprobado.",
+              [
+                { text: "OK" }
+              ],
+              { cancelable: true });
+          }
+        })
+        .catch((error) => console.log("err:  " + error))
+
+    } catch (er) {
+      console.log(er);
+    }
+  }
+ 
 
   return (
     <>
-           <Animated.ScrollView ref={myScroll}>
+      <Animated.ScrollView ref={myScroll}>
 
         <ImageBackground source={require('../assets/back.png')} style={styles.image}>
 

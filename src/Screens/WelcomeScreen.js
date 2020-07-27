@@ -10,8 +10,7 @@ export default function WelcomeScreen({ route, navigation }) {
     const { name } = route.params;
     const { email } = route.params;
     const { avatar } = route.params;
-    const { token } = route.params;
-    let data;
+    const { token } = route.params;    
 
     const saveNewUser = async () => {
 
@@ -48,6 +47,7 @@ export default function WelcomeScreen({ route, navigation }) {
                 await AsyncStorage.setItem('avatar', avatar)
                 await AsyncStorage.setItem('nickname', nickname)
 
+                saveFCMtoken();
 
             console.log('Data successfully saved ' + name);
             createTwoButtonAlert();
@@ -56,6 +56,41 @@ export default function WelcomeScreen({ route, navigation }) {
             console.log('Failed to save the data to the storage ' + error.toString());
         }
     }
+
+    const saveFCMtoken = async () =>{
+
+        try {
+    
+            const fcmtoken = await AsyncStorage.getItem('tokenfcm');
+            const email = await AsyncStorage.getItem('email');
+    
+            await fetch('https://www.mincrix.com/savereuserfcmtoken', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email:email,
+                    fcmtoken: fcmtoken,                   
+                })
+            }).then((response) => response.json())
+                //If response is in json then in success
+                .then((responseJson) => {
+                    //alert(JSON.stringify(responseJson));
+                    console.log(responseJson);                    
+                })
+                //If response is not in json then in error
+                .catch((error) => {
+                    //alert(JSON.stringify(error));
+                    console.log("mistake: " + error);;
+                });
+    
+                
+        } catch (error) {
+            console.log('Failed to save the data to the storage ' + error.toString());
+        }    
+    }    
 
     const goToGameScren = () => {
         navigation.navigate("Game")
@@ -94,9 +129,7 @@ export default function WelcomeScreen({ route, navigation }) {
                 <Button onPress={saveNewUser}>Guardar</Button>
 
             </Layout>
-        )
-     
-
+        )     
 
 }
 

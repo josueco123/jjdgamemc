@@ -142,10 +142,12 @@ export default class CameraMenu extends Component {
         if (this.state.fileData) {
             return <Image source={{ uri: 'data:image/jpeg;base64,' + this.state.fileData }}
                 style={styles.images}
+                resizeMode="stretch"
             />
         } else {
-            return <Image source={require('../assets/icon-png.png')}
-                style={styles.images}
+            return <Image source={require('../assets/social-343.png')}
+                style={styles.images} 
+                resizeMode="stretch"
             />
         }
     }
@@ -153,12 +155,19 @@ export default class CameraMenu extends Component {
 
     render() {
 
+        const AdjIcon = (props) => (
+            <Icon {...props} name='attach' />
+        );
+
+        const CamIcon = (props) => (
+            <Icon {...props} name='camera' />
+        );
         return (
 
             <>
-                <Layout style={styles.btncontainer} level="3">
-                    <Button style={styles.button} appearance='ghost' onPress={this.launchCamera} > Tomar Foto</Button>
-                    <Button style={styles.button} appearance='ghost' onPress={this.launchImageLibrary}>Abrir Galeria</Button>
+                <Layout style={styles.btncontainer} level="1">
+                    <Button style={styles.button} accessoryLeft={CamIcon} appearance='ghost' onPress={this.launchCamera} > Tomar Foto</Button>
+                    <Button style={styles.button} accessoryLeft={AdjIcon} appearance='ghost' onPress={this.launchImageLibrary}>Abrir Galeria</Button>
                 </Layout>
                 {this.renderFileData()}
 
@@ -173,13 +182,12 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
     },
-    button: {
-        borderRadius: 25,
+    button: {        
         margin: 2,
     },
     images: {
         width: 350,
-        height: 400,
+        height: 375,
         borderColor: 'black',
         borderWidth: 1,
         marginHorizontal: 3

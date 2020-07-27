@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "503884796565",
+    "firebase_url": "https://mincrix.firebaseio.com",
+    "project_id": "mincrix",
+    "storage_bucket": "mincrix.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503884796565:android:067c2502cbc5da6aa9c19c",
+        "android_client_info": {
+          "package_name": "com.mincrix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "503884796565-vs29u6mk2f6tbueq5jtrsukv3b7aiaqv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mincrix",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "503884796565-sgh2k794guc60sigkcvh7b53mgjrrq79.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYkGNB7tE53gEKHorVmwHyeu6vmtgCAY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "503884796565-sgh2k794guc60sigkcvh7b53mgjrrq79.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

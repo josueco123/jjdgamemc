@@ -52,6 +52,7 @@ export default function LoginScreen({ navigation }) {
                     } else {
 
                       storeData(responseJson);
+                      saveFCMtoken();
                       navigation.navigate('Game');
 
                     }
@@ -77,6 +78,43 @@ export default function LoginScreen({ navigation }) {
       }
     );
   }
+
+  const saveFCMtoken = async () =>{
+
+    try {
+
+        const fcmtoken = await AsyncStorage.getItem('tokenfcm');
+        const email = await AsyncStorage.getItem('email');
+
+        await fetch('https://www.mincrix.com/savereuserfcmtoken', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email:email,
+                fcmtoken: fcmtoken,                   
+            })
+        }).then((response) => response.json())
+            //If response is in json then in success
+            .then((responseJson) => {
+                //alert(JSON.stringify(responseJson));
+                console.log(responseJson);                    
+            })
+            //If response is not in json then in error
+            .catch((error) => {
+                //alert(JSON.stringify(error));
+                console.log("mistake: " + error);;
+            });
+
+            
+    } catch (error) {
+        console.log('Failed to save the data to the storage ' + error.toString());
+    }
+
+}
+  
 
   //guardar datos se session localmente si el usuario ya se encuentra registrado 
   const storeData = async (value) => {
@@ -111,30 +149,30 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
   },
   image: {
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "center"
+    justifyContent: "center",
+    alignItems: 'center',
   },
   btnfb: {
     backgroundColor: '#1877F2',
     borderColor: '#1877F2',
     borderRadius: 32,
-    width: 200,
+    width: 220,
     height: 28,
     margin: 0,
-    left: 80,
+    
     top: 130,
   },
   btnstaf: {
     borderRadius: 32,
-    width: 200,
+    width: 220,
     height: 28,
-    margin: 0,
-    left: 80,
+    margin: 0,    
     top: 150,
   }
 });

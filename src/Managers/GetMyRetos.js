@@ -71,7 +71,7 @@ export default class GetMyRetos extends Component {
 
         const renderItem = ({ item }) => (
             //<ListItem title={item.title}/>
-            <Card footer={Footer}>
+            <Card style={styles.card} footer={Footer}>
                 <Image source={{ uri: 'https://www.mincrix.com//storage/' + item.image }}
                     style={styles.images}
                     resizeMode="stretch" />
@@ -87,7 +87,7 @@ export default class GetMyRetos extends Component {
                     <>
                         <Layout style={styles.imagelayer} level="3">
                             <Spinner />
-                            <Image source={require('../assets/free-386.png')} style={styles.images} resizeMode="stretch" />
+                            <Image source={require('../assets/social-343.png')} style={styles.images} resizeMode="stretch" />
                         </Layout>
                     </>
                 ) : (
@@ -100,10 +100,10 @@ export default class GetMyRetos extends Component {
                                 renderItem={renderItem}
                             />
                             : (
-                                <>
-                                    <Layout style={styles.imagelayer}  level="3">
-                                        <Text category='s1'> No tienes retos aprobados </Text>
-                                        <Image source={require('../assets/free-386.png')} style={styles.images} resizeMode="stretch" />
+                                <>                                
+                                    <Layout style={styles.imagelayer}  level="3">                                       
+                                        <Text category='h6'> No tienes retos aprobados </Text>
+                                        <Image source={require('../assets/social-343.png')} style={styles.images} resizeMode="stretch" />
                                     </Layout>
                                 </>
                             )
@@ -115,9 +115,8 @@ export default class GetMyRetos extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        maxHeight: 280,
-        maxHeight: 270,        
-        padding: 10,                             
+        maxHeight: 285,          
+        padding: 15,                             
     },
     contentContainer: {
         paddingHorizontal: 8,
@@ -137,6 +136,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: 355,
         height:300,
+    },
+    card:{
+        flex: 1,
+        alignItems: 'stretch'        
     },
     footerContainer: {
         flexDirection: 'row',

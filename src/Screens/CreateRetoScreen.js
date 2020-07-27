@@ -105,8 +105,7 @@ const styles = StyleSheet.create({
   layout: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 35,
+    alignItems: 'center',    
   },
   input: {
     width: 350,
