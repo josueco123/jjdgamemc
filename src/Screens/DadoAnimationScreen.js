@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { Vibration } from "react-native";
 import LottieView from 'lottie-react-native';
 
 
 export default function DadoAnimationScreen({ route, navigation }) {
 
-
+  Vibration.vibrate(2000);
+  
   const { dadoResult } = route.params;
 
   const navigateBack = () => {

@@ -11,12 +11,14 @@ import { Vibration } from "react-native";
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { default as theme } from './theme.json';
+import { default as mapping } from './mapping.json';
 import SplashScreen from 'react-native-splash-screen'
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import IndexNavigator from './src/Screens/IndexNavigator';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
+
 
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
@@ -91,7 +93,7 @@ export default class App extends Component {
     return (
       <>
         <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
+        <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }} customMapping={mapping}>
           <IndexNavigator />
         </ApplicationProvider>
       </>

@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
-import { Layout, Text, Button, Input, Spinner, Divider } from '@ui-kitten/components';
+import { Layout, Text, Button, Input, Spinner, Icon } from '@ui-kitten/components';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 import CameraMenu from '../Managers/CameraMenu';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNFetchBlob from 'rn-fetch-blob'
 
 
+
 export default function CreateRetoScreen({ navigation }) {
 
   const [description, setDescription] = useState('');
   const [user_id,setUserId] = useState('');
+  const [position,setPosition] = useState('');
   const [btnavalible, setBtnavalible] = useState(false);  
 
   const [data, setData] = useState('');
   
   const getData = async () => {
     try {
-      const value = await AsyncStorage.getItem('token')
+      const value = await AsyncStorage.getItem('email')
       if(value !== null) {
         // value previously stored
         setUserId(value);        
@@ -25,7 +27,12 @@ export default function CreateRetoScreen({ navigation }) {
       if(value1 !== null) {
         // value previously stored
         setData(value1);            
-      }          
+      } 
+      const value2 = await AsyncStorage.getItem('position')
+      if(value2 !== null) {
+        // value previously stored
+        setPosition(value2);            
+      }         
       
     } catch(e) {
       // error reading value
@@ -45,7 +52,8 @@ export default function CreateRetoScreen({ navigation }) {
       { name : 'image', filename : 'image.jpg', type:'image/jpg', data: RNFetchBlob.wrap(data)},      
       // elements without property `filename` will be sent as plain text
       { name : 'description', data : description},
-      { name : 'user_id', data : user_id},      
+      { name : 'user_id', data : user_id}, 
+      { name : 'position', data : position},      
     ]).then(response => response.text())            
     .then((responseJson) => {
         //alert(JSON.stringify(responseJson));
@@ -72,7 +80,9 @@ export default function CreateRetoScreen({ navigation }) {
     navigation.navigate('Profile');
   }
 
-  
+  const sendIcon = (props) => (
+    <Icon {...props} name='paper-plane-outline' />
+  );
 
   return (
 
@@ -93,7 +103,7 @@ export default function CreateRetoScreen({ navigation }) {
           />
         </Layout>
         {btnavalible ? <Spinner />: 
-        <Button disabled={btnavalible} appearance='ghost' onPress={uploadReto} > Enviar Reto</Button>
+        <Button disabled={btnavalible} accessoryLeft={sendIcon} appearance='ghost' onPress={uploadReto} > Enviar Reto</Button>
         }
       </Layout>
     </ScrollView>

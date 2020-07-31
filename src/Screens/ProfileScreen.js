@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Layout, Text, Card, Avatar, Button,  } from '@ui-kitten/components';
-import { View, ScrollView, StyleSheet, Alert } from 'react-native';
+import { Layout, Text, Icon, Avatar, Button,  } from '@ui-kitten/components';
+import { View, ImageBackground, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import GetMyRetos from '../Managers/GetMyRetos';
 
@@ -11,6 +11,7 @@ export default function ProfileScreen({ navigation }) {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
+  const [position, setPosition] = useState('');
 
   const getData = async () => {
     try {
@@ -32,6 +33,11 @@ export default function ProfileScreen({ navigation }) {
         setNickname(valueanickname);
       }
 
+      const valuepos  = await AsyncStorage.getItem('position')
+      if (valuepos !== null) {
+        // value previously stored
+        setPosition(valuepos);
+      }
 
     } catch (e) {
       // error reading value
@@ -42,76 +48,70 @@ export default function ProfileScreen({ navigation }) {
 
   const goToCreateReto = async () => {
 
-    try {
+    const estado = await AsyncStorage.getItem('estado');
 
-      const mail = await AsyncStorage.getItem('email');
-
-      await fetch('https://mincrix.com/usergamestate/' + mail)
-        .then((response) => response.json())
-        .then((json) => {
-          //que vamos hacer con el resultado despues de obtener el estado de usuario
-          if (json.estado.toString() == "2") {
+    if (estado == "2") {
             
-            navigation.navigate('CreateReto');
-          }else{
-            
-            Alert.alert(
-              "¡Espera!",
-              "todavía no puedes subir el reto.",
-              [
-                  { text: "OK" }
-              ],
-              { cancelable: true });
-          }
-        })
-        .catch((error) => console.log("err:  " + error))
-
-    } catch (er) {
-      console.log(er);
-    }   
-  }
-
+      navigation.navigate('CreateReto');
+    }else{
+      
+      Alert.alert(
+        "¡Espera!",
+        "Todavía no puedes subir el reto.",
+        [
+            { text: "OK" }
+        ],
+        { cancelable: true });
+    }  
+  } 
   
+  
+  const imgIcon = (props) => (
+    <Icon {...props} name='image-outline' />
+);
 
   return (    
 
-      <Layout style={styles.topContainer} level="1">
-        <Layout style={styles.profile}>
+    <ImageBackground source={require('../assets/corona_rt.png')} style={styles.topContainer}>
+       
+       
         {avatar == null ? (
           <Avatar size='giant' source={require('../assets/comic.png')} />
         ) : (
             <Avatar size='giant' source={{ uri: avatar }} />
           )}
-        <Text category='h6'>{name}</Text>
-        <Text category='s1'>{nickname}</Text>
-        <Layout style={styles.infolater}>
-          <Layout style={styles.groupLater}>
-            <Text category='s1'> Nivel </Text>
-            <Text category='s1'> 0</Text>
-          </Layout>
-          <Layout style={styles.groupLater}>
-            <Text category='s1'> Amigos</Text>
+        
+        <Text category='h6'>{nickname}</Text>
+        <View style={styles.infolater}>
+          <View style={styles.groupLater}>
+            <Text category='h6'> Nivel </Text>
+            <Text category='s1'> {position}</Text>
+          </View>
+          <View style={styles.groupLater}>
+            <Text category='h6'> Amigos</Text>
             <Text category='s1'> 15</Text>
-          </Layout>
-        </Layout>   
-        </Layout>             
-        <Button appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
+          </View>
+        </View>                       
+        <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
+        <Text category='h5'> Retos Aprobados</Text>
 
-
-        <Layout style={styles.layouretos} >
+        
           
           <GetMyRetos />
-        </Layout>
+       
 
-      </Layout>   
-
+        </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  topContainer: {
+  topContainer: {    
+    padding:10,
+    flex: 1,
+    resizeMode: "cover",    
     flexDirection: 'column',
-    justifyContent: 'space-between',    
+    justifyContent: 'space-between',
+    alignItems: 'center',    
   },
   card: {
     flex: 1,
@@ -124,13 +124,12 @@ const styles = StyleSheet.create({
   },
   infolater: {
     flexDirection: 'row',
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
   },
   groupLater: {
     flexDirection: 'column',
   },
-  profile:{
-    padding:15,
-  }
+ 
   
 });

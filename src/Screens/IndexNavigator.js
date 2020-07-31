@@ -24,11 +24,13 @@ const PersonIcon = (props) => (
 );
 
 const GameIcon = (props) => (
-  <Icon {...props} name='star-outline' />
+  <Icon {...props} name='star-outline' 
+  animationConfig={{ cycles: Infinity }}
+  animation='pulse'/>
 );
 
 const NotificationIcon = (props) => (
-  <Icon {...props} name='bell-outline' />
+  <Icon {...props} name='message-circle-outline' />
 );
 
 const MenuIcon = (props) => (
@@ -60,58 +62,22 @@ function TabNavigator() {
 
 function gameNavigator() {
   return (
-    <GameStack.Navigator >
+    <GameStack.Navigator headerMode="none" >
       <GameStack.Screen name='Game' component={GameScreen} 
-       options={{
-        title: 'El Juego',
-        headerStyle: {
-          backgroundColor: '#1a2138',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }} />
+       />
       <GameStack.Screen name="DadoAnimation" component={DadoAnimationScreen} 
-       options={{
-        title: 'El Juego',
-        headerStyle: {
-          backgroundColor: '#1a2138',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }}/>
+       />
     </GameStack.Navigator>
   )
 }
 
 function profileNavigator(){
   return(
-    <ProfileStack.Navigator >
+    <ProfileStack.Navigator headerMode="none" >
       <ProfileStack.Screen name='Profile' component={ProfileScreen}
-       options={{
-        title: 'Mi Perfil',
-        headerStyle: {
-          backgroundColor: '#1a2138',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }} />
+        />
       <ProfileStack.Screen name='CreateReto' component={CreateRetoScreen} 
-      options={{
-        title: 'Enviar Reto',
-        headerStyle: {
-          backgroundColor: '#1a2138',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }}/>
+      />
     </ProfileStack.Navigator>
   )    
 }
@@ -138,7 +104,7 @@ function loginNavigator() {
   
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor="#1a2138" barStyle='light-content' />
+      <StatusBar backgroundColor="#000000" barStyle='light-content' animated={true} />
       {tokenLog == null ? (
         // No token found, user isn't signed in
         <LoginStack.Navigator headerMode="none">

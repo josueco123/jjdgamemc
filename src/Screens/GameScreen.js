@@ -10,12 +10,42 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-let Position = 0;
+let Position;
 let lastPosition = 0;
-let test = true;
+let firstExecute = true;
 
 export default function GameScreen({ navigation }) {
 
+  //se trae el estado y la posicion del usuario
+  const askUserState = async () =>{
+    try {
+
+      const mail = await AsyncStorage.getItem('email');
+
+      await fetch('https://mincrix.com/usergamestate/' + mail)
+        .then((response) => response.json())
+        .then((json) => {          
+          //await AsyncStorage.setItem('estado', json.estado.toString());  
+          storeState(json)          
+          console.log("es: "+json.estado.toString())          
+             
+        })
+        .catch((error) => console.log("err:  " + error))
+
+    } catch (er) {
+      console.log(er);
+    }
+  }
+  askUserState();
+
+  //almacenar el estado traido del backend
+  const storeState = async (value) =>{
+
+    await AsyncStorage.setItem('estado', value.estado);          
+    
+  }
+
+  //servicion de notificaciones en backgrond
   const mesaginpush = () =>{
     
       
@@ -45,9 +75,11 @@ export default function GameScreen({ navigation }) {
       
     });
   }
-
   mesaginpush();
 
+  
+
+  //  el card que contiene los retos
   const [visible, setVisible] = useState(false);
 
   const cardHeader = (props) => (
@@ -69,6 +101,7 @@ export default function GameScreen({ navigation }) {
   const myScroll = useRef();
   const scrollAnimation = useRef(new Animated.Value(0));
 
+  //mover la ficha a una posision determinada
 const moveFicha = () =>{
 
   if (lastPosition < Position) {
@@ -86,7 +119,7 @@ const moveFicha = () =>{
       duration: 10000,
       useNativeDriver: true,
       easing: Easing.linear,
-    }).start()
+    }).start();
 
     Animated.timing(moveAnim, {
       toValue: 100 * Position,
@@ -97,38 +130,88 @@ const moveFicha = () =>{
     console.log("last: " + lastPosition);
     console.log("Posicion: " + Position);
     lastPosition = Position;
+    updateUserPosition(Position);
   }
-}   
+}
 
+//mover ficha al inicio
+const initPosition = async () =>{
+
+  const pos = await AsyncStorage.getItem('position');
+
+  if(firstExecute){
+
+    scrollAnimation.current.addListener((animation) => {
+      myScroll.current &&
+        myScroll.current.scrollTo({
+          y: animation.value,
+          animated: false,
+        })
+    })
+
+    Animated.timing(scrollAnimation.current, {
+      toValue: 100 * Number(pos),
+      duration: 3000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+
+    Animated.timing(moveAnim, {
+      toValue: 100 * Number(pos),
+      duration: 3000,
+      useNativeDriver: true
+    }).start();
+
+    Position = Number(pos);
+    lastPosition = Number(pos);
+    console.log("execution test ");  
+    firstExecute = false;
+  }
+}
+initPosition();
+
+//hacer el numero aletorio y mostrar el dado 
   const getUserState = async () => {
 
+    const estado = await AsyncStorage.getItem('estado');
+
+    if (estado == "1") {
+
+      setVisible(false);
+      let number = getRandomInt(1, 7);
+      Position = Number(Position) + number;
+      console.log("Pos3: " + Position);
+      navigation.navigate('DadoAnimation', { dadoResult: number });
+      await AsyncStorage.setItem('estado', "2");
+      await AsyncStorage.setItem('position', Position);
+      updataUserState();
+
+      moveFicha();
+
+    } else {
+
+      Alert.alert(
+        "¡Espera!",
+        "No puedes tirar el dado hasta que te aprueben este reto.",
+        [
+          { text: "OK" }
+        ],
+        { cancelable: true });
+    }
+    
+  }
+ 
+  //actualizar el estado de jugador
+  const updataUserState = async()=>{
 
     try {
 
       const mail = await AsyncStorage.getItem('email');
 
-      fetch('https://mincrix.com/usergamestate/' + mail)
+      await fetch('https://mincrix.com/setusergamestate/' + mail+ '/2')
         .then((response) => response.json())
-        .then((json) => {
-          //que vamos hacer con el resultado despues de obtener el estado de usuario
-          if (json.estado.toString() == "1") {
-
-            setVisible(false);
-            let number = getRandomInt(1, 7);
-            Position = Position + number;
-            navigation.navigate('DadoAnimation', { dadoResult: number });
-            moveFicha();
-
-          } else {
-
-            Alert.alert(
-              "¡Espera!",
-              "No puedes tirar el dado hasta que el reto sea aprobado.",
-              [
-                { text: "OK" }
-              ],
-              { cancelable: true });
-          }
+        .then((json) => {          
+        
         })
         .catch((error) => console.log("err:  " + error))
 
@@ -136,7 +219,24 @@ const moveFicha = () =>{
       console.log(er);
     }
   }
- 
+//actualizar la posicion
+  const updateUserPosition = async(value)=>{
+
+    try {
+
+      const mail = await AsyncStorage.getItem('email');
+
+      await fetch('https://mincrix.com/setuseposition/' + mail+ '/'+ value)
+        .then((response) => response.json())
+        .then((json) => {          
+        
+        })
+        .catch((error) => console.log("err:  " + error))
+
+    } catch (er) {
+      console.log(er);
+    }
+  }
 
   return (
     <>

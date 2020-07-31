@@ -14,6 +14,7 @@ export default  function GameScreen({ navigation }) {
       await AsyncStorage.removeItem('email');
       await AsyncStorage.removeItem('avatar');
       await AsyncStorage.removeItem('nickname');
+      await AsyncStorage.removeItem('estado');
       await AsyncStorage.removeItem('position');
       await AsyncStorage.removeItem('tokenfcm');
       

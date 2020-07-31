@@ -127,6 +127,7 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem('avatar', value.avatar)
       await AsyncStorage.setItem('nickname', value.nickname)
       await AsyncStorage.setItem('position', value.position)
+      await AsyncStorage.setItem('estado', value.estado)
 
     } catch (error) {
       console.log("tell me: " + error)

@@ -117,7 +117,7 @@ export default class CameraMenu extends Component {
                 alert(response.customButton);
             } else {
                 const source = { uri: response.uri };  
-                console.log(response);              
+                //console.log(response);              
                 this.storeData(response);
                 this.setState({
                     filePath: response,

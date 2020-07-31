@@ -36,7 +36,10 @@ export default class GetMyRetos extends Component {
 
     }
 
-
+    renferRetosimg(){
+        const { data, isLoading } = this.state;
+        
+    }
 
     render() {
         const { data, isLoading } = this.state;
@@ -71,40 +74,38 @@ export default class GetMyRetos extends Component {
 
         const renderItem = ({ item }) => (
             //<ListItem title={item.title}/>
-            <Card style={styles.card} footer={Footer}>
+            <View style={styles.card} >
                 <Image source={{ uri: 'https://www.mincrix.com//storage/' + item.image }}
                     style={styles.images}
                     resizeMode="stretch" />
-                <Card>
+                <Card footer={Footer}>
                     <Text category='s1'>  {item.description}</Text>
                 </Card>
-            </Card>
+            </View>
         );
 
         return (
             <>
                 {isLoading ? (
                     <>
-                        <Layout style={styles.imagelayer} level="3">
+                        <View style={styles.imagelayer} level="3">
                             <Spinner />
                             <Image source={require('../assets/social-343.png')} style={styles.images} resizeMode="stretch" />
-                        </Layout>
+                        </View>
                     </>
                 ) : (
                         data.length > 0 ?
                             <List
                                 style={styles.container}
-                                data={data}
-                                ItemSeparatorComponent={Divider}
-                                keyExtractor={({ id }, index) => id.toString()}
+                                data={data}                                                            
                                 renderItem={renderItem}
                             />
                             : (
                                 <>                                
-                                    <Layout style={styles.imagelayer}  level="3">                                       
+                                    <View style={styles.imagelayer}  level="3">                                       
                                         <Text category='h6'> No tienes retos aprobados </Text>
                                         <Image source={require('../assets/social-343.png')} style={styles.images} resizeMode="stretch" />
-                                    </Layout>
+                                    </View>
                                 </>
                             )
                     )}
@@ -115,8 +116,7 @@ export default class GetMyRetos extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        maxHeight: 285,          
-        padding: 15,                             
+        maxHeight: 285,                                      
     },
     contentContainer: {
         paddingHorizontal: 8,

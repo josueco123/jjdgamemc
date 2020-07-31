@@ -46,6 +46,8 @@ export default function WelcomeScreen({ route, navigation }) {
                 await AsyncStorage.setItem('email', email)
                 await AsyncStorage.setItem('avatar', avatar)
                 await AsyncStorage.setItem('nickname', nickname)
+                await AsyncStorage.setItem('position', "0")
+                await AsyncStorage.setItem('estado', "1")
 
                 saveFCMtoken();
 
