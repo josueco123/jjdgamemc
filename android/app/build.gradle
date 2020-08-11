@@ -136,6 +136,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
     splits {
         abi {
@@ -210,7 +211,11 @@ dependencies {
 
     implementation project(':react-native-firebase_messaging')
 
-     implementation project(':react-native-push-notification')
+    implementation project(':react-native-push-notification')
+
+    implementation project(':@react-native-firebase_firestore')
+
+    implementation project(":react-native-google-signin")
 
     implementation 'androidx.multidex:multidex:2.0.1'
 

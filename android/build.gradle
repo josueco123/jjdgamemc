@@ -9,6 +9,8 @@ buildscript {
         minSdkVersion = 16
         compileSdkVersion = 28
         targetSdkVersion = 28
+        supportLibVersion = "27.1.1"
+        googlePlayServicesAuthVersion = "16.0.1" // <--- use this version or newer
     }
     repositories {
         mavenCentral()
@@ -37,6 +39,7 @@ allprojects {
 
         google()
         jcenter()
+         maven { url 'https://maven.google.com' }
         maven { url 'https://www.jitpack.io' }
     }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Text, Icon, Avatar, Button,  } from '@ui-kitten/components';
+import { Layout, Text, Icon, Avatar, Button, } from '@ui-kitten/components';
 import { View, ImageBackground, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import GetMyRetos from '../Managers/GetMyRetos';
@@ -33,7 +33,7 @@ export default function ProfileScreen({ navigation }) {
         setNickname(valueanickname);
       }
 
-      const valuepos  = await AsyncStorage.getItem('position')
+      const valuepos = await AsyncStorage.getItem('position')
       if (valuepos !== null) {
         // value previously stored
         setPosition(valuepos);
@@ -51,67 +51,74 @@ export default function ProfileScreen({ navigation }) {
     const estado = await AsyncStorage.getItem('estado');
 
     if (estado == "2") {
-            
+
       navigation.navigate('CreateReto');
-    }else{
-      
+    } else {
+
       Alert.alert(
         "¡Espera!",
         "Todavía no puedes subir el reto.",
         [
-            { text: "OK" }
+          { text: "OK" }
         ],
         { cancelable: true });
-    }  
-  } 
-  
-  
+    }
+  }
+
+
   const imgIcon = (props) => (
     <Icon {...props} name='image-outline' />
-);
+  );
 
-  return (    
+  return (
 
-    <ImageBackground source={require('../assets/corona_rt.png')} style={styles.topContainer}>
-       
-       
-        {avatar == null ? (
-          <Avatar size='giant' source={require('../assets/comic.png')} />
-        ) : (
-            <Avatar size='giant' source={{ uri: avatar }} />
-          )}
-        
-        <Text category='h6'>{nickname}</Text>
-        <View style={styles.infolater}>
-          <View style={styles.groupLater}>
-            <Text category='h6'> Nivel </Text>
-            <Text category='s1'> {position}</Text>
+    <ImageBackground source={require('../assets/back.png')} style={styles.topContainer}>
+
+
+      {avatar == null ? (
+        <Avatar size='giant' source={require('../assets/comic.png')} />
+      ) : (
+          <Avatar style={styles.avatar} size='giant' source={{ uri: avatar }} />
+        )}
+
+      <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
+        <Text category='h4'>{nickname}</Text>
+      </View>
+      <View style={styles.infolater}>
+        <View style={styles.groupLater}>
+          <Text category='h6'> Nivel </Text>
+          <View style={styles.number}>
+            <Text category='h6'> {position}</Text>
           </View>
-          <View style={styles.groupLater}>
-            <Text category='h6'> Amigos</Text>
-            <Text category='s1'> 15</Text>
+        </View>
+        <View style={styles.groupLater}>
+          <Text category='h6'> Amigos</Text>
+          <View style={styles.number}>
+            <Text category='h6'> 15</Text>
           </View>
-        </View>                       
-        <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
-        <Text category='h5'> Retos Aprobados</Text>
+        </View>
+      </View>
+      <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
+      <Text category='h5'> Retos Completados</Text>
 
-        
-          
-          <GetMyRetos />
-       
+      <GetMyRetos />
 
-        </ImageBackground>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  topContainer: {    
-    padding:10,
+  topContainer: {
+    padding: 10,
     flex: 1,
-    resizeMode: "cover",    
+    resizeMode: "cover",
     flexDirection: 'column',
     justifyContent: 'space-between',
-    alignItems: 'center',    
+    alignItems: 'center',
+  },
+  avatar: {
+    borderColor: '#ffffff',
+    borderWidth: 1,
   },
   card: {
     flex: 1,
@@ -120,7 +127,7 @@ const styles = StyleSheet.create({
   layouretos: {
     justifyContent: 'center',
     alignItems: 'center',
-    
+
   },
   infolater: {
     flexDirection: 'row',
@@ -130,6 +137,12 @@ const styles = StyleSheet.create({
   groupLater: {
     flexDirection: 'column',
   },
- 
-  
+  number: {
+    backgroundColor: '#ff0000',
+    width: 42,
+    borderRadius: 5,
+    alignItems: 'center',
+  }
+
+
 });

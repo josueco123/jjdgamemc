@@ -18,14 +18,14 @@ import IndexNavigator from './src/Screens/IndexNavigator';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
+import { GoogleSignin } from '@react-native-community/google-signin';
 
 
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', JSON.stringify(remoteMessage));
-  Vibration.vibrate(1000);
+  Vibration.vibrate(1000);  
 });
-
 
 export default class App extends Component {
 
@@ -33,6 +33,7 @@ export default class App extends Component {
     super(props);
     //Setting the state for the data after login
     this.notificationConfig();
+    this.googleConfig();
 
   }
 
@@ -87,6 +88,14 @@ export default class App extends Component {
     });
   }
 
+  googleConfig(){
+
+    GoogleSignin.configure({       
+        
+      webClientId: '503884796565-sgh2k794guc60sigkcvh7b53mgjrrq79.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER     
+    });
+  }
 
   render() {
 

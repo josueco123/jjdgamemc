@@ -18,6 +18,8 @@ import com.RNFetchBlob.RNFetchBlobPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;  
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage; 
+import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;  // <--- import
 
 public class MainApplication extends Application implements ReactApplication {
 

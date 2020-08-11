@@ -183,7 +183,7 @@ initPosition();
       console.log("Pos3: " + Position);
       navigation.navigate('DadoAnimation', { dadoResult: number });
       await AsyncStorage.setItem('estado', "2");
-      await AsyncStorage.setItem('position', Position);
+      await AsyncStorage.setItem('position', Position.toString());
       updataUserState();
 
       moveFicha();

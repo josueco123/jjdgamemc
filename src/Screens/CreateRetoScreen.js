@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Layout, Text, Button, Input, Spinner, Icon } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Alert, BackHandler } from 'react-native';
 import CameraMenu from '../Managers/CameraMenu';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNFetchBlob from 'rn-fetch-blob'
@@ -41,7 +41,37 @@ export default function CreateRetoScreen({ navigation }) {
   
   getData();
 
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", goToProfile);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", goToProfile);
+  }, []);
+
   const uploadReto = async () => {
+
+    if(description == ''){
+
+      Alert.alert(
+        "¡Hubo un error!",
+        "no pusiste nada en la descripcion del reto",
+        [        
+          { text: "OK"}
+        ],
+        { cancelable: true });
+
+    }else if(data == '') {
+
+      Alert.alert(
+        "¡Hubo un error!",
+        "no subiste ninguna una imagen",
+        [        
+          { text: "OK"}
+        ],
+        { cancelable: true });
+
+      }else {    
       
     setBtnavalible(true);
 
@@ -72,6 +102,7 @@ export default function CreateRetoScreen({ navigation }) {
       // ...
       console.log("mistake: "+ err);
     });
+  }
   }
 
   const goToProfile = async() =>{

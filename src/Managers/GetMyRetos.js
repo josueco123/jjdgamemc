@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
 import { List, Text, Spinner, Divider, Card, Layout, Button, Icon, } from '@ui-kitten/components';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import LottieView from 'lottie-react-native';
 
 export default class GetMyRetos extends Component {
     constructor(props) {
@@ -36,9 +36,9 @@ export default class GetMyRetos extends Component {
 
     }
 
-    renferRetosimg(){
+    renferRetosimg() {
         const { data, isLoading } = this.state;
-        
+
     }
 
     render() {
@@ -78,7 +78,7 @@ export default class GetMyRetos extends Component {
                 <Image source={{ uri: 'https://www.mincrix.com//storage/' + item.image }}
                     style={styles.images}
                     resizeMode="stretch" />
-                <Card footer={Footer}>
+                <Card >
                     <Text category='s1'>  {item.description}</Text>
                 </Card>
             </View>
@@ -88,23 +88,28 @@ export default class GetMyRetos extends Component {
             <>
                 {isLoading ? (
                     <>
-                        <View style={styles.imagelayer} level="3">
-                            <Spinner />
-                            <Image source={require('../assets/social-343.png')} style={styles.images} resizeMode="stretch" />
+                        <View style={styles.imagelayer} >                            
+                            <LottieView
+                                autoPlay={true}
+                                source={require('../animations/4434-loading.json')}
+                                loop={true}                                
+                                />
                         </View>
                     </>
                 ) : (
                         data.length > 0 ?
-                            <List
-                                style={styles.container}
-                                data={data}                                                            
-                                renderItem={renderItem}
-                            />
+                            <View>
+                                
+                                <List
+                                    style={styles.list}
+                                    data={data}
+                                    renderItem={renderItem}
+                                />
+                            </View>
                             : (
-                                <>                                
-                                    <View style={styles.imagelayer}  level="3">                                       
-                                        <Text category='h6'> No tienes retos aprobados </Text>
-                                        <Image source={require('../assets/social-343.png')} style={styles.images} resizeMode="stretch" />
+                                <>
+                                    <View style={styles.imagelayer} >
+                                        <Text category='h3'> No tienes retos aprobados </Text>                                        
                                     </View>
                                 </>
                             )
@@ -116,7 +121,21 @@ export default class GetMyRetos extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        maxHeight: 285,                                      
+        top: 20,
+        left: 17,
+        maxHeight: 260,
+        width: 275,
+        zIndex: 20,
+        position: 'absolute',
+    },
+    list:{
+        maxHeight: 250,
+        borderLeftWidth:40,
+        borderLeftColor: 'black',
+        borderRightColor: 'black',
+        borderRightWidth:30,        
+        borderTopColor: 'black',        
+        borderTopWidth: 10, 
     },
     contentContainer: {
         paddingHorizontal: 8,
@@ -126,20 +145,26 @@ const styles = StyleSheet.create({
         marginVertical: 4,
     },
     images: {
-        width: 285,
-        height: 300,
+        width: 320,
+        height: 320,
         borderWidth: 1,
     },
-    imagelayer:{
+    bimages: {
+        width: 310,
+        height: 310,
+        borderWidth: 1,
+    },
+    imagelayer: {
         flexDirection: 'column',
-        justifyContent:'center',
+        justifyContent: 'center',
         alignItems: 'center',
         width: 355,
-        height:300,
+        height: 300,
     },
-    card:{
+    card: {
         flex: 1,
-        alignItems: 'stretch'        
+        alignItems: 'stretch',
+        borderRadius: 15,
     },
     footerContainer: {
         flexDirection: 'row',

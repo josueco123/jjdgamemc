@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { TabBar, Tab, Icon } from '@ui-kitten/components';
+import { Icon } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-community/async-storage';
 import GameScreen from './GameScreen';
 import ProfileScreen from './ProfileScreen';
@@ -13,48 +13,98 @@ import DadoAnimationScreen from './DadoAnimationScreen';
 import LogginScreen from './LoginScreen';
 import WelcomeScreen from './WelcomeScreen';
 import CreateRetoScreen from './CreateRetoScreen';
+import searchScreen from './searchScreen'
+import GamerProfileScreen from './GamerProfileScreen';
+import RankingScreen from './RankingScreen';
 
 const TabNav = createBottomTabNavigator();
 const LoginStack = createStackNavigator();
 const GameStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const MenuStack = createStackNavigator();
 
-const PersonIcon = (props) => (
-  <Icon {...props} name='person-outline' />
-);
-
-const GameIcon = (props) => (
-  <Icon {...props} name='star-outline' 
-  animationConfig={{ cycles: Infinity }}
-  animation='pulse'/>
-);
-
-const NotificationIcon = (props) => (
-  <Icon {...props} name='message-circle-outline' />
-);
-
-const MenuIcon = (props) => (
-  <Icon {...props} name='menu-outline' />
-);
-
-const TopTabBar = ({ navigation, state }) => (
-  <TabBar
-    selectedIndex={state.index}
-    onSelect={index => navigation.navigate(state.routeNames[index])}>
-    <Tab icon={GameIcon} />
-    <Tab icon={PersonIcon} />
-    <Tab icon={NotificationIcon} />
-    <Tab icon={MenuIcon} />
-  </TabBar>
-);
 
 function TabNavigator() {
+
+  const perfilIconRef = useRef();
+  const gameIconRef = useRef();
+  const chatIconRef = useRef();
+  const menuIconRef = useRef();
+
+  useEffect(() => {
+    perfilIconRef.current.startAnimation();
+    gameIconRef.current.startAnimation();
+    chatIconRef.current.startAnimation();
+    menuIconRef.current.startAnimation();
+  }, []);
+
   return (
-    <TabNav.Navigator  tabBar={props => <TopTabBar {...props} />} >
-      <TabNav.Screen name='Game' component={gameNavigator} />
-      <TabNav.Screen name='Profile' component={profileNavigator} />
-      <TabNav.Screen name='Notification' component={NotificationScreen} />
-      <TabNav.Screen name='Menu' component={MenuScreen} />
+    <TabNav.Navigator tabBarOptions={{  
+      activeTintColor:'#ff6699',     
+      keyboardHidesTabBar:true,      
+      tabStyle:{backgroundColor: '#000000'}
+    }}   >
+      <TabNav.Screen name='Game' component={gameNavigator} options={{  
+        tabBarLabel: 'El Juego',       
+          tabBarIcon: ({ color, size }) => (
+            <Icon
+            ref={gameIconRef}
+            animationConfig={{ cycles: Infinity }}
+            animation='pulse'
+            style={{width: 32,height: 32,}}
+            fill='#ff6699'
+            name='star'
+            color={color} size={size}
+          />
+          ),
+        }}
+       />
+      <TabNav.Screen name='Profile' component={profileNavigator}
+      options={{              
+        tabBarLabel: 'Mi Perfil',
+        tabBarIcon: ({ color, size }) => (
+          <Icon
+            ref={perfilIconRef}
+            animationConfig={{ cycles: Infinity }}
+            animation='pulse'
+            style={{width: 32,height: 32,}}
+            fill='#ff6699'
+            name='person'
+            color={color} size={size}
+          />
+        ),
+      }} 
+     />
+      <TabNav.Screen name='Notification' component={NotificationScreen} 
+      options={{    
+        tabBarLabel: 'Chat',    
+        tabBarIcon: ({ color, size }) => (
+          <Icon
+          ref={chatIconRef}
+          animationConfig={{ cycles: Infinity }}
+          animation='pulse'
+            style={{width: 32,height: 32,}}
+            fill='#ff6699'
+            name='message-circle'
+            color={color} size={size}
+          />
+        ),
+      }}/>
+      <TabNav.Screen name='Menu' component={menuNavigator} 
+      options={{        
+        tabBarLabel: 'Menu',
+        tabBarIcon: ({ color, size }) => (
+          <Icon
+          ref={menuIconRef}
+          animationConfig={{ cycles: Infinity }}
+          animation='pulse'
+            style={{width: 32,height: 32,}}
+            fill='#ff6699'
+            name='menu'
+            color={color} size={size}
+          />
+        ),
+      }}/>
     </TabNav.Navigator >
 
   );
@@ -63,29 +113,37 @@ function TabNavigator() {
 function gameNavigator() {
   return (
     <GameStack.Navigator headerMode="none" >
-      <GameStack.Screen name='Game' component={GameScreen} 
-       />
-      <GameStack.Screen name="DadoAnimation" component={DadoAnimationScreen} 
-       />
+      <GameStack.Screen name='Game' component={GameScreen} />
+      <GameStack.Screen name="DadoAnimation" component={DadoAnimationScreen} />
     </GameStack.Navigator>
   )
 }
 
-function profileNavigator(){
-  return(
+function profileNavigator() {
+  return (
     <ProfileStack.Navigator headerMode="none" >
       <ProfileStack.Screen name='Profile' component={ProfileScreen}
-        />
-      <ProfileStack.Screen name='CreateReto' component={CreateRetoScreen} 
+      />
+      <ProfileStack.Screen name='CreateReto' component={CreateRetoScreen}
       />
     </ProfileStack.Navigator>
-  )    
+  )
 }
 
+function menuNavigator() {
+  return (
+    <MenuStack.Navigator headerMode="none" >
+      <MenuStack.Screen name='Menu' component={MenuScreen} />
+      <MenuStack.Screen name="Buscar" component={searchScreen} />
+      <MenuStack.Screen name="GamerProfile" component={GamerProfileScreen} />
+      <MenuStack.Screen name="Ranking" component={RankingScreen} />    
+    </MenuStack.Navigator>
+  )
+}
 
 function loginNavigator() {
 
-  const [tokenLog, setTokenLog] = useState(null);  
+  const [tokenLog, setTokenLog] = useState(null);
 
   const getData = async () => {
     try {
@@ -93,7 +151,7 @@ function loginNavigator() {
       if (value !== null) {
         // value previously stored
         setTokenLog(value);
-      }      
+      }
     } catch (e) {
       // error reading value
       console.log('Mk1:' + error)
@@ -101,10 +159,10 @@ function loginNavigator() {
   }
 
   getData();
-  
+
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor="#000000" barStyle='light-content' animated={true} />
+      <StatusBar backgroundColor="#000000" barStyle='dark-content' animated={true} />
       {tokenLog == null ? (
         // No token found, user isn't signed in
         <LoginStack.Navigator headerMode="none">
@@ -118,11 +176,11 @@ function loginNavigator() {
               },
             }}
           />
-          <LoginStack.Screen name='Welcome' component={WelcomeScreen}  />
-          <LoginStack.Screen name='Game' component={TabNavigator}  />
+          <LoginStack.Screen name='Welcome' component={WelcomeScreen} />
+          <LoginStack.Screen name='Game' component={TabNavigator} />
         </LoginStack.Navigator>
       ) : (
-        <TabNavigator/>)}
+          <TabNavigator />)}
     </NavigationContainer>
   );
 }

@@ -1,18 +1,8 @@
 import React, { Component } from 'react'
 import { StyleSheet, Image } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import { Button, Layout, Input, Text, Icon } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-community/async-storage';
-
-
-const options = {
-    title: 'Select Avatar',
-    customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
-    storageOptions: {
-        skipBackup: true,
-        path: 'images',
-    },
-};
 
 
 export default class CameraMenu extends Component {
@@ -29,103 +19,49 @@ export default class CameraMenu extends Component {
         }
     }
 
-    chooseImage = () => {
-        let options = {
-            title: 'Select Image',
-            customButtons: [
-                { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-            ],
-            storageOptions: {
-                skipBackup: true,
-                path: 'mincrix',
-            },
-        };
-        ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
-
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-                alert(response.customButton);
-            } else {
-                const source = { uri: response.uri };
-
-                // You can also display the image using data:
-                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-                // alert(JSON.stringify(response));s
-                //console.log('response', JSON.stringify(response));
-                this.setState({
-                    filePath: response,
-                    fileData: response.data,
-                    fileUri: response.uri
-                });
-            }
-        });
-    }
+    
 
     launchCamera = () => {
-        let options = {
-            storageOptions: {
-                skipBackup: true,
-                path: 'mincrix',
-            },
-        };
+     
+        ImagePicker.openCamera({
+            useFrontCamera: true,
+            cropping: true,
+            includeBase64: true,
+            compressImageQuality: 0.4,
+            mediaType: 'photo',
+          }).then(image => {
+            console.log(image);
+            this.storeData(image); 
+            this.setState({
+                filePath: image,
+                fileData: image.data,
+                fileUri: ''
+            });
 
-        ImagePicker.launchCamera(options, (response) => {
-            //console.log('Response = ', response);
-
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-                alert(response.customButton);
-            } else {
-                const source = { uri: response.uri };
-                //console.log('response uri', JSON.stringify(response.uri));
-                this.storeData(response);                
-                this.setState({
-                    filePath: response,
-                    fileData: response.data,
-                    fileUri: response.uri
-                });
-            }
-        });
+          }).catch((error) => {
+            console.log("crop mk: " + error);
+          });     
 
     }
 
     launchImageLibrary = () => {
-        let options = {
-            storageOptions: {
-                skipBackup: true,
-                path: 'mincrix',
-            },
-        };
-        ImagePicker.launchImageLibrary(options, (response) => {
-            //console.log('Response = ', response);
+       
+        ImagePicker.openPicker({
+            cropping: true,
+            includeBase64: true,
+            compressImageQuality: 0.4,
+            mediaType: 'photo',
+            cropping: true
+          }).then(image => {
+            console.log(image);
+            this.storeData(image); 
+            this.setState({
+                filePath: image,
+                fileData: image.data,
+                fileUri: ''
+            });
 
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-                alert(response.customButton);
-            } else {
-                const source = { uri: response.uri };  
-                //console.log(response);              
-                this.storeData(response);
-                this.setState({
-                    filePath: response,
-                    fileData: response.data,
-                    fileUri: response.uri
-                });
-            }
-        });
+          });
 
     }
 
@@ -135,6 +71,14 @@ export default class CameraMenu extends Component {
             await AsyncStorage.setItem('pathimg', value.path)
         } catch (error) {
             console.log('msj ' + error)
+        }
+    }
+
+    deleteData = async () => {
+        try {
+            await AsyncStorage.removeItem('pathimg');
+        } catch (error) {
+            console.log('msj: ' + error)
         }
     }
 
