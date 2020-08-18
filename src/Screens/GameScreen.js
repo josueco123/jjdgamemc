@@ -5,6 +5,7 @@ import * as Animatable from 'react-native-animatable';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
 import PushNotification from 'react-native-push-notification';
+import { useIsFocused } from '@react-navigation/native';
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -12,7 +13,7 @@ function getRandomInt(min, max) {
 
 let Position;
 let lastPosition = 0;
-let firstExecute = true;
+global.firstExecute = true;
 
 export default function GameScreen({ navigation }) {
 
@@ -25,9 +26,9 @@ export default function GameScreen({ navigation }) {
       await fetch('https://mincrix.com/usergamestate/' + mail)
         .then((response) => response.json())
         .then((json) => {          
-          //await AsyncStorage.setItem('estado', json.estado.toString());  
+          
           storeState(json)          
-          console.log("es: "+json.estado.toString())          
+          console.log("es: "+json.estado)          
              
         })
         .catch((error) => console.log("err:  " + error))
@@ -36,13 +37,21 @@ export default function GameScreen({ navigation }) {
       console.log(er);
     }
   }
-  askUserState();
+  const isFocused = useIsFocused();
+
+  if(isFocused){
+    askUserState();
+   
+  }
 
   //almacenar el estado traido del backend
   const storeState = async (value) =>{
 
-    await AsyncStorage.setItem('estado', value.estado);          
-    
+    try {
+      await AsyncStorage.setItem('estado', value.estado); 
+    } catch (error) {
+      console.log("e: " + error);
+    }                 
   }
 
   //servicion de notificaciones en backgrond
@@ -100,6 +109,8 @@ export default function GameScreen({ navigation }) {
   const moveAnim = useRef(new Animated.Value(0)).current;
   const myScroll = useRef();
   const scrollAnimation = useRef(new Animated.Value(0));
+  const stars = useRef();
+  const startAnim =  useRef(new Animated.Value(0));
 
   //mover la ficha a una posision determinada
 const moveFicha = () =>{
@@ -134,12 +145,24 @@ const moveFicha = () =>{
   }
 }
 
-//mover ficha al inicio
+const animateStart = () =>{
+
+  Animated.timing(stars, {
+    toValue: 1000,
+    duration: 3000,
+    useNativeDriver: true
+  }).start();
+}
+
+//mover ficha cuando se inicia el juego
 const initPosition = async () =>{
 
   const pos = await AsyncStorage.getItem('position');
-
-  if(firstExecute){
+  const mail = await AsyncStorage.getItem('email');
+  
+  global.id = mail;
+  
+  if(global.firstExecute){
 
     scrollAnimation.current.addListener((animation) => {
       myScroll.current &&
@@ -165,10 +188,11 @@ const initPosition = async () =>{
     Position = Number(pos);
     lastPosition = Number(pos);
     console.log("execution test ");  
-    firstExecute = false;
+    global.firstExecute = false;
   }
 }
-initPosition();
+ initPosition();
+
 
 //hacer el numero aletorio y mostrar el dado 
   const getUserState = async () => {
@@ -267,104 +291,114 @@ initPosition();
             ]}>
 
             </Animatable.View>
-          </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>          
 
-          <Animatable.View style={styles.salida} animation="jello" iterationCount={2}>
+                  
+          <Animatable.Image style={{position:'absolute',  height: 5, width: 5, top: 150, right: 30}} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={3000} >
+          </Animatable.Image>
+
+          <Animatable.Image style={{position:'absolute',  height: 7, width: 7, top: 350, right: 60}} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={4000} >
+          </Animatable.Image>  
+
+          <Animatable.Image style={{position:'absolute',  height: 6, width: 6, top: 450, left: 60}} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={5000} >
+          </Animatable.Image> 
+
+          <Animatable.View style={styles.salida} animation="flash" >
             <Text style={styles.text} category='h4'>Inicio</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPink} animation="pulse" iterationDelay={5000} iterationCount="infinite">
+          <Animatable.View style={styles.vPink} animation="pulse"  iterationCount={4}>
             <Text style={styles.text} category='h5'> 1</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlue} animation="shake" iterationDelay={3000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlue} animation="shake"  iterationCount={3}>
             <Text style={styles.text} category='h5'> 2 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPurple} animation="tada" iterationDelay={1000} iterationCount="infinite">
+          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={5}>
             <Text style={styles.text} category='h5'> 3 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationDelay={6000} iterationCount="infinite">
+          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={4}>
             <Text style={styles.text} category='h5'> 4 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationDelay={4000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={4}>
             <Text style={styles.text} category='h5'> 5 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vOrange} animation="swing" iterationDelay={8000} iterationCount="infinite">
+          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={3}>
             <Text style={styles.text} category='h5'> 6 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPink} animation="pulse" iterationDelay={5000} iterationCount="infinite">
+          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={3}>
             <Text style={styles.text} category='h5'> 7</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlue} animation="shake" iterationDelay={3000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={5}>
             <Text style={styles.text} category='h5'> 8 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPurple} animation="tada" iterationDelay={1000} iterationCount="infinite">
+          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={4}>
             <Text style={styles.text} category='h5'> 9 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationDelay={6000} iterationCount="infinite">
+          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={3}>
             <Text style={styles.text} category='h5'> 10 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationDelay={4000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={5}>
             <Text style={styles.text} category='h5'> 11 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vOrange} animation="swing" iterationDelay={8000} iterationCount="infinite">
+          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={4}>
             <Text style={styles.text} category='h5'> 12 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPink} animation="pulse" iterationDelay={5000} iterationCount="infinite">
+          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={3}>
             <Text style={styles.text} category='h5'> 13</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlue} animation="shake" iterationDelay={3000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={4}>
             <Text style={styles.text} category='h5'> 14 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPurple} animation="tada" iterationDelay={1000} iterationCount="infinite">
+          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={3}>
             <Text style={styles.text} category='h5'> 15 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationDelay={6000} iterationCount="infinite">
+          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={6}>
             <Text style={styles.text} category='h5'> 16 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationDelay={4000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={5}>
             <Text style={styles.text} category='h5'> 17 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vOrange} animation="swing" iterationDelay={8000} iterationCount="infinite">
+          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={4}>
             <Text style={styles.text} category='h5'> 18 </Text>
           </Animatable.View>
-          <Animatable.View style={styles.vPink} animation="pulse" iterationDelay={5000} iterationCount="infinite">
+          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={3}>
             <Text style={styles.text} category='h5'> 19</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlue} animation="shake" iterationDelay={3000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={4}>
             <Text style={styles.text} category='h5'> 20 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPurple} animation="tada" iterationDelay={1000} iterationCount="infinite">
+          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={5}>
             <Text style={styles.text} category='h5'> 21 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationDelay={6000} iterationCount="infinite">
+          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={4}>
             <Text style={styles.text} category='h5'> 22 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationDelay={4000} iterationCount="infinite">
+          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={5}>
             <Text style={styles.text} category='h5'> 23 </Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vOrange} animation="swing" iterationDelay={8000} iterationCount="infinite">
+          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={3}>
             <Text style={styles.text} category='h5'> 24 </Text>
           </Animatable.View>
 
@@ -483,6 +517,13 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
     borderRadius: 64,
     borderWidth: 4,
+    position: 'absolute',
+    zIndex: 20,
+    top: 20,
+  },
+  imgs: {
+    height: 75,
+    width: 75,    
     position: 'absolute',
     zIndex: 20,
     top: 20,

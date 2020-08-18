@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Text, Icon, Avatar, Button, } from '@ui-kitten/components';
 import { View, ImageBackground, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -9,17 +9,12 @@ import GetMyRetos from '../Managers/GetMyRetos';
 export default function ProfileScreen({ navigation }) {
 
   const [avatar, setAvatar] = useState(null);
-  const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
   const [position, setPosition] = useState('');
+  const [friends, setFriends] = useState(0);
 
   const getData = async () => {
     try {
-      const valuename = await AsyncStorage.getItem('username')
-      if (valuename !== null) {
-        // value previously stored
-        setName(valuename);
-      }
 
       const valueavatar = await AsyncStorage.getItem('avatar')
       if (valueavatar !== null) {
@@ -45,6 +40,24 @@ export default function ProfileScreen({ navigation }) {
   }
 
   getData();
+
+  useEffect(() => {
+
+    fetch('https://mincrix.com/getfriendsmail/' + global.id, {
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //console.log(responseJson);
+
+        setFriends(responseJson);
+
+      }).catch((error) => {
+        console.error(error);
+      });
+
+
+  }, []);
 
   const goToCreateReto = async () => {
 
@@ -94,7 +107,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.groupLater}>
           <Text category='h6'> Amigos</Text>
           <View style={styles.number}>
-            <Text category='h6'> 15</Text>
+            <Text category='h6'> {friends}</Text>
           </View>
         </View>
       </View>

@@ -1,178 +1,261 @@
-import React, {useState, useEffect} from 'react';
-import { Layout, Text, Icon, Avatar, List,Card } from '@ui-kitten/components';
+import React, { useState, useEffect } from 'react';
+import { Layout, Text, Icon, Avatar, List, Card, Button } from '@ui-kitten/components';
 import { View, ImageBackground, StyleSheet, Image } from 'react-native';
 import LottieView from 'lottie-react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
-export default function GamerProfileScreen({route,navigation }) {
+export default function GamerProfileScreen({ route, navigation }) {
 
-    const { nickname } = route.params;
+  const { nickname } = route.params;
+  const { email } = route.params;
 
-    const [userdata, setUserdata] = useState([]);
-    const [useretos, setUseretos] = useState([]);
-    const [isLoading, setIsloading ] = useState(true);
+  const [userdata, setUserdata] = useState([]);
+  const [useretos, setUseretos] = useState([]);
+  const [isLoading, setIsloading] = useState(true);
+  const [isFriend, setIsfriend] = useState(false);
+  const [friends, setFriends] = useState(0);
 
 
-    useEffect(() => {
+  useEffect(() => {
 
-        fetch('https://mincrix.com/getnicknamegamer/' + nickname, {
-            method: 'GET'
+    fetch('https://mincrix.com/getnicknamegamer/' + nickname, {
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //console.log(responseJson);
+
+        setUserdata(responseJson);
+
+      }).catch((error) => {
+        console.error(error);
+      });
+
+    fetch('https://mincrix.com/getretosgamer/' + nickname, {
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //console.log(responseJson);
+
+        setUseretos(responseJson);
+
+      }).catch((error) => {
+        console.error(error);
+      }).finally(() => {
+        setIsloading(false);
+      });
+
+    fetch('https://mincrix.com/getfriendsnikc/' + nickname, {
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //console.log(responseJson);
+
+        setFriends(responseJson);
+
+      }).catch((error) => {
+        console.error(error);
+      }).finally(() => {
+        setIsloading(false);
+      });
+
+    fetch('https://mincrix.com/getfriendship/' + email + '/' + nickname, {
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //console.log(responseJson);
+
+        if (responseJson == null) {
+          setIsfriend(false);
+        } else {
+          setIsfriend(true);
+        }
+
+      }).catch((error) => {
+        console.error(error);
+      }).finally(() => {
+        setIsloading(false);
+      });
+
+  }, []);
+
+  const sendRequest = async () => {
+    try {
+
+      const email = await AsyncStorage.getItem('email');
+
+      await fetch('https://www.mincrix.com/requestfriendship', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          nickname: nickname,
         })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                //console.log(responseJson);
-    
-                setUserdata(responseJson);
-    
-            }).catch((error) => {
-                console.error(error);
-            });
+      }).then((response) => response.json())
+        //If response is in json then in success
+        .then((responseJson) => {
+          //alert(JSON.stringify(responseJson));
+          console.log(responseJson);
 
-            fetch('https://mincrix.com/getretosgamer/' + nickname, {
-            method: 'GET'
         })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                //console.log(responseJson);
-    
-                setUseretos(responseJson);
-    
-            }).catch((error) => {
-                console.error(error);
-            }).finally(() => {
-                setIsloading(false);
-            });
+        //If response is not in json then in error
+        .catch((error) => {
+          //alert(JSON.stringify(error));
+          console.log("mistake: " + error);
+        });
+
+    } catch (error) {
+      console.log('Failed to load the data ' + error.toString());
+    }
+    setSend(true);
+  }
+
+  const renderItem = ({ item }) => (
+    //<ListItem title={item.title}/>
+    <View style={styles.card} >
+      <Image source={{ uri: 'https://www.mincrix.com//storage/' + item.image }}
+        style={styles.images}
+        resizeMode="stretch" />
+      <Card >
+        <Text category='s1'>  {item.description}</Text>
+      </Card>
+    </View>
+  );
+
+  const addIcon = (props) => (
+    <Icon {...props} name='person-add-outline' />
+  );
 
 
-      }, []);
+  return (
 
-      const renderItem = ({ item }) => (
-        //<ListItem title={item.title}/>
-        <View style={styles.card} >
-            <Image source={{ uri: 'https://www.mincrix.com//storage/' + item.image }}
-                style={styles.images}
-                resizeMode="stretch" />
-            <Card >
-                <Text category='s1'>  {item.description}</Text>
-            </Card>
-        </View>
-    );
+    <ImageBackground source={require('../assets/back.png')} style={styles.topContainer}>
 
 
-      return (
+      {userdata.avatar == null ? (
+        <Avatar size='giant' source={require('../assets/comic.png')} />
+      ) : (
+          <Avatar style={styles.avatar} size='giant' source={{ uri: userdata.avatar }} />
+        )}
 
-        <ImageBackground source={require('../assets/back.png')} style={styles.topContainer}>
-    
-    
-          {userdata.avatar == null ? (
-            <Avatar size='giant' source={require('../assets/comic.png')} />
-          ) : (
-              <Avatar style={styles.avatar} size='giant' source={{ uri: userdata.avatar }} />
-            )}
-    
-          <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
-            <Text category='h4'>{nickname}</Text>
+      <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
+        <Text category='h4'>{nickname}</Text>
+      </View>
+      <View style={styles.infolater}>
+        <View style={styles.groupLater}>
+          <Text category='h6'> Nivel </Text>
+          <View style={styles.number}>
+            <Text category='h6'> {userdata.position}</Text>
           </View>
-          <View style={styles.infolater}>
-            <View style={styles.groupLater}>
-              <Text category='h6'> Nivel </Text>
-              <View style={styles.number}>
-                <Text category='h6'> {userdata.position}</Text>
-              </View>
+        </View>
+        <View style={styles.groupLater}>
+          <Text category='h6'> Amigos</Text>
+          <View style={styles.number}>
+            <Text category='h6'> {friends}</Text>
+          </View>
+        </View>
+      </View>
+      {isFriend ? <Text category='s1'> Has escogido a {nickname} como tu Amigo</Text> :
+        <Button accessoryLeft={addIcon} appearance='ghost' onPress={sendRequest}> Agregar como Amigo</Button>
+      }
+      <Text category='h5'> Retos Completados</Text>
+
+      {isLoading ? (
+        <>
+          <View style={styles.imagelayer} >
+            <LottieView
+              autoPlay={true}
+              source={require('../animations/4434-loading.json')}
+              loop={true}
+            />
+          </View>
+        </>
+      ) : (
+          useretos.length > 0 ?
+            <View>
+
+              <List
+                style={styles.list}
+                data={useretos}
+                renderItem={renderItem}
+              />
             </View>
-            
-          </View>        
-          <Text category='h5'> Retos Completados</Text>
-    
-          {isLoading ? (
-                    <>
-                        <View style={styles.imagelayer} >                            
-                            <LottieView
-                                autoPlay={true}
-                                source={require('../animations/4434-loading.json')}
-                                loop={true}                                
-                                />
-                        </View>
-                    </>
-                ) : (
-                    useretos.length > 0 ?
-                            <View>
-                                
-                                <List
-                                    style={styles.list}
-                                    data={useretos}
-                                    renderItem={renderItem}
-                                />
-                            </View>
-                            : (
-                                <>
-                                    <View style={styles.imagelayer} >
-                                        <Text category='h3'> {nickname} No tienes retos aprobados </Text>                                        
-                                    </View>
-                                </>
-                            )
-                    )}
-    
-        </ImageBackground>
-      );
+            : (
+              <>
+                <View style={styles.imagelayer} >
+                  <Text category='h3'> {nickname} No tienes retos aprobados </Text>
+                </View>
+              </>
+            )
+        )}
+
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
-    topContainer: {
-      padding: 10,
-      flex: 1,
-      resizeMode: "cover",
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    avatar: {
-      borderColor: '#ffffff',
-      borderWidth: 1,
-    },
-   
-    layouretos: {
-      justifyContent: 'center',
-      alignItems: 'center',
-  
-    },
-    infolater: {
-      flexDirection: 'row',
-      alignSelf: 'center',
-      justifyContent: 'space-between',
-    },
-    groupLater: {
-      flexDirection: 'column',
-    },
-    number: {
-      backgroundColor: '#ff0000',
-      width: 42,
-      borderRadius: 5,
-      alignItems: 'center',
-    },
-    list:{
-        maxHeight: 250,
-        borderLeftWidth:40,
-        borderLeftColor: 'black',
-        borderRightColor: 'black',
-        borderRightWidth:30,        
-        borderTopColor: 'black',        
-        borderTopWidth: 10, 
-    },
-    imagelayer: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 355,
-        height: 300,
-    },
-    images: {
-        width: 320,
-        height: 320,
-        borderWidth: 1,
-    },
-    card: {
-        flex: 1,
-        alignItems: 'stretch',
-        borderRadius: 10,
-    },
-  });
+  topContainer: {
+    padding: 10,
+    flex: 1,
+    resizeMode: "cover",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  avatar: {
+    borderColor: '#ffffff',
+    borderWidth: 1,
+  },
+
+  layouretos: {
+    justifyContent: 'center',
+    alignItems: 'center',
+
+  },
+  infolater: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+  },
+  groupLater: {
+    flexDirection: 'column',
+  },
+  number: {
+    backgroundColor: '#ff0000',
+    width: 42,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  list: {
+    maxHeight: 250,
+    borderLeftWidth: 40,
+    borderLeftColor: 'black',
+    borderRightColor: 'black',
+    borderRightWidth: 30,
+    borderTopColor: 'black',
+    borderTopWidth: 10,
+  },
+  imagelayer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 355,
+    height: 300,
+  },
+  images: {
+    width: 320,
+    height: 320,
+    borderWidth: 1,
+  },
+  card: {
+    flex: 1,
+    alignItems: 'stretch',
+    borderRadius: 10,
+  },
+});

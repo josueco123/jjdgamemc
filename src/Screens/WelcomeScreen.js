@@ -92,7 +92,7 @@ export default function WelcomeScreen({ route, navigation }) {
                     await AsyncStorage.setItem('nickname', nickname)
                     await AsyncStorage.setItem('position', "0")
                     await AsyncStorage.setItem('estado', "1")
-
+                    global.id = value.email;
                     saveFCMtoken();
 
                     console.log('Data successfully saved ' + name);

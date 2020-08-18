@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Icon } from '@ui-kitten/components';
@@ -16,6 +16,7 @@ import CreateRetoScreen from './CreateRetoScreen';
 import searchScreen from './searchScreen'
 import GamerProfileScreen from './GamerProfileScreen';
 import RankingScreen from './RankingScreen';
+import FriendsScreen from './FriendsScreen';
 
 const TabNav = createBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -23,8 +24,31 @@ const GameStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const MenuStack = createStackNavigator();
 
+function getHeaderTitle(route) {
+  // If the focused route is not found, we need to assume it's the initial screen
+  // This can happen during if there hasn't been any navigation inside the screen
+  // In our case, it's "Feed" as that's the first screen inside the navigator
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Game';
 
-function TabNavigator() {
+  switch (routeName) {
+    case 'Game':
+      return 'Juego';
+    case 'Profile':
+      return 'My profile';
+    case 'Notification':
+      return 'My account';
+    case 'Menu':
+      return 'Menu';
+
+  }
+}
+
+
+
+function TabNavigator({ navigation, route }) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({ headerTitle: getHeaderTitle(route) });
+  }, [navigation, route]);
 
   const perfilIconRef = useRef();
   const gameIconRef = useRef();
@@ -38,73 +62,62 @@ function TabNavigator() {
     menuIconRef.current.startAnimation();
   }, []);
 
+
   return (
-    <TabNav.Navigator tabBarOptions={{  
-      activeTintColor:'#ff6699',     
-      keyboardHidesTabBar:true,      
-      tabStyle:{backgroundColor: '#000000'}
-    }}   >
-      <TabNav.Screen name='Game' component={gameNavigator} options={{  
-        tabBarLabel: 'El Juego',       
-          tabBarIcon: ({ color, size }) => (
-            <Icon
-            ref={gameIconRef}
+    <TabNav.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName; let refName;
+
+          if (route.name === 'Game') {
+            refName = gameIconRef;
+            if (focused) {
+              iconName = 'star';
+            } else {
+              iconName = 'star-outline';
+            }
+          } else if (route.name === 'Profile') {
+            refName = perfilIconRef;
+            iconName = focused ? 'person' : 'person-outline';
+
+          } else if (route.name === 'Notification') {
+            refName = chatIconRef;
+            iconName = focused ? 'message-circle' : 'message-circle-outline';
+          } else if (route.name === 'Menu') {
+            refName = menuIconRef;
+            iconName = focused ? 'menu' : 'menu-outline';
+          }
+
+
+          // You can return any component that you like here!
+          return <Icon name={iconName} size={size} color={color}
+            style={{ width: 32, height: 32, }} fill='#ff6699'
             animationConfig={{ cycles: Infinity }}
-            animation='pulse'
-            style={{width: 32,height: 32,}}
-            fill='#ff6699'
-            name='star'
-            color={color} size={size}
-          />
-          ),
-        }}
-       />
-      <TabNav.Screen name='Profile' component={profileNavigator}
-      options={{              
+            animation='pulse' ref={refName} />;
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: '#ff6699',
+        inactiveTintColor: 'gray',
+        keyboardHidesTabBar: true,
+        tabStyle: { backgroundColor: '#000000' },
+        labelStyle: { fontFamily: 'VT323-Regular', fontSize: 14 }
+      }}
+    >
+      <TabNav.Screen name='Game' component={gameNavigator} options={{
+        tabBarLabel: 'Juego',
+      }} />
+      <TabNav.Screen name='Profile' component={profileNavigator} options={{
         tabBarLabel: 'Mi Perfil',
-        tabBarIcon: ({ color, size }) => (
-          <Icon
-            ref={perfilIconRef}
-            animationConfig={{ cycles: Infinity }}
-            animation='pulse'
-            style={{width: 32,height: 32,}}
-            fill='#ff6699'
-            name='person'
-            color={color} size={size}
-          />
-        ),
-      }} 
-     />
-      <TabNav.Screen name='Notification' component={NotificationScreen} 
-      options={{    
-        tabBarLabel: 'Chat',    
-        tabBarIcon: ({ color, size }) => (
-          <Icon
-          ref={chatIconRef}
-          animationConfig={{ cycles: Infinity }}
-          animation='pulse'
-            style={{width: 32,height: 32,}}
-            fill='#ff6699'
-            name='message-circle'
-            color={color} size={size}
-          />
-        ),
-      }}/>
-      <TabNav.Screen name='Menu' component={menuNavigator} 
-      options={{        
-        tabBarLabel: 'Menu',
-        tabBarIcon: ({ color, size }) => (
-          <Icon
-          ref={menuIconRef}
-          animationConfig={{ cycles: Infinity }}
-          animation='pulse'
-            style={{width: 32,height: 32,}}
-            fill='#ff6699'
-            name='menu'
-            color={color} size={size}
-          />
-        ),
-      }}/>
+      }}
+
+      />
+      <TabNav.Screen name='Notification' component={NotificationScreen} options={{
+        tabBarLabel: 'Chat',
+      }}
+      />
+      <TabNav.Screen name='Menu' component={menuNavigator}
+      />
     </TabNav.Navigator >
 
   );
@@ -136,7 +149,8 @@ function menuNavigator() {
       <MenuStack.Screen name='Menu' component={MenuScreen} />
       <MenuStack.Screen name="Buscar" component={searchScreen} />
       <MenuStack.Screen name="GamerProfile" component={GamerProfileScreen} />
-      <MenuStack.Screen name="Ranking" component={RankingScreen} />    
+      <MenuStack.Screen name="Ranking" component={RankingScreen} />
+      <MenuStack.Screen name="Friends" component={FriendsScreen} />
     </MenuStack.Navigator>
   )
 }
@@ -180,7 +194,10 @@ function loginNavigator() {
           <LoginStack.Screen name='Game' component={TabNavigator} />
         </LoginStack.Navigator>
       ) : (
-          <TabNavigator />)}
+          <LoginStack.Navigator headerMode="none" initialRouteName="Game" >
+            <LoginStack.Screen name='Game' component={TabNavigator} />            
+          </LoginStack.Navigator>
+        )}
     </NavigationContainer>
   );
 }

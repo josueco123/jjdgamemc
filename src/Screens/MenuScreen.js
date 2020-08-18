@@ -18,6 +18,7 @@ export default function GameScreen({ navigation }) {
       await AsyncStorage.removeItem('estado');
       await AsyncStorage.removeItem('position');
       await AsyncStorage.removeItem('tokenfcm');
+      global.firstExecute = true;
 
       const isSignedIn = await GoogleSignin.isSignedIn();
 
@@ -55,6 +56,18 @@ export default function GameScreen({ navigation }) {
     navigation.navigate('Ranking');    
   }
 
+  const gotoFriends = async () =>{
+    try {
+      const value = await AsyncStorage.getItem('email')
+      if (value !== null) {
+        // value previously stored
+        navigation.navigate('Friends',{email: value}); 
+      }
+    }catch(error){
+
+    }
+  }
+
   return (
 
     <ScrollView>
@@ -64,7 +77,7 @@ export default function GameScreen({ navigation }) {
         <Image source={require('../assets/logo.png')} style={styles.images} />
         <Divider/>
        <View style={styles.componets}>
-        <TouchableOpacity style={styles.button} >
+        <TouchableOpacity style={styles.button} onPress={gotoFriends}>
           <Icon style={styles.icon} fill='#ff6699' name='people-outline' />
           <Text category='h5'>Amigos</Text>
         </TouchableOpacity>

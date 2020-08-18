@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation }) {
                 })
                   .then((response) => response.json())
                   .then((responseJson) => {
-                    //console.log(responseJson);
+                    console.log(responseJson);
 
                     if (responseJson == null) {
 
@@ -52,14 +52,12 @@ export default function LoginScreen({ navigation }) {
                       });
                     } else {
 
-                      storeData(responseJson);
-                      saveFCMtoken();
-                      navigation.navigate('Game');
+                      storeData(responseJson);                     
 
                     }
 
                   }).catch((error) => {
-                    console.error(error);
+                    console.error("what: "+error);
                   });
               };
             }
@@ -130,6 +128,10 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem('position', value.position)
       await AsyncStorage.setItem('estado', value.estado)
 
+      global.id = value.email;
+      saveFCMtoken();
+      navigation.navigate('Game');
+
     } catch (error) {
       console.log("tell me: " + error)
     }
@@ -142,17 +144,15 @@ export default function LoginScreen({ navigation }) {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const userInfo = await GoogleSignin.signIn();
-      console.log(JSON.stringify(userInfo));
+      //console.log(JSON.stringify(userInfo));
 
-
-       //Busqueda del usuario en la base de Datos
-
+      //Busqueda del usuario en la base de Datos
        await fetch('https://www.mincrix.com/userbyemail/' + userInfo.user.email.toString(), {
         method: 'GET'
       })
         .then((response) => response.json())
         .then((responseJson) => {
-          //console.log(responseJson);
+          console.log(responseJson);
 
           if (responseJson == null) {
 
@@ -164,9 +164,7 @@ export default function LoginScreen({ navigation }) {
             });
           } else {
 
-            storeData(responseJson);
-            saveFCMtoken();
-            navigation.navigate('Game');
+            storeData(responseJson);            
 
           }
 

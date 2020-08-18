@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, ImageBackground, View, Alert } from 'react-native';
-import { Text, Autocomplete, AutocompleteItem, Icon, Avatar, Divider } from '@ui-kitten/components';
-
+import { Text, Autocomplete, AutocompleteItem, Icon, Avatar, Button, Card, Modal } from '@ui-kitten/components';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const filter = (item, query) => item.nickname.toLowerCase().includes(query.toLowerCase());
 
@@ -11,56 +11,68 @@ export default function searchScreen({ navigation }) {
 
     const [value, setValue] = useState(null);
     const [data, setData] = useState([]);
+    const [modal, setModal] = useState(false);
 
-useEffect(() => {
+    useEffect(() => {
 
-    fetch('https://mincrix.com/getnicknamegamers', {
-        method: 'GET'
-    })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            //console.log(responseJson);
+        fetch('https://mincrix.com/getnicknamegamers', {
+            method: 'GET'
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                //console.log(responseJson);
 
-           setData(responseJson);
+                setData(responseJson);
 
-        }).catch((error) => {
-            console.error(error);
-        });
-  }, []);
+            }).catch((error) => {
+                console.error(error);
+            });
+    }, []);
 
-    const getUsers =  () =>{
+    const getUsers = () => {
 
-         fetch('https://mincrix.com/getnicknamegamers', {
-                method: 'GET'
-            })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    //console.log(responseJson);
+        fetch('https://mincrix.com/getnicknamegamers', {
+            method: 'GET'
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                //console.log(responseJson);
 
-                   setData(responseJson);
+                setData(responseJson);
 
-                }).catch((error) => {
-                    console.error(error);
-                });
-    }        
+            }).catch((error) => {
+                console.error(error);
+            });
+    }
 
     const clearInput = () => {
         setValue('');
-        getUsers();        
+        getUsers();
     };
 
-    const onSelect = (index) => {
+    const onSelect = async (index) => {
+
         setValue(data[index].nickname);
-        navigation.navigate('GamerProfile', {
-            nickname: data[index].nickname
-          });
-      };
-    
-      const onChangeText = (query) => {
+
+        const nickname = await AsyncStorage.getItem('nickname');
+        const myemail = await AsyncStorage.getItem('email');
+
+        if (data[index].nickname == nickname) {
+            setModal(true);
+        } else {
+            navigation.navigate('GamerProfile', {
+                nickname: data[index].nickname,
+                email: myemail
+            });
+        }
+
+    };
+
+    const onChangeText = (query) => {
         setValue(query);
         setData(data.filter(item => filter(item, query)));
-       
-      };
+
+    };
 
     const renderCloseIcon = (props) => (
         <TouchableWithoutFeedback onPress={clearInput}>
@@ -70,11 +82,11 @@ useEffect(() => {
 
     const renderOption = (item, index) => (
         <AutocompleteItem
-          key={index}
-          title={item.nickname}
-          accessoryLeft={() => <Avatar  size='medium' source={{ uri: item.avatar }} />}        
+            key={index}
+            title={item.nickname}
+            accessoryLeft={() => <Avatar size='small' source={{ uri: item.avatar }} />}
         />
-      );
+    );
 
     return (
 
@@ -87,12 +99,20 @@ useEffect(() => {
             <Autocomplete
                 placeholder='Escribe el nickname...'
                 value={value}
-                style={styles.input}               
+                style={styles.input}
                 accessoryRight={renderCloseIcon}
                 onChangeText={onChangeText}
                 onSelect={onSelect}>
                 {data.map(renderOption)}
             </Autocomplete>
+
+            <Modal visible={modal}
+                backdropStyle={styles.backdrop}
+                onBackdropPress={() => setModal(false)}>
+                <Card disabled={true}>
+                    <Text category='h6'>si quieres ver tu perfil ve a la pestaña de perfil</Text>                    
+                </Card>
+            </Modal>
 
         </ImageBackground>
     );
@@ -106,13 +126,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 15
     },
-   input:{
-       top: 20,
-       width: 330,
-   },
+    input: {
+        top: 20,
+        width: 330,
+    },
     images: {
         width: 50,
         height: 75,
         marginHorizontal: 3
     },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      },
 })
