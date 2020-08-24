@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import GameScreen from './GameScreen';
 import ProfileScreen from './ProfileScreen';
 import MenuScreen from './MenuScreen';
-import NotificationScreen from './NotificationScreen';
+import ChatScreen from './ChatScreen';
 import DadoAnimationScreen from './DadoAnimationScreen';
 import LogginScreen from './LoginScreen';
 import WelcomeScreen from './WelcomeScreen';
@@ -34,9 +34,9 @@ function getHeaderTitle(route) {
     case 'Game':
       return 'Juego';
     case 'Profile':
-      return 'My profile';
-    case 'Notification':
-      return 'My account';
+      return 'profile';
+    case 'Chat':
+      return 'Chat';
     case 'Menu':
       return 'Menu';
 
@@ -50,18 +50,6 @@ function TabNavigator({ navigation, route }) {
     navigation.setOptions({ headerTitle: getHeaderTitle(route) });
   }, [navigation, route]);
 
-  const perfilIconRef = useRef();
-  const gameIconRef = useRef();
-  const chatIconRef = useRef();
-  const menuIconRef = useRef();
-
-  useEffect(() => {
-    perfilIconRef.current.startAnimation();
-    gameIconRef.current.startAnimation();
-    chatIconRef.current.startAnimation();
-    menuIconRef.current.startAnimation();
-  }, []);
-
 
   return (
     <TabNav.Navigator
@@ -70,30 +58,22 @@ function TabNavigator({ navigation, route }) {
           let iconName; let refName;
 
           if (route.name === 'Game') {
-            refName = gameIconRef;
-            if (focused) {
-              iconName = 'star';
-            } else {
-              iconName = 'star-outline';
-            }
-          } else if (route.name === 'Profile') {
-            refName = perfilIconRef;
-            iconName = focused ? 'person' : 'person-outline';
 
-          } else if (route.name === 'Notification') {
-            refName = chatIconRef;
+            iconName = focused ? 'star' : 'star-outline';
+          } else if (route.name === 'Profile') {
+
+            iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'Chat') {
+
             iconName = focused ? 'message-circle' : 'message-circle-outline';
           } else if (route.name === 'Menu') {
-            refName = menuIconRef;
             iconName = focused ? 'menu' : 'menu-outline';
           }
 
 
           // You can return any component that you like here!
           return <Icon name={iconName} size={size} color={color}
-            style={{ width: 32, height: 32, }} fill='#ff6699'
-            animationConfig={{ cycles: Infinity }}
-            animation='pulse' ref={refName} />;
+            style={{ width: 32, height: 32, }} fill='#ff6699' />;
         },
       })}
       tabBarOptions={{
@@ -112,7 +92,7 @@ function TabNavigator({ navigation, route }) {
       }}
 
       />
-      <TabNav.Screen name='Notification' component={NotificationScreen} options={{
+      <TabNav.Screen name='Chat' component={ChatScreen} options={{
         tabBarLabel: 'Chat',
       }}
       />
@@ -166,6 +146,7 @@ function loginNavigator() {
         // value previously stored
         setTokenLog(value);
       }
+      console.log("eje: " + value)
     } catch (e) {
       // error reading value
       console.log('Mk1:' + error)
@@ -176,28 +157,28 @@ function loginNavigator() {
 
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor="#000000" barStyle='dark-content' animated={true} />
-      {tokenLog == null ? (
-        // No token found, user isn't signed in
-        <LoginStack.Navigator headerMode="none">
-          <LoginStack.Screen
-            name='loggin'
-            component={LogginScreen}
-            options={{
-              title: ' ',
-              headerStyle: {
-                backgroundColor: '#000000',
-              },
-            }}
-          />
-          <LoginStack.Screen name='Welcome' component={WelcomeScreen} />
-          <LoginStack.Screen name='Game' component={TabNavigator} />
-        </LoginStack.Navigator>
-      ) : (
-          <LoginStack.Navigator headerMode="none" initialRouteName="Game" >
-            <LoginStack.Screen name='Game' component={TabNavigator} />            
+      <StatusBar backgroundColor="#000000" barStyle='dark-content' animated={true} />     
+        {tokenLog == null ? (
+          // No token found, user isn't signed in
+          <LoginStack.Navigator headerMode="none">
+            <LoginStack.Screen
+              name='loggin'
+              component={LogginScreen}
+              options={{
+                title: ' ',
+                headerStyle: {
+                  backgroundColor: '#000000',
+                },
+              }}
+            />
+            <LoginStack.Screen name='Welcome' component={WelcomeScreen} />
+            <LoginStack.Screen name='Game' component={TabNavigator} />
           </LoginStack.Navigator>
-        )}
+        ) : (
+            <LoginStack.Navigator headerMode="none" initialRouteName="Game" >
+              <LoginStack.Screen name='Game' component={TabNavigator} />
+            </LoginStack.Navigator>
+          )}      
     </NavigationContainer>
   );
 }

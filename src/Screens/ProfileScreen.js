@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Text, Icon, Avatar, Button, } from '@ui-kitten/components';
-import { View, ImageBackground, StyleSheet, Alert } from 'react-native';
+import { Layout, Text, Icon, Avatar, Button, Card, Modal, Divider } from '@ui-kitten/components';
+import { View, ImageBackground, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import GetMyRetos from '../Managers/GetMyRetos';
-
+import { useNetInfo } from "@react-native-community/netinfo";
 
 
 export default function ProfileScreen({ navigation }) {
@@ -12,6 +12,8 @@ export default function ProfileScreen({ navigation }) {
   const [nickname, setNickname] = useState('');
   const [position, setPosition] = useState('');
   const [friends, setFriends] = useState(0);
+  const [modal, setModal] = useState(false);
+  const netinfo = useNetInfo().isConnected;
 
   const getData = async () => {
     try {
@@ -43,20 +45,21 @@ export default function ProfileScreen({ navigation }) {
 
   useEffect(() => {
 
-    fetch('https://mincrix.com/getfriendsmail/' + global.id, {
-      method: 'GET'
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        //console.log(responseJson);
+    if (netinfo) {
 
-        setFriends(responseJson);
+      fetch('https://mincrix.com/getfriendsmail/' + global.id, {
+        method: 'GET'
+      })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          //console.log(responseJson);
 
-      }).catch((error) => {
-        console.error(error);
-      });
+          setFriends(responseJson);
 
-
+        }).catch((error) => {
+          console.error(error);
+        });
+    }
   }, []);
 
   const goToCreateReto = async () => {
@@ -68,13 +71,7 @@ export default function ProfileScreen({ navigation }) {
       navigation.navigate('CreateReto');
     } else {
 
-      Alert.alert(
-        "¡Espera!",
-        "Todavía no puedes subir el reto.",
-        [
-          { text: "OK" }
-        ],
-        { cancelable: true });
+      setModal(true);
     }
   }
 
@@ -87,35 +84,45 @@ export default function ProfileScreen({ navigation }) {
 
     <ImageBackground source={require('../assets/back.png')} style={styles.topContainer}>
 
-
-      {avatar == null ? (
-        <Avatar size='giant' source={require('../assets/comic.png')} />
-      ) : (
+      {netinfo ? (
+        <>
           <Avatar style={styles.avatar} size='giant' source={{ uri: avatar }} />
+
+          <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
+            <Text category='h4'>{nickname}</Text>
+          </View>
+          <View style={styles.infolater}>
+            <View style={styles.groupLater}>
+              <Text category='h6'> Nivel </Text>
+              <View style={styles.number}>
+                <Text category='h6'> {position}</Text>
+              </View>
+            </View>
+            <View style={styles.groupLater}>
+              <Text category='h6'> Amigos</Text>
+              <View style={styles.number}>
+                <Text category='h6'> {friends}</Text>
+              </View>
+            </View>
+          </View>
+          <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
+          <Text category='h5'> Retos Completados</Text>
+
+          <GetMyRetos />
+
+          <Modal visible={modal}
+            backdropStyle={styles.backdrop}
+            onBackdropPress={() => setModal(false)}>
+            <Card disabled={true} status='danger'>
+              <Text category='h4'> ¡Espera! </Text>
+              <Text category='h6'>Todavía no puedes subir un reto.</Text>
+              <Button size='small' appearance='ghost' onPress={() => setModal(false)} >Ok</Button>
+            </Card>
+          </Modal>
+        </>
+      ) : (
+          <Text category='h3'> No tienes conexion a Internet </Text>
         )}
-
-      <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
-        <Text category='h4'>{nickname}</Text>
-      </View>
-      <View style={styles.infolater}>
-        <View style={styles.groupLater}>
-          <Text category='h6'> Nivel </Text>
-          <View style={styles.number}>
-            <Text category='h6'> {position}</Text>
-          </View>
-        </View>
-        <View style={styles.groupLater}>
-          <Text category='h6'> Amigos</Text>
-          <View style={styles.number}>
-            <Text category='h6'> {friends}</Text>
-          </View>
-        </View>
-      </View>
-      <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
-      <Text category='h5'> Retos Completados</Text>
-
-      <GetMyRetos />
-
     </ImageBackground>
   );
 }
@@ -141,6 +148,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
 
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   infolater: {
     flexDirection: 'row',

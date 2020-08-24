@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { List, Text, Spinner, Divider, Card, Layout, Button, Icon, } from '@ui-kitten/components';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Share } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import LottieView from 'lottie-react-native';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export default class GetMyRetos extends Component {
     constructor(props) {
@@ -10,65 +11,46 @@ export default class GetMyRetos extends Component {
 
         this.state = {
             data: [],
-            isLoading: true
+            isLoading: true,
+            netinfo: false,
         };
     }
 
     async componentDidMount() {
 
-        try {
+        this.setState({ netinfo: useNetInfo().isConnected });
+        
+        if (this.state.netinfo) {
+            try {
 
-            const mail = await AsyncStorage.getItem('email');
+                const mail = await AsyncStorage.getItem('email');
+                await fetch('https://mincrix.com/useretosup/' + mail)
+                    .then((response) => response.json())
+                    .then((json) => {
+                        this.setState({ data: json });
+                    })
+                    .catch((error) => console.log("err:  " + error))
+                    .finally(() => {
+                        this.setState({ isLoading: false });
+                    });
 
-            await fetch('https://mincrix.com/useretosup/' + mail)
-                .then((response) => response.json())
-                .then((json) => {
-                    this.setState({ data: json });
-                })
-                .catch((error) => console.log("err:  " + error))
-                .finally(() => {
-                    this.setState({ isLoading: false });
-                });
-        } catch (er) {
-            console.log(er);
+            } catch (er) {
+                console.log(er);
+            }
         }
-
-
     }
-
-    renferRetosimg() {
-        const { data, isLoading } = this.state;
-
-    }
+ 
 
     render() {
-        const { data, isLoading } = this.state;
+        const { data, isLoading } = this.state;     
 
-        const HeartIcon = (props) => (
-            <Icon {...props} name='heart' />
-        );
-
-        const ComentsIcon = (props) => (
-            <Icon {...props} name='message-square' />
+        const shareIcon = (props) => (
+            <Icon {...props} name='share-outline' />
         );
 
         const Footer = (props) => (
             <View {...props} style={[props.style, styles.footerContainer]}>
-                <Button
-                    style={styles.footerControl}
-                    size='medium'
-                    accessoryLeft={HeartIcon}
-                    appearance='ghost'
-                >
-                    12
-              </Button>
-                <Button
-                    style={styles.footerControl}
-                    accessoryLeft={ComentsIcon}
-                    appearance='ghost'
-                    size='medium'>
-                    3
-              </Button>
+
             </View>
         );
 
@@ -88,18 +70,18 @@ export default class GetMyRetos extends Component {
             <>
                 {isLoading ? (
                     <>
-                        <View style={styles.imagelayer} >                            
+                        <View style={styles.imagelayer} >
                             <LottieView
                                 autoPlay={true}
                                 source={require('../animations/4434-loading.json')}
-                                loop={true}                                
-                                />
+                                loop={true}
+                            />
                         </View>
                     </>
                 ) : (
                         data.length > 0 ?
                             <View>
-                                
+
                                 <List
                                     style={styles.list}
                                     data={data}
@@ -109,7 +91,7 @@ export default class GetMyRetos extends Component {
                             : (
                                 <>
                                     <View style={styles.imagelayer} >
-                                        <Text category='h3'> No tienes retos aprobados </Text>                                        
+                                        <Text category='h3'> No tienes retos aprobados </Text>
                                     </View>
                                 </>
                             )
@@ -128,14 +110,14 @@ const styles = StyleSheet.create({
         zIndex: 20,
         position: 'absolute',
     },
-    list:{
+    list: {
         maxHeight: 250,
-        borderLeftWidth:40,
+        borderLeftWidth: 40,
         borderLeftColor: 'black',
         borderRightColor: 'black',
-        borderRightWidth:30,        
-        borderTopColor: 'black',        
-        borderTopWidth: 10, 
+        borderRightWidth: 30,
+        borderTopColor: 'black',
+        borderTopWidth: 10,
     },
     contentContainer: {
         paddingHorizontal: 8,

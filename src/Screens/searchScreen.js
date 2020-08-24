@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, ImageBackground, View, Alert } from 'react-native';
-import { Text, Autocomplete, AutocompleteItem, Icon, Avatar, Button, Card, Modal } from '@ui-kitten/components';
+import { Text, Autocomplete, AutocompleteItem, Icon, Avatar, Button, Card, Modal, Divider } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const filter = (item, query) => item.nickname.toLowerCase().includes(query.toLowerCase());
@@ -109,8 +109,10 @@ export default function searchScreen({ navigation }) {
             <Modal visible={modal}
                 backdropStyle={styles.backdrop}
                 onBackdropPress={() => setModal(false)}>
-                <Card disabled={true}>
-                    <Text category='h6'>si quieres ver tu perfil ve a la pestaña de perfil</Text>                    
+                <Card disabled={true} status='danger'>
+                    <Text category='h4' > ¡Espera!</Text>
+                    <Text category='h6'>ve a la pestaña de perfil para ver el tuyo</Text>                    
+                    <Button size='small' appearance='ghost' onPress={() => setModal(false)} >Ok</Button>
                 </Card>
             </Modal>
 
@@ -137,5 +139,5 @@ const styles = StyleSheet.create({
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      },
+    },
 })

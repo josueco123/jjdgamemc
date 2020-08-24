@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Image, ImageBackground, FlatList, View, TouchableOpacity, Share } from 'react-native';
-import {  Text, Avatar, Button, Icon } from '@ui-kitten/components';
+import { StyleSheet, Image, ImageBackground, FlatList, View, TouchableOpacity, Alert, Share } from 'react-native';
+import { Text, Avatar, Button, Icon } from '@ui-kitten/components';
 
 export default function FriendsScreen({ route, navigation }) {
 
     const [data, setData] = useState([]);
-    const { email } = route.params;
-
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const { email } = route.params;        
 
     useEffect(() => {
 
@@ -24,22 +22,14 @@ export default function FriendsScreen({ route, navigation }) {
                 console.error(error);
             });
 
-    }, []);
-
-    const goToProfile = (item) =>{
-        console.log(item.nickname);
-        navigation.navigate('GamerProfile', {
-            nickname: item.nickname,
-            email: global.id
-        });
-    }
+    }, []);    
 
     const renderItem = ({ item, index }) => (
 
         <TouchableOpacity style={styles.elements} onPress={() => navigation.navigate('GamerProfile', {
             nickname: item.nickname,
             email: global.id
-        }) }>
+        })}>
             <Avatar style={styles.avatar} size='medium' source={{ uri: item.avatar }} />
             <View>
                 <Text category='h6'> {item.name} </Text>
@@ -47,13 +37,7 @@ export default function FriendsScreen({ route, navigation }) {
             </View>
         </TouchableOpacity>
     );
-
-
-    const listHeader = () => (
-        <View style={styles.header}>
-            <Button accessoryLeft={shareIcon} appearance='ghost' onPress={onShare}> Invita a otros </Button>
-        </View>
-    );
+  
 
     const shareIcon = (props) => (
         <Icon {...props} name='share-outline' />
@@ -63,7 +47,7 @@ export default function FriendsScreen({ route, navigation }) {
         try {
             const result = await Share.share({
                 message:
-                    'Hola te invito a descargar MINCRIX | A framework for building native apps using React',
+                    'Hola te invito a descargar MINCRIX | https://mincrix.com/',
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
@@ -90,14 +74,14 @@ export default function FriendsScreen({ route, navigation }) {
                         <Button accessoryLeft={shareIcon} appearance='ghost' onPress={onShare}> Invitar </Button>
                     </View>
                 ) : (
-                    <>
-                    <Button accessoryLeft={shareIcon} appearance='ghost' onPress={onShare}> Invita a otros </Button>
-                        <FlatList
-                            style={styles.list}
-                            data={data}                            
-                            renderItem={renderItem}
-                            keyExtractor={(item, index) => index.toString()}
-                        />
+                        <>
+                            <Button accessoryLeft={shareIcon} appearance='ghost' onPress={onShare}> Invita a otros </Button>
+                            <FlatList
+                                style={styles.list}
+                                data={data}
+                                renderItem={renderItem}
+                                keyExtractor={(item, index) => index.toString()}
+                            />
                         </>
                     )}
             </View>
@@ -146,7 +130,7 @@ const styles = StyleSheet.create({
     btnSolicitud: {
         flexDirection: 'row',
     },
-    header:{
+    header: {
         borderColor: '#ff6699',
         borderWidth: 10,
     }

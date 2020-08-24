@@ -1,11 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Layout, Button, Card, Text, Modal, Icon } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, Alert, BackHandler } from 'react-native';
+import { Layout, Button, Card, Text, Modal, Icon, Divider } from '@ui-kitten/components';
+import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, BackHandler } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
 import PushNotification from 'react-native-push-notification';
 import { useIsFocused } from '@react-navigation/native';
+import GetRetos from '../Managers/GetRetos';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -17,19 +19,22 @@ global.firstExecute = true;
 
 export default function GameScreen({ navigation }) {
 
+
+  const netinfo = useNetInfo().isConnected;
+  
   //se trae el estado y la posicion del usuario
-  const askUserState = async () =>{
+  const askUserState = async () => {
     try {
 
       const mail = await AsyncStorage.getItem('email');
 
       await fetch('https://mincrix.com/usergamestate/' + mail)
         .then((response) => response.json())
-        .then((json) => {          
-          
-          storeState(json)          
-          console.log("es: "+json.estado)          
-             
+        .then((json) => {
+
+          storeState(json)
+          console.log("es: " + json.estado)
+
         })
         .catch((error) => console.log("err:  " + error))
 
@@ -39,63 +44,61 @@ export default function GameScreen({ navigation }) {
   }
   const isFocused = useIsFocused();
 
-  if(isFocused){
+  if (isFocused) {
+
+    if (netinfo)
     askUserState();
-   
+
   }
 
   //almacenar el estado traido del backend
-  const storeState = async (value) =>{
+  const storeState = async (value) => {
 
     try {
-      await AsyncStorage.setItem('estado', value.estado); 
+      await AsyncStorage.setItem('estado', value.estado);
     } catch (error) {
       console.log("e: " + error);
-    }                 
+    }
   }
 
   //servicion de notificaciones en backgrond
-  const mesaginpush = () =>{
-    
-      
+  const mesaginpush = () => {
+
+
     useEffect(() => {
       messaging().onMessage(async remoteMessage => {
         console.log(JSON.stringify(remoteMessage))
 
         PushNotification.localNotification({
           /* Android Only Properties */
-          id: remoteMessage.id,  
-          ignoreInForeground: false,      
+          id: remoteMessage.id,
+          ignoreInForeground: false,
           //smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"     
           vibrate: true, // (optional) default: true
           vibration: 1000, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-                      
+
           invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
-            
+
           /* iOS and Android properties */
           title: remoteMessage.title, // (optional)
           message: remoteMessage.body, // (required)
           playSound: true,// (optional) default: true
           soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-          
+
         });
 
       });
-      
+
     });
   }
   mesaginpush();
 
-  
+
 
   //  el card que contiene los retos
   const [visible, setVisible] = useState(false);
+  const [modalestado, setModalestado] = useState(false);
 
-  const cardHeader = (props) => (
-    <View {...props}>
-      <Text category='h6'>Reto 😻</Text>
-    </View>
-  );
 
   const cardFooter = (props) => (
     <View {...props} style={[props.style, styles.footerContainer]}>
@@ -109,92 +112,81 @@ export default function GameScreen({ navigation }) {
   const moveAnim = useRef(new Animated.Value(0)).current;
   const myScroll = useRef();
   const scrollAnimation = useRef(new Animated.Value(0));
-  const stars = useRef();
-  const startAnim =  useRef(new Animated.Value(0));
 
   //mover la ficha a una posision determinada
-const moveFicha = () =>{
+  const moveFicha = () => {
 
-  if (lastPosition < Position) {
+    if (lastPosition < Position) {
 
-    scrollAnimation.current.addListener((animation) => {
-      myScroll.current &&
-        myScroll.current.scrollTo({
-          y: animation.value,
-          animated: false,
-        })
-    })
+      scrollAnimation.current.addListener((animation) => {
+        myScroll.current &&
+          myScroll.current.scrollTo({
+            y: animation.value,
+            animated: false,
+          })
+      })
 
-    Animated.timing(scrollAnimation.current, {
-      toValue: 100 * Position,
-      duration: 10000,
-      useNativeDriver: true,
-      easing: Easing.linear,
-    }).start();
+      Animated.timing(scrollAnimation.current, {
+        toValue: 100 * Position,
+        duration: 10000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }).start();
 
-    Animated.timing(moveAnim, {
-      toValue: 100 * Position,
-      duration: 10000,
-      useNativeDriver: true
-    }).start();
+      Animated.timing(moveAnim, {
+        toValue: 100 * Position,
+        duration: 10000,
+        useNativeDriver: true
+      }).start();
 
-    console.log("last: " + lastPosition);
-    console.log("Posicion: " + Position);
-    lastPosition = Position;
-    updateUserPosition(Position);
+      console.log("last: " + lastPosition);
+      console.log("Posicion: " + Position);
+      lastPosition = Position;
+      updateUserPosition(Position);
+    }
   }
-}
 
-const animateStart = () =>{
+  //mover ficha cuando se inicia el juego
+  const initPosition = async () => {
 
-  Animated.timing(stars, {
-    toValue: 1000,
-    duration: 3000,
-    useNativeDriver: true
-  }).start();
-}
+    const pos = await AsyncStorage.getItem('position');
+    const mail = await AsyncStorage.getItem('email');
 
-//mover ficha cuando se inicia el juego
-const initPosition = async () =>{
+    global.id = mail;
 
-  const pos = await AsyncStorage.getItem('position');
-  const mail = await AsyncStorage.getItem('email');
-  
-  global.id = mail;
-  
-  if(global.firstExecute){
+    if (global.firstExecute) {
 
-    scrollAnimation.current.addListener((animation) => {
-      myScroll.current &&
-        myScroll.current.scrollTo({
-          y: animation.value,
-          animated: false,
-        })
-    })
+      scrollAnimation.current.addListener((animation) => {
+        myScroll.current &&
+          myScroll.current.scrollTo({
+            y: animation.value,
+            animated: false,
+          })
+      })
 
-    Animated.timing(scrollAnimation.current, {
-      toValue: 100 * Number(pos),
-      duration: 3000,
-      useNativeDriver: true,
-      easing: Easing.linear,
-    }).start();
+      Animated.timing(scrollAnimation.current, {
+        toValue: 100 * Number(pos),
+        duration: 3000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }).start();
 
-    Animated.timing(moveAnim, {
-      toValue: 100 * Number(pos),
-      duration: 3000,
-      useNativeDriver: true
-    }).start();
+      Animated.timing(moveAnim, {
+        toValue: 100 * Number(pos),
+        duration: 3000,
+        useNativeDriver: true
+      }).start();
 
-    Position = Number(pos);
-    lastPosition = Number(pos);
-    console.log("execution test ");  
-    global.firstExecute = false;
+      Position = Number(pos);
+      lastPosition = Number(pos);
+      console.log("execution test ");
+      global.firstExecute = false;
+    }
   }
-}
- initPosition();
+  initPosition();
 
 
-//hacer el numero aletorio y mostrar el dado 
+  //hacer el numero aletorio y mostrar el dado 
   const getUserState = async () => {
 
     const estado = await AsyncStorage.getItem('estado');
@@ -213,29 +205,22 @@ const initPosition = async () =>{
       moveFicha();
 
     } else {
-
-      Alert.alert(
-        "¡Espera!",
-        "No puedes tirar el dado hasta que te aprueben este reto.",
-        [
-          { text: "OK" }
-        ],
-        { cancelable: true });
+      setModalestado(true);      
     }
-    
+
   }
- 
+
   //actualizar el estado de jugador
-  const updataUserState = async()=>{
+  const updataUserState = async () => {
 
     try {
 
       const mail = await AsyncStorage.getItem('email');
 
-      await fetch('https://mincrix.com/setusergamestate/' + mail+ '/2')
+      await fetch('https://mincrix.com/setusergamestate/' + mail + '/2')
         .then((response) => response.json())
-        .then((json) => {          
-        
+        .then((json) => {
+
         })
         .catch((error) => console.log("err:  " + error))
 
@@ -243,17 +228,17 @@ const initPosition = async () =>{
       console.log(er);
     }
   }
-//actualizar la posicion
-  const updateUserPosition = async(value)=>{
+  //actualizar la posicion
+  const updateUserPosition = async (value) => {
 
     try {
 
       const mail = await AsyncStorage.getItem('email');
 
-      await fetch('https://mincrix.com/setuseposition/' + mail+ '/'+ value)
+      await fetch('https://mincrix.com/setuseposition/' + mail + '/' + value)
         .then((response) => response.json())
-        .then((json) => {          
-        
+        .then((json) => {
+
         })
         .catch((error) => console.log("err:  " + error))
 
@@ -272,8 +257,19 @@ const initPosition = async () =>{
             visible={visible}
             backdropStyle={styles.backdrop}
             onBackdropPress={() => setVisible(false)}>
-            <Card disabled={true} footer={cardFooter} header={cardHeader}>
-              <Text>Hazlo sin llorar </Text>
+            <Card disabled={true} footer={cardFooter}  status='success' >
+              <GetRetos />
+            </Card>
+          </Modal>
+
+          <Modal
+            visible={modalestado}
+            backdropStyle={styles.backdrop}
+            onBackdropPress={() => setModalestado(false)}>
+            <Card disabled={true} status='warning' style={styles.card}  >
+              <Text category='h4'> ¡Espera! </Text>
+              <Text category='h6'>No puedes tirar el dado hasta que te aprueben este reto.</Text>              
+              <Button size='small' appearance='ghost' onPress={() => setModalestado(false)} >Ok</Button>
             </Card>
           </Modal>
 
@@ -291,27 +287,27 @@ const initPosition = async () =>{
             ]}>
 
             </Animatable.View>
-          </TouchableWithoutFeedback>          
+          </TouchableWithoutFeedback>
 
-                  
-          <Animatable.Image style={{position:'absolute',  height: 5, width: 5, top: 150, right: 30}} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={3000} >
+
+          <Animatable.Image style={{ position: 'absolute', height: 5, width: 5, top: 150, right: 30 }} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={3000} >
           </Animatable.Image>
 
-          <Animatable.Image style={{position:'absolute',  height: 7, width: 7, top: 350, right: 60}} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={4000} >
-          </Animatable.Image>  
+          <Animatable.Image style={{ position: 'absolute', height: 7, width: 7, top: 350, right: 60 }} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={4000} >
+          </Animatable.Image>
 
-          <Animatable.Image style={{position:'absolute',  height: 6, width: 6, top: 450, left: 60}} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={5000} >
-          </Animatable.Image> 
+          <Animatable.Image style={{ position: 'absolute', height: 6, width: 6, top: 450, left: 60 }} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={5000} >
+          </Animatable.Image>
 
           <Animatable.View style={styles.salida} animation="flash" >
             <Text style={styles.text} category='h4'>Inicio</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vPink} animation="pulse"  iterationCount={4}>
+          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={4}>
             <Text style={styles.text} category='h5'> 1</Text>
           </Animatable.View>
 
-          <Animatable.View style={styles.vBlue} animation="shake"  iterationCount={3}>
+          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={3}>
             <Text style={styles.text} category='h5'> 2 </Text>
           </Animatable.View>
 
@@ -417,15 +413,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-  layout: {
-    height: 40,
-  },
-  text: {
-    left: 40,
-  },
-  card: {
+  card:{   
     margin: 1,
-  },
+    alignItems: 'center',
+  }, 
+  text: {
+    alignSelf: 'flex-start',    
+  },  
   image: {
     flex: 1,
     resizeMode: "cover",
@@ -523,7 +517,7 @@ const styles = StyleSheet.create({
   },
   imgs: {
     height: 75,
-    width: 75,    
+    width: 75,
     position: 'absolute',
     zIndex: 20,
     top: 20,

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Layout, Text, Avatar, Input, Button, Divider } from '@ui-kitten/components';
+import { Layout, Text, Avatar, Input, Button, Divider, Modal, Card } from '@ui-kitten/components';
 import { StyleSheet, Alert, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export default function WelcomeScreen({ route, navigation }) {
 
     const [nickname, setNicknme] = useState('');
+
+    const [modal1, setModal1] = useState(false);
+    const [modal2, setModal2] = useState(false);
+    const [modal3, setModal3] = useState(false);
 
     const { name } = route.params;
     const { email } = route.params;
@@ -18,13 +22,7 @@ export default function WelcomeScreen({ route, navigation }) {
 
         if (nickname == '' || nickname.includes(' ') || nickname.length < 3) {
 
-            Alert.alert(
-                "¡Hubo un error!",
-                "Tu nickname no debe tener espacios y debe ser mayor a tres caracteres",
-                [
-                    { text: "OK" }
-                ],
-                { cancelable: true });
+           setModal1(true);
         } else {
 
             await fetch('https://mincrix.com/getallnicknames', {
@@ -49,13 +47,7 @@ export default function WelcomeScreen({ route, navigation }) {
 
             if (exist) {
 
-                Alert.alert(
-                    "¡El nickname ya existe!",
-                    "por favor intenta escribir otro",
-                    [
-                        { text: "OK" }
-                    ],
-                    { cancelable: true });
+               setModal2(true);
             } else {
 
                 try {
@@ -96,7 +88,7 @@ export default function WelcomeScreen({ route, navigation }) {
                     saveFCMtoken();
 
                     console.log('Data successfully saved ' + name);
-                    createTwoButtonAlert();
+                    setModal3(true);
 
                 } catch (error) {
                     console.log('Failed to save the data to the storage ' + error.toString());
@@ -178,6 +170,35 @@ export default function WelcomeScreen({ route, navigation }) {
             />
             <Button appearance='ghost' onPress={saveNewUser}>Guardar</Button>
 
+            <Modal visible={modal1}
+                backdropStyle={styles.backdrop}
+                onBackdropPress={() => setModal1(false)}>
+                <Card disabled={true} status='danger'>
+                    <Text category='h4'> ¡Hubo un error! </Text>
+                    <Text category='h6'>Tu nickname no debe tener espacios y debe ser mayor a tres letras</Text>
+                    <Button size='small' appearance='ghost' onPress={() => setModal1(false)} >Ok</Button>
+                </Card>
+            </Modal>
+
+            <Modal visible={modal2}
+                backdropStyle={styles.backdrop}
+                onBackdropPress={() => setModal2(false)}>
+                <Card disabled={true} status='danger'>
+                    <Text category='h4'> ¡El nickname ya existe! </Text>
+                    <Text category='h6'>Lo sentimos, por favor intenta escribir otro</Text>
+                    <Button size='small' appearance='ghost' onPress={() => setModal2(false)} >Ok</Button>
+                </Card>
+            </Modal>
+
+            <Modal visible={modal3}
+                backdropStyle={styles.backdrop}>
+                <Card disabled={true} status='success'>
+                    <Text category='h4'> ¡Perfecto! </Text>
+                    <Text category='h6'>Todo listo para que inicies a Jugar.</Text>
+                    <Button size='small' appearance='ghost' onPress={goToGameScren} >Ok</Button>
+                </Card>
+            </Modal>
+
         </Layout>
     )
 
@@ -196,5 +217,8 @@ const styles = StyleSheet.create({
     avatar: {
         borderColor: '#ffffff',
         borderWidth: 1,
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 })

@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { Layout, Text, Button, Icon, Divider } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Image, TouchableOpacity, ImageBackground, View, Alert } from 'react-native';
+import { Layout, Text, Button, Icon, Divider, Modal,Card  } from '@ui-kitten/components';
+import { ScrollView, StyleSheet, Image, TouchableOpacity, ImageBackground, View, Alert ,BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { GoogleSignin } from '@react-native-community/google-signin';
 
 
 export default function GameScreen({ navigation }) {
+
+  const [modal, setModal] = React.useState(false);
 
   const loggOut = async () => {
 
@@ -27,7 +29,8 @@ export default function GameScreen({ navigation }) {
         await GoogleSignin.signOut();
       }
       
-      navigation.navigate('loggin');
+      //navigation.navigate('loggin');
+      BackHandler.exitApp();
     } catch (error) {
       console.log('Mk2:' + error)
     }
@@ -36,7 +39,7 @@ export default function GameScreen({ navigation }) {
   const exitApp = () =>{
     Alert.alert(
       "¿Estas Seguro?",
-      "¿Deseas cerrar tu session?",
+      "¿Deseas salir y cerrar sesión?",
       [
         {
           text: "No",          
@@ -73,6 +76,20 @@ export default function GameScreen({ navigation }) {
     <ScrollView>
       <ImageBackground source={require('../assets/back.png')} style={styles.container}>
       
+
+      <Modal visible={modal}
+        backdropStyle={styles.backdrop}
+        onBackdropPress={() => setModal(false)}>
+        <Card disabled={true} status='danger'>
+          <Text category='h4'> ¿Estas Seguro? </Text>
+          <Text category='h6'>¿Deseas salir y cerrar sesión?</Text>     
+          <View style={styles.close}>
+          <Button size='medium' appearance='ghost' onPress={() => setModal(false)} >No</Button>    
+          <Button size='medium' appearance='ghost' onPress={loggOut} >Sí</Button>
+          </View>
+        </Card>
+      </Modal>
+
         <Text category='h1'>MINCRIX</Text>
         <Image source={require('../assets/logo.png')} style={styles.images} />
         <Divider/>
@@ -118,8 +135,8 @@ export default function GameScreen({ navigation }) {
         </TouchableOpacity>
 
         
-        <TouchableOpacity style={styles.button} onPress={exitApp}>         
-          <Text category='h5'>Cerrar Session</Text>
+        <TouchableOpacity style={styles.button} onPress={() => setModal(true)}>         
+          <Text category='h5'>Cerrar Sesión</Text>
         </TouchableOpacity>        
       
       </ImageBackground>
@@ -141,6 +158,10 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ff6699',
     borderTopColor: '#ff6699', 
 
+   },
+   close:{
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
    },
    componets2:{ 
     top: 10,    
@@ -169,4 +190,7 @@ const styles = StyleSheet.create({
     height: 75,    
     marginHorizontal: 3
   },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+},
 })

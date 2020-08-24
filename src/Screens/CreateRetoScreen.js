@@ -1,5 +1,5 @@
-import React, { useState, useEffect} from 'react';
-import { Layout, Text, Button, Input, Spinner, Icon } from '@ui-kitten/components';
+import React, { useState, useEffect } from 'react';
+import { Layout, Text, Button, Input, Spinner, Icon, Divider } from '@ui-kitten/components';
 import { ScrollView, StyleSheet, Alert, BackHandler } from 'react-native';
 import CameraMenu from '../Managers/CameraMenu';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -10,35 +10,37 @@ import RNFetchBlob from 'rn-fetch-blob'
 export default function CreateRetoScreen({ navigation }) {
 
   const [description, setDescription] = useState('');
-  const [user_id,setUserId] = useState('');
-  const [position,setPosition] = useState('');
-  const [btnavalible, setBtnavalible] = useState(false);  
+  const [user_id, setUserId] = useState('');
+  const [position, setPosition] = useState('');
+  const [btnavalible, setBtnavalible] = useState(false);
+  const [modal1, setModal1] = useState(false);
+  const [modal2, setModal2] = useState(false);
 
   const [data, setData] = useState('');
-  
+
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem('email')
-      if(value !== null) {
+      if (value !== null) {
         // value previously stored
-        setUserId(value);        
-      } 
+        setUserId(value);
+      }
       const value1 = await AsyncStorage.getItem('pathimg')
-      if(value1 !== null) {
+      if (value1 !== null) {
         // value previously stored
-        setData(value1);            
-      } 
+        setData(value1);
+      }
       const value2 = await AsyncStorage.getItem('position')
-      if(value2 !== null) {
+      if (value2 !== null) {
         // value previously stored
-        setPosition(value2);            
-      }         
-      
-    } catch(e) {
+        setPosition(value2);
+      }
+
+    } catch (e) {
       // error reading value
     }
   }
-  
+
   getData();
 
 
@@ -51,62 +53,46 @@ export default function CreateRetoScreen({ navigation }) {
 
   const uploadReto = async () => {
 
-    if(description == ''){
+    if (description == '') {
+      setModal1(true);
+    } else if (data == '') {
+      setModal2(true);
+    } else {
 
-      Alert.alert(
-        "¡Hubo un error!",
-        "no pusiste nada en la descripcion del reto",
-        [        
-          { text: "OK"}
-        ],
-        { cancelable: true });
+      setBtnavalible(true);
 
-    }else if(data == '') {
+      await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/saveretouser', {
+        'Content-Type': 'multipart/form-data',
+      }, [
+        // custom content type
+        { name: 'image', filename: 'image.jpg', type: 'image/jpg', data: RNFetchBlob.wrap(data) },
+        // elements without property `filename` will be sent as plain text
+        { name: 'description', data: description },
+        { name: 'user_id', data: user_id },
+        { name: 'position', data: position },
+      ]).then(response => response.text())
+        .then((responseJson) => {
+          //alert(JSON.stringify(responseJson));
+          console.log(responseJson);
 
-      Alert.alert(
-        "¡Hubo un error!",
-        "no subiste ninguna una imagen",
-        [        
-          { text: "OK"}
-        ],
-        { cancelable: true });
+          Alert.alert(
+            "¡Excelente!",
+            "Gracias por enviarnos tu reto, espera un poco por nuestra aprobación",
+            [
+              { text: "OK", onPress: goToProfile }
+            ],
+            { cancelable: false });
 
-      }else {    
-      
-    setBtnavalible(true);
-
-    await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/saveretouser', {     
-      'Content-Type' : 'multipart/form-data',
-    }, [     
-      // custom content type
-      { name : 'image', filename : 'image.jpg', type:'image/jpg', data: RNFetchBlob.wrap(data)},      
-      // elements without property `filename` will be sent as plain text
-      { name : 'description', data : description},
-      { name : 'user_id', data : user_id}, 
-      { name : 'position', data : position},      
-    ]).then(response => response.text())            
-    .then((responseJson) => {
-        //alert(JSON.stringify(responseJson));
-        console.log(responseJson);
-        
-        Alert.alert(
-          "¡Excelente!",
-          "Gracias por enviarnos tu reto, espera un poco por nuestra aprobación",
-          [        
-            { text: "OK", onPress: goToProfile}
-          ],
-          { cancelable: false });
-          
-      })
-    .catch((err) => {
-      // ...
-      console.log("mistake: "+ err);
-    });
-  }
+        })
+        .catch((err) => {
+          // ...
+          console.log("mistake: " + err);
+        });
+    }
   }
 
-  const goToProfile = async() =>{
-    setBtnavalible(false);    
+  const goToProfile = async () => {
+    setBtnavalible(false);
     await AsyncStorage.removeItem('pathimg');
     navigation.navigate('Profile');
   }
@@ -119,7 +105,7 @@ export default function CreateRetoScreen({ navigation }) {
 
     <ScrollView>
       <Layout style={styles.layout} level="3">
-        
+
 
         <Layout style={styles.layout} level="1">
 
@@ -133,9 +119,31 @@ export default function CreateRetoScreen({ navigation }) {
             onChangeText={nextValue => setDescription(nextValue)}
           />
         </Layout>
-        {btnavalible ? <Spinner />: 
-        <Button disabled={btnavalible} accessoryLeft={sendIcon} appearance='ghost' onPress={uploadReto} > Enviar Reto</Button>
+        {btnavalible ? <Spinner /> :
+          <Button disabled={btnavalible} accessoryLeft={sendIcon} appearance='ghost' onPress={uploadReto} > Enviar Reto</Button>
         }
+
+        <Modal visible={modal1}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setModal1(false)} status='danger'>
+          <Card disabled={true}>
+            <Text category='h4'> ¡Hubo un error! </Text>
+            <Text category='h6'> No pusiste nada en la descripcion del reto</Text>            
+            <Button size='small' appearance='ghost' onPress={() => setModal1(false)} >Ok</Button>
+          </Card>
+        </Modal>
+
+        <Modal visible={modal2}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setModal2(false)}>
+          <Card disabled={true} status='danger'>
+            <Text category='h4'> ¡Hubo un error! </Text>
+            <Text category='h6'> No subiste ninguna una imagen</Text>
+           
+            <Button size='small' appearance='ghost' onPress={() => setModal2(false)} >Ok</Button>
+          </Card>
+        </Modal>
+
       </Layout>
     </ScrollView>
   )
@@ -146,7 +154,7 @@ const styles = StyleSheet.create({
   layout: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',    
+    alignItems: 'center',
   },
   input: {
     width: 350,

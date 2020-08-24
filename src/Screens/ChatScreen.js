@@ -1,23 +1,21 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Text, Button, Icon, Spinner } from '@ui-kitten/components';
-import { GiftedChat, Bubble, Send, Time,Day } from 'react-native-gifted-chat';
-import { View, StyleSheet } from 'react-native';
+import { GiftedChat, Bubble, Send, Time, Day } from 'react-native-gifted-chat';
+import { View, StyleSheet, ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import LottieView from 'lottie-react-native';
-import { useIsFocused } from '@react-navigation/native';
-
-
 
 let getData = true;
 let index = 0;
 
-export default function NotificationScreen({ navigation }) {
+export default function ChatScreen({ navigation }) {
 
   const [messages, setMessages] = useState([]);
   const [avatar, setAvatar] = useState('');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
- 
+  const [loading, setLoading] = useState(true);
+
 
   async function getUser() {
 
@@ -85,109 +83,79 @@ export default function NotificationScreen({ navigation }) {
           // Here is the color change
           backgroundColor: '#9900ff'
         },
-        left:{
+        left: {
           backgroundColor: '#ff6699'
         }
       }}
-      textStyle={{       
+      textStyle={{
         right: {
           fontFamily: 'VT323-Regular',
           color: '#fff',
-          fontSize: 20,  
+          fontSize: 20,
         },
-        left :{
+        left: {
           fontFamily: 'VT323-Regular',
           color: '#fff',
-          fontSize: 20,  
+          fontSize: 20,
         }
       }}
     />
-  ); 
+  );
 
-  /** render the time labels in the bubble */
-  function renderTime() {
-    return (
-        <Time
-            textStyle={{
-                right: {
-                  color: '#fff',
-                  fontFamily: 'VT323-Regular',  
-                  fontSize: 25                  
-                },
-                left: {
-                    color: '#fff',
-                    fontFamily: 'VT323-Regular',  
-                    fontSize: 25                 
-                }
-            }}
-        />
-    );
-}
+  /** render the day labels above the bubble */
+  const renderDay = (props) => (
+    <Day
+      {...props}
 
-/** render the day labels above the bubble */
-const renderDay = (props) => (
-  <Day
-    {...props}
-    
-    textStyle={{       
-      
+      textStyle={{
+
         fontFamily: 'VT323-Regular',
         color: '#fff',
-        fontSize: 20,  
-              
-    }}
-  />
-); 
+        fontSize: 20,
 
-  function renderLoading() {
-    return (
-      <View style={styles.loadingContainer}>
-        <LottieView
-          autoPlay={true}
-          source={require('../animations/15319-navbar-chat.json')}
-          loop={true}
-        />
-      </View>
-    );
-  }   
-  
+      }}
+    />
+  );
+
   const getChatMsg = () => {
 
     fetch('https://mincrix.com/messgesfromchat', {
-     method: 'GET'
-   })
-     .then((response) => response.json())
-     .then((responseJson) => {
-  
-       while (index < responseJson.length) {
-  
-         setMessages(previousMessages => GiftedChat.append(previousMessages,
-           {
-             _id: responseJson[index].id,
-             text: responseJson[index].texto,
-             createdAt: responseJson[index].created_at,
-             user: {
-               _id: responseJson[index].email,
-               name: responseJson[index].nickname,
-               avatar: responseJson[index].avatar,
-             },
-           },
-         ))
-  
-         index++;
-       }
-       console.log(index);
-     }).catch((error) => {
-       console.error(error);
-     });
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+
+        while (index < responseJson.length) {
+
+          setMessages(previousMessages => GiftedChat.append(previousMessages,
+            {
+              _id: responseJson[index].id,
+              text: responseJson[index].texto,
+              createdAt: responseJson[index].created_at,
+              user: {
+                _id: responseJson[index].email,
+                name: responseJson[index].nickname,
+                avatar: responseJson[index].avatar,
+              },
+            },
+          ))
+
+          index++;
+        }
+        console.log(index);
+      }).catch((error) => {
+        console.error(error);
+      }).finally(() => {
+        setLoading(false);
+      });
   }
-  
+
   useEffect(() => {
     const toggle = setInterval(getChatMsg, 1000);
 
     return () => clearInterval(toggle);
- });
-   
+  });
+
   async function handleSend(messages) {
 
     const msg = messages[0].text;
@@ -216,26 +184,31 @@ const renderDay = (props) => (
     //setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
   }
 
-  
+
 
   return (
-    <View style={styles.container}>
-      <GiftedChat
-        messages={messages}
-        onSend={handleSend}
-        user={{ _id: email, name: nickname, avatar: avatar }}
-        placeholder='Escribe tu mensaje...'
-        renderBubble={renderBubble} 
-        renderDay={renderDay}                         
-        renderUsernameOnMessage={true}
-        renderLoading={renderLoading}
-        scrollToBottom={true}
-        renderAvatarOnTop={true}
-        showUserAvatar
-        renderSend={renderSend}
-        scrollToBottomComponent={scrollToBottomComponent}
-      />
-    </View>
+    <ImageBackground source={require('../assets/back.png')} style={styles.container} >
+      {loading ? (<LottieView
+        autoPlay={true}
+        source={require('../animations/15319-navbar-chat.json')}
+        loop={true}
+      />) : (
+          <GiftedChat
+            messages={messages}
+            onSend={handleSend}
+            user={{ _id: email, name: nickname, avatar: avatar }}
+            placeholder='Escribe tu mensaje...'
+            renderBubble={renderBubble}
+            renderDay={renderDay}
+            renderUsernameOnMessage={true}
+            scrollToBottom={true}
+            renderAvatarOnTop={true}
+            showUserAvatar
+            renderSend={renderSend}
+            scrollToBottomComponent={scrollToBottomComponent}
+          />
+        )}
+    </ImageBackground>
   )
 }
 
@@ -243,9 +216,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: 10,
-    backgroundColor: '#081240',
-    padding: 8,
   },
   sendingContainer: {
     justifyContent: 'center',
