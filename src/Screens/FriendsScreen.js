@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Image, ImageBackground, FlatList, View, TouchableOpacity, Alert, Share } from 'react-native';
+import { StyleSheet, Image, ImageBackground, FlatList, View, TouchableOpacity, ToastAndroid, Share } from 'react-native';
 import { Text, Avatar, Button, Icon } from '@ui-kitten/components';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export default function FriendsScreen({ route, navigation }) {
 
     const [data, setData] = useState([]);
-    const { email } = route.params;        
+    const { email } = route.params;  
+    const net = useNetInfo().isConnected;      
 
     useEffect(() => {
 
-        fetch('http://mincrix.com/useramigos/' + email, {
+        if(net){
+            fetch('http://mincrix.com/useramigos/' + email, {
             method: 'GET'
-        })
+            })
             .then((response) => response.json())
             .then((responseJson) => {
                 //console.log(responseJson);
@@ -22,7 +25,17 @@ export default function FriendsScreen({ route, navigation }) {
                 console.error(error);
             });
 
+        }        
     }, []);    
+
+    //mensage cuando se pierde la conexion
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "Has perdido la conexion a internet",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
 
     const renderItem = ({ item, index }) => (
 
@@ -47,7 +60,7 @@ export default function FriendsScreen({ route, navigation }) {
         try {
             const result = await Share.share({
                 message:
-                    'Hola te invito a descargar MINCRIX | https://mincrix.com/',
+                    'Hola te invito a descargar MINCRIX | https://mincrix.com',
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {

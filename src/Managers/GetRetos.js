@@ -14,13 +14,11 @@ export default class GetMyRetos extends Component {
         };
     }
 
-    async componentDidMount() {
+    componentDidMount() {
 
         try {
 
-            const pos = await AsyncStorage.getItem('position');
-
-            await fetch('https://mincrix.com/showreto/' + pos)
+            fetch('https://mincrix.com/showreto/' + global.pos)
                 .then((response) => response.json())
                 .then((json) => {
                     this.setState({ data: json });
@@ -43,13 +41,13 @@ export default class GetMyRetos extends Component {
                 {isLoading ? (
                     <Spinner />
                 ) : (
-                    <>
-                        <Text category='h3'  status='primary'> {data.titulo}</Text>
-                        <Divider/>
-                        <Text category='h5'>{data.descripcion}</Text>
-                        <Text category='s2'>no olvides tomar una foto y subirla a tu perfil</Text>
-                    </>
-                )}
+                        <>
+                            <Text category='h3' status='primary'> {data.titulo}</Text>
+                            <Divider />
+                            <Text category='h5'>{data.descripcion}</Text>
+                            <Text category='s2'>no olvides tomar una foto y subirla a tu perfil</Text>
+                        </>
+                    )}
             </>
 
         );

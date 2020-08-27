@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, ImageBackground, View, Alert } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback, ImageBackground, View, ToastAndroid } from 'react-native';
 import { Text, Autocomplete, AutocompleteItem, Icon, Avatar, Button, Card, Modal, Divider } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 const filter = (item, query) => item.nickname.toLowerCase().includes(query.toLowerCase());
 
@@ -12,6 +13,7 @@ export default function searchScreen({ navigation }) {
     const [value, setValue] = useState(null);
     const [data, setData] = useState([]);
     const [modal, setModal] = useState(false);
+    const net = useNetInfo().isConnected;
 
     useEffect(() => {
 
@@ -27,22 +29,38 @@ export default function searchScreen({ navigation }) {
             }).catch((error) => {
                 console.error(error);
             });
+
     }, []);
+
+
+    //mensage cuando se pierde la conexion
+    const showToastWithGravity = () => {
+        ToastAndroid.showWithGravity(
+            "Has perdido la conexion a internet",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+        );
+    };
 
     const getUsers = () => {
 
-        fetch('https://mincrix.com/getnicknamegamers', {
-            method: 'GET'
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                //console.log(responseJson);
+        if (net) {
+            fetch('https://mincrix.com/getnicknamegamers', {
+                method: 'GET'
+            })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    //console.log(responseJson);
 
-                setData(responseJson);
+                    setData(responseJson);
 
-            }).catch((error) => {
-                console.error(error);
-            });
+                }).catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            showToastWithGravity();
+        }
+
     }
 
     const clearInput = () => {
@@ -111,7 +129,7 @@ export default function searchScreen({ navigation }) {
                 onBackdropPress={() => setModal(false)}>
                 <Card disabled={true} status='danger'>
                     <Text category='h4' > ¡Espera!</Text>
-                    <Text category='h6'>ve a la pestaña de perfil para ver el tuyo</Text>                    
+                    <Text category='h6'>ve a la pestaña de perfil para ver el tuyo</Text>
                     <Button size='small' appearance='ghost' onPress={() => setModal(false)} >Ok</Button>
                 </Card>
             </Modal>

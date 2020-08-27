@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Image, ImageBackground, FlatList, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Image, ImageBackground, FlatList, View, ToastAndroid } from 'react-native';
 import { List, Text, ListItem, Divider, Avatar } from '@ui-kitten/components';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export default function searchScreen({ navigation }) {
 
     const [data, setData] = useState([]);
+   
 
-    useEffect(() => {
+    useEffect(() => {       
 
-        fetch('https://mincrix.com/getrankiengamers', {
-            method: 'GET'
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                //console.log(responseJson);
+            fetch('https://mincrix.com/getrankiengamers', {
+                method: 'GET'
+            })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    //console.log(responseJson);
 
-                setData(responseJson);
+                    setData(responseJson);
 
-            }).catch((error) => {
-                console.error(error);
-            });
+                }).catch((error) => {
+                    console.error(error);
+                });       
+
     }, []);
+
+    
 
     const renderItem = ({ item, index }) => (
 
@@ -28,7 +33,7 @@ export default function searchScreen({ navigation }) {
             <View style={styles.number}>
                 <Text category='h1' >{index + 1}</Text>
             </View>
-            <Avatar style={styles.avatar}  shape='square' size='medium' source={{ uri: item.avatar }} />
+            <Avatar style={styles.avatar} shape='square' size='medium' source={{ uri: item.avatar }} />
             <View>
                 <Text category='h6'> {item.name} Casilla {item.position} </Text>
                 <Text category='s1'> {item.nickname}  </Text>
@@ -75,9 +80,9 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
 
     },
-    number: {                  
+    number: {
         alignItems: 'center',
-        margin: 5,        
+        margin: 5,
     },
     elements: {
         flexDirection: 'row',
@@ -88,6 +93,6 @@ const styles = StyleSheet.create({
     avatar: {
         borderColor: '#ffffff',
         borderWidth: 2,
-      },
+    },
 
 })

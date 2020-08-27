@@ -3,7 +3,7 @@ import { List, Text, Spinner, Divider, Card, Layout, Button, Icon, } from '@ui-k
 import { StyleSheet, View, Image, Share } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import LottieView from 'lottie-react-native';
-import { useNetInfo } from "@react-native-community/netinfo";
+
 
 export default class GetMyRetos extends Component {
     constructor(props) {
@@ -12,37 +12,32 @@ export default class GetMyRetos extends Component {
         this.state = {
             data: [],
             isLoading: true,
-            netinfo: false,
         };
     }
 
-    async componentDidMount() {
+    componentDidMount() {
 
-        this.setState({ netinfo: useNetInfo().isConnected });
-        
-        if (this.state.netinfo) {
-            try {
+        try {
 
-                const mail = await AsyncStorage.getItem('email');
-                await fetch('https://mincrix.com/useretosup/' + mail)
-                    .then((response) => response.json())
-                    .then((json) => {
-                        this.setState({ data: json });
-                    })
-                    .catch((error) => console.log("err:  " + error))
-                    .finally(() => {
-                        this.setState({ isLoading: false });
-                    });
+            fetch('https://mincrix.com/useretosup/' + global.id)
+                .then((response) => response.json())
+                .then((json) => {
+                    this.setState({ data: json });
+                })
+                .catch((error) => console.log("err:  " + error))
+                .finally(() => {
+                    this.setState({ isLoading: false });
+                });
 
-            } catch (er) {
-                console.log(er);
-            }
+        } catch (er) {
+            console.log(er);
         }
+
     }
- 
+
 
     render() {
-        const { data, isLoading } = this.state;     
+        const { data, isLoading } = this.state;
 
         const shareIcon = (props) => (
             <Icon {...props} name='share-outline' />

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Text, Icon, Avatar, Button, Card, Modal, Divider } from '@ui-kitten/components';
-import { View, ImageBackground, StyleSheet } from 'react-native';
+import { View, ImageBackground, StyleSheet, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import GetMyRetos from '../Managers/GetMyRetos';
 import { useNetInfo } from "@react-native-community/netinfo";
-
+import { useIsFocused } from '@react-navigation/native';
 
 export default function ProfileScreen({ navigation }) {
 
@@ -13,7 +13,9 @@ export default function ProfileScreen({ navigation }) {
   const [position, setPosition] = useState('');
   const [friends, setFriends] = useState(0);
   const [modal, setModal] = useState(false);
-  const netinfo = useNetInfo().isConnected;
+
+  const net = useNetInfo().isConnected;
+  const isFocused = useIsFocused();
 
   const getData = async () => {
     try {
@@ -41,12 +43,12 @@ export default function ProfileScreen({ navigation }) {
     }
   }
 
-  getData();
 
-  useEffect(() => {
+  if(isFocused){
 
-    if (netinfo) {
+    getData();
 
+    if(net){
       fetch('https://mincrix.com/getfriendsmail/' + global.id, {
         method: 'GET'
       })
@@ -58,9 +60,9 @@ export default function ProfileScreen({ navigation }) {
 
         }).catch((error) => {
           console.error(error);
-        });
+        });    
     }
-  }, []);
+  }  
 
   const goToCreateReto = async () => {
 
@@ -84,7 +86,7 @@ export default function ProfileScreen({ navigation }) {
 
     <ImageBackground source={require('../assets/back.png')} style={styles.topContainer}>
 
-      {netinfo ? (
+      {net ? (
         <>
           <Avatar style={styles.avatar} size='giant' source={{ uri: avatar }} />
 

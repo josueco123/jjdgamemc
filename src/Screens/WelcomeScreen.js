@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Layout, Text, Avatar, Input, Button, Divider, Modal, Card } from '@ui-kitten/components';
-import { StyleSheet, Alert, View } from 'react-native';
+import { Layout, Text, Avatar, Input, Button, Modal, Card } from '@ui-kitten/components';
+import { StyleSheet, Alert, View, ToastAndroid } from 'react-native';
+import { useNetInfo } from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-community/async-storage';
 
 export default function WelcomeScreen({ route, navigation }) {
@@ -16,16 +17,28 @@ export default function WelcomeScreen({ route, navigation }) {
     const { avatar } = route.params;
     const { token } = route.params;
 
+    const net = useNetInfo().isConnected;
+
+    //mensage cuando se pierde la conexion
+    const showToastWithGravity = () => {
+        ToastAndroid.showWithGravity(
+            "Has perdido la conexion a internet",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+        );
+    };
+
     const saveNewUser = async () => {
 
         let exist = false;
 
         if (nickname == '' || nickname.includes(' ') || nickname.length < 3) {
 
-           setModal1(true);
+            setModal1(true);
         } else {
 
-            await fetch('https://mincrix.com/getallnicknames', {
+            if(net){
+                await fetch('https://mincrix.com/getallnicknames', {
                 method: 'GET'
             })
                 .then((response) => response.json())
@@ -44,51 +57,61 @@ export default function WelcomeScreen({ route, navigation }) {
                 }).catch((error) => {
                     console.error(error);
                 });
+            }else{
+                showToastWithGravity();
+            }
+            
 
             if (exist) {
 
-               setModal2(true);
+                setModal2(true);
             } else {
 
                 try {
-                    await fetch('https://www.mincrix.com/savenewuser', {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: name,
-                            email: email,
-                            avatar: avatar,
-                            nickname: nickname
-                        })
-                    }).then((response) => response.json())
-                        //If response is in json then in success
-                        .then((responseJson) => {
-                            //alert(JSON.stringify(responseJson));
-                            console.log(responseJson);
+                    if(net){
+                        await fetch('https://www.mincrix.com/savenewuser', {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                name: name,
+                                email: email,
+                                avatar: avatar,
+                                nickname: nickname
+                            })
+                        }).then((response) => response.json())
+                            //If response is in json then in success
+                            .then((responseJson) => {
+                                //alert(JSON.stringify(responseJson));
+                                console.log(responseJson);
+    
+    
+                            })
+                            //If response is not in json then in error
+                            .catch((error) => {
+                                //alert(JSON.stringify(error));
+                                console.log("mistake: " + error);;
+                            });
+    
+                        await AsyncStorage.setItem('token', token)
+                        await AsyncStorage.setItem('username', name)
+                        await AsyncStorage.setItem('email', email)
+                        await AsyncStorage.setItem('avatar', avatar)
+                        await AsyncStorage.setItem('nickname', nickname)
+                        await AsyncStorage.setItem('position', "0")
+                        await AsyncStorage.setItem('estado', "1")
+                        global.id = value.email;
+                        saveFCMtoken();
+    
+                        console.log('Data successfully saved ' + name);
+                        setModal3(true);
 
-
-                        })
-                        //If response is not in json then in error
-                        .catch((error) => {
-                            //alert(JSON.stringify(error));
-                            console.log("mistake: " + error);;
-                        });
-
-                    await AsyncStorage.setItem('token', token)
-                    await AsyncStorage.setItem('username', name)
-                    await AsyncStorage.setItem('email', email)
-                    await AsyncStorage.setItem('avatar', avatar)
-                    await AsyncStorage.setItem('nickname', nickname)
-                    await AsyncStorage.setItem('position', "0")
-                    await AsyncStorage.setItem('estado', "1")
-                    global.id = value.email;
-                    saveFCMtoken();
-
-                    console.log('Data successfully saved ' + name);
-                    setModal3(true);
+                    }else{
+                        showToastWithGravity();
+                    }
+                   
 
                 } catch (error) {
                     console.log('Failed to save the data to the storage ' + error.toString());
@@ -104,7 +127,8 @@ export default function WelcomeScreen({ route, navigation }) {
             const fcmtoken = await AsyncStorage.getItem('tokenfcm');
             const email = await AsyncStorage.getItem('email');
 
-            await fetch('https://www.mincrix.com/savereuserfcmtoken', {
+            if(net){
+                await fetch('https://www.mincrix.com/savereuserfcmtoken', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -125,6 +149,10 @@ export default function WelcomeScreen({ route, navigation }) {
                     //alert(JSON.stringify(error));
                     console.log("mistake: " + error);;
                 });
+            }else{
+                showToastWithGravity();
+            }
+            
 
 
         } catch (error) {
@@ -134,18 +162,7 @@ export default function WelcomeScreen({ route, navigation }) {
 
     const goToGameScren = () => {
         navigation.navigate("Game")
-    }
-
-    const createTwoButtonAlert = () =>
-        Alert.alert(
-            "¡Perfecto!",
-            "Todo listo para que inicies a Jugar.",
-            [
-                { text: "OK", onPress: goToGameScren }
-            ],
-            { cancelable: false }
-        );
-
+    }  
 
     return (
         <Layout style={styles.layout} level="2">

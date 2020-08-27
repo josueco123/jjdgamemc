@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Text, Icon, Avatar, List, Card, Button } from '@ui-kitten/components';
-import { View, ImageBackground, StyleSheet, Image } from 'react-native';
+import { View, ImageBackground, StyleSheet, Image, ToastAndroid } from 'react-native';
 import LottieView from 'lottie-react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export default function GamerProfileScreen({ route, navigation }) {
 
@@ -15,6 +16,7 @@ export default function GamerProfileScreen({ route, navigation }) {
   const [isFriend, setIsfriend] = useState(false);
   const [friends, setFriends] = useState(0);
 
+  const net = useNetInfo().isConnected;
 
   useEffect(() => {
 
@@ -82,12 +84,22 @@ export default function GamerProfileScreen({ route, navigation }) {
 
   }, []);
 
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "Has perdido la conexion a internet",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
+
   const sendRequest = async () => {
     try {
 
       const email = await AsyncStorage.getItem('email');
 
-      await fetch('https://www.mincrix.com/requestfriendship', {
+      if(net){
+
+        await fetch('https://www.mincrix.com/requestfriendship', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -110,10 +122,13 @@ export default function GamerProfileScreen({ route, navigation }) {
           console.log("mistake: " + error);
         });
 
+      }else{
+        showToastWithGravity();
+      }      
+
     } catch (error) {
       console.log('Failed to load the data ' + error.toString());
-    }
-    setSend(true);
+    }   
   }
 
   const renderItem = ({ item }) => (

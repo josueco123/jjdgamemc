@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Layout, Button, Card, Text, Modal, Icon, Divider } from '@ui-kitten/components';
-import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, BackHandler } from 'react-native';
+import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -20,7 +20,8 @@ global.firstExecute = true;
 export default function GameScreen({ navigation }) {
 
 
-  const netinfo = useNetInfo().isConnected;
+  const net = useNetInfo().isConnected;
+  const isFocused = useIsFocused();
   
   //se trae el estado y la posicion del usuario
   const askUserState = async () => {
@@ -28,7 +29,8 @@ export default function GameScreen({ navigation }) {
 
       const mail = await AsyncStorage.getItem('email');
 
-      await fetch('https://mincrix.com/usergamestate/' + mail)
+       
+        await fetch('https://mincrix.com/usergamestate/' + mail)
         .then((response) => response.json())
         .then((json) => {
 
@@ -37,18 +39,18 @@ export default function GameScreen({ navigation }) {
 
         })
         .catch((error) => console.log("err:  " + error))
+        
 
     } catch (er) {
       console.log(er);
     }
   }
-  const isFocused = useIsFocused();
+  
 
-  if (isFocused) {
-
-    if (netinfo)
+  if (isFocused) { 
+    
+    if(net)
     askUserState();
-
   }
 
   //almacenar el estado traido del backend
@@ -93,7 +95,13 @@ export default function GameScreen({ navigation }) {
   }
   mesaginpush();
 
-
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "Has perdido la conexion a internet",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
 
   //  el card que contiene los retos
   const [visible, setVisible] = useState(false);
@@ -152,6 +160,7 @@ export default function GameScreen({ navigation }) {
     const pos = await AsyncStorage.getItem('position');
     const mail = await AsyncStorage.getItem('email');
 
+    global.pos = pos;
     global.id = mail;
 
     if (global.firstExecute) {
@@ -193,16 +202,20 @@ export default function GameScreen({ navigation }) {
 
     if (estado == "1") {
 
-      setVisible(false);
-      let number = getRandomInt(1, 7);
-      Position = Number(Position) + number;
-      console.log("Pos3: " + Position);
-      navigation.navigate('DadoAnimation', { dadoResult: number });
-      await AsyncStorage.setItem('estado', "2");
-      await AsyncStorage.setItem('position', Position.toString());
-      updataUserState();
-
-      moveFicha();
+      if(net){
+        setVisible(false);
+        let number = getRandomInt(1, 7);
+        Position = Number(Position) + number;
+        console.log("Pos3: " + Position);
+        navigation.navigate('DadoAnimation', { dadoResult: number });
+        await AsyncStorage.setItem('estado', "2");
+        await AsyncStorage.setItem('position', Position.toString());
+        updataUserState();
+        moveFicha();
+      }else{
+        showToastWithGravity();
+      }
+     
 
     } else {
       setModalestado(true);      
@@ -217,12 +230,17 @@ export default function GameScreen({ navigation }) {
 
       const mail = await AsyncStorage.getItem('email');
 
-      await fetch('https://mincrix.com/setusergamestate/' + mail + '/2')
+      if(net){
+
+        await fetch('https://mincrix.com/setusergamestate/' + mail + '/2')
         .then((response) => response.json())
         .then((json) => {
 
         })
         .catch((error) => console.log("err:  " + error))
+      }else{
+        showToastWithGravity();
+      }      
 
     } catch (er) {
       console.log(er);
@@ -235,12 +253,16 @@ export default function GameScreen({ navigation }) {
 
       const mail = await AsyncStorage.getItem('email');
 
-      await fetch('https://mincrix.com/setuseposition/' + mail + '/' + value)
+      if(net){
+        await fetch('https://mincrix.com/setuseposition/' + mail + '/' + value)
         .then((response) => response.json())
         .then((json) => {
 
         })
         .catch((error) => console.log("err:  " + error))
+      } else{
+        showToastWithGravity()
+      }     
 
     } catch (er) {
       console.log(er);

@@ -10,5 +10,6 @@
     android:layout_height="wrap_content"     
     android:scaleType="centerCrop"    
     android:src="@mipmap/ic_launcher" 
-    android:layout_gravity="center"/>     
+    android:layout_gravity="center"
+    android:layout_margin="100dp"/>    
 </RelativeLayout>

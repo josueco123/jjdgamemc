@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Text, Button, Input, Spinner, Icon, Divider } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Alert, BackHandler } from 'react-native';
+import { ScrollView, StyleSheet, Alert, BackHandler, ToastAndroid } from 'react-native';
+import { useNetInfo } from "@react-native-community/netinfo";
 import CameraMenu from '../Managers/CameraMenu';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNFetchBlob from 'rn-fetch-blob'
@@ -17,6 +18,7 @@ export default function CreateRetoScreen({ navigation }) {
   const [modal2, setModal2] = useState(false);
 
   const [data, setData] = useState('');
+  const net = useNetInfo().isConnected;
 
   const getData = async () => {
     try {
@@ -44,6 +46,15 @@ export default function CreateRetoScreen({ navigation }) {
   getData();
 
 
+  //mensage cuando se pierde la conexion
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "Has perdido la conexion a internet",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
+
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", goToProfile);
 
@@ -61,7 +72,8 @@ export default function CreateRetoScreen({ navigation }) {
 
       setBtnavalible(true);
 
-      await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/saveretouser', {
+      if(net){
+        await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/saveretouser', {
         'Content-Type': 'multipart/form-data',
       }, [
         // custom content type
@@ -88,6 +100,10 @@ export default function CreateRetoScreen({ navigation }) {
           // ...
           console.log("mistake: " + err);
         });
+      }else{
+        showToastWithGravity();
+      }
+      
     }
   }
 
