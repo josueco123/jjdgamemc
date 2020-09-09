@@ -13,12 +13,10 @@ import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
-import com.imagepicker.ImagePickerPackage;
 import com.RNFetchBlob.RNFetchBlobPackage; 
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;  
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage; 
-import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;  // <--- import
 
 public class MainApplication extends Application implements ReactApplication {

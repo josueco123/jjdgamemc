@@ -175,7 +175,7 @@ function loginNavigator() {
             <LoginStack.Screen name='Game' component={TabNavigator} />
           </LoginStack.Navigator>
         ) : (
-            <LoginStack.Navigator headerMode="none" initialRouteName="Game" >
+            <LoginStack.Navigator headerMode="none" >
               <LoginStack.Screen name='Game' component={TabNavigator} />
             </LoginStack.Navigator>
           )}      

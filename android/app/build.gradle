@@ -201,9 +201,7 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 
-    implementation project(':lottie-react-native')
-
-    implementation project(':react-native-image-picker')    
+    implementation project(':lottie-react-native')       
 
     implementation project(':rn-fetch-blob')   
 
@@ -211,9 +209,7 @@ dependencies {
 
     implementation project(':react-native-firebase_messaging')
 
-    implementation project(':react-native-push-notification')
-
-    implementation project(':@react-native-firebase_firestore')
+    implementation project(':react-native-push-notification')   
 
     implementation project(":react-native-google-signin")
 

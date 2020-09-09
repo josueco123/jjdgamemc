@@ -117,7 +117,7 @@ export default function GameScreen({ navigation }) {
     </View>
   );
 
-  const moveAnim = useRef(new Animated.Value(0)).current;
+  const moveAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const myScroll = useRef();
   const scrollAnimation = useRef(new Animated.Value(0));
 
@@ -129,7 +129,7 @@ export default function GameScreen({ navigation }) {
       scrollAnimation.current.addListener((animation) => {
         myScroll.current &&
           myScroll.current.scrollTo({
-            y: animation.value,
+            y: animation.value,           
             animated: false,
           })
       })
@@ -142,7 +142,7 @@ export default function GameScreen({ navigation }) {
       }).start();
 
       Animated.timing(moveAnim, {
-        toValue: 100 * Position,
+        toValue: {x:0, y:100 * Position},
         duration: 10000,
         useNativeDriver: true
       }).start();
@@ -168,7 +168,7 @@ export default function GameScreen({ navigation }) {
       scrollAnimation.current.addListener((animation) => {
         myScroll.current &&
           myScroll.current.scrollTo({
-            y: animation.value,
+            y: animation.value,           
             animated: false,
           })
       })
@@ -181,7 +181,7 @@ export default function GameScreen({ navigation }) {
       }).start();
 
       Animated.timing(moveAnim, {
-        toValue: 100 * Number(pos),
+        toValue: {x:0, y:100 * Number(pos)},
         duration: 3000,
         useNativeDriver: true
       }).start();
@@ -218,6 +218,7 @@ export default function GameScreen({ navigation }) {
      
 
     } else {
+      setVisible(false);
       setModalestado(true);      
     }
 
@@ -299,12 +300,7 @@ export default function GameScreen({ navigation }) {
             <Animatable.View style={[
               styles.ficha,
               {
-                transform: [
-                  {
-                    translateX: 0,
-                    translateY: moveAnim,
-                  },
-                ],
+                transform: moveAnim.getTranslateTransform(),
               },
             ]}>
 
