@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Image, ImageBackground, FlatList, View, ToastAndroid } from 'react-native';
 import { List, Text, ListItem, Divider, Avatar } from '@ui-kitten/components';
-import { useNetInfo } from "@react-native-community/netinfo";
 
-export default function searchScreen({ navigation }) {
+export default function RankingScreen({ navigation }) {
 
     const [data, setData] = useState([]);
    

@@ -11,21 +11,19 @@ export default function FriendsScreen({ route, navigation }) {
 
     useEffect(() => {
 
-        if(net){
             fetch('http://mincrix.com/useramigos/' + email, {
             method: 'GET'
             })
             .then((response) => response.json())
             .then((responseJson) => {
+                
                 //console.log(responseJson);
-
                 setData(responseJson);
 
             }).catch((error) => {
                 console.error(error);
             });
-
-        }        
+              
     }, []);    
 
     //mensage cuando se pierde la conexion

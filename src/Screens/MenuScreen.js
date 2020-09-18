@@ -81,6 +81,11 @@ export default function GameScreen({ navigation }) {
     }
   }
 
+  const goToSettins = () =>{
+
+    navigation.navigate('Settings');
+  }
+
   return (
 
     <ScrollView>
@@ -101,7 +106,7 @@ export default function GameScreen({ navigation }) {
         </Modal>
 
         <Text category='h1'>MINCRIX</Text>
-        <Image source={require('../assets/logo.png')} style={styles.images} />
+        <Image source={require('../assets/image.png')} style={styles.images} />
         <Divider />
         <View style={styles.componets}>
           <TouchableOpacity style={styles.button} onPress={gotoFriends}>
@@ -119,16 +124,18 @@ export default function GameScreen({ navigation }) {
             <Text category='h5'>Ranking</Text>
           </TouchableOpacity>
         </View>
+
         <View style={styles.componets2}>
           <TouchableOpacity style={styles.button} >
             <Icon style={styles.icon} fill='#ff6699' name='info-outline' />
             <Text category='h5'>Instrucciones</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} >
-            <Icon style={styles.icon} fill='#ff6699' name='link-2-outline' />
-            <Text category='h5'>Blog</Text>
+          <TouchableOpacity style={styles.button}  onPress={goToSettins}>
+            <Icon style={styles.icon} fill='#ff6699' name='settings-outline' />
+            <Text category='h5'>Configuración</Text>
           </TouchableOpacity>
+          
 
           <TouchableOpacity style={styles.button} >
             <Icon style={styles.icon} fill='#ff6699' name='star-outline' />
@@ -140,6 +147,11 @@ export default function GameScreen({ navigation }) {
             <Text category='h5'>Donaciones</Text>
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.button} >            
+            <Text category='h5'>Blog</Text>
+          </TouchableOpacity>
+
         <TouchableOpacity style={styles.button} >
           <Text category='h5'>Sobre MINCRIX</Text>
         </TouchableOpacity>

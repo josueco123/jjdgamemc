@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Text, Button, Input, Spinner, Icon, Divider } from '@ui-kitten/components';
+import { Layout, Text, Button, Input, Spinner, Icon, Modal, Card } from '@ui-kitten/components';
 import { ScrollView, StyleSheet, Alert, BackHandler, ToastAndroid } from 'react-native';
 import { useNetInfo } from "@react-native-community/netinfo";
 import CameraMenu from '../Managers/CameraMenu';
 import AsyncStorage from '@react-native-community/async-storage';
-import RNFetchBlob from 'rn-fetch-blob'
-
+import RNFetchBlob from 'rn-fetch-blob';
 
 
 export default function CreateRetoScreen({ navigation }) {

@@ -24,7 +24,7 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', JSON.stringify(remoteMessage));
-  Vibration.vibrate(1000);  
+  Vibration.vibrate(1000);   
 });
 
 export default class App extends Component {

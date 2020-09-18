@@ -1,12 +1,23 @@
 import * as React from 'react';
 import { Vibration } from "react-native";
 import LottieView from 'lottie-react-native';
-
+import SoundPlayer from 'react-native-sound-player'
 
 export default function DadoAnimationScreen({ route, navigation }) {
 
+  if(global.vibs)
   Vibration.vibrate(2000);
-  
+
+  if(global.sounds){
+    
+    try {
+      // play the file tone.mp3
+      SoundPlayer.playSoundFile('dice6', 'wav');   
+    } catch (e) {
+        console.log('cannot play the sound file', e)
+    }
+  }
+    
   const { dadoResult } = route.params;
 
   const navigateBack = () => {

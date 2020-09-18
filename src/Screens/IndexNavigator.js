@@ -4,6 +4,7 @@ import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-naviga
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Icon } from '@ui-kitten/components';
+import SoundPlayer from 'react-native-sound-player';
 import AsyncStorage from '@react-native-community/async-storage';
 import GameScreen from './GameScreen';
 import ProfileScreen from './ProfileScreen';
@@ -17,6 +18,7 @@ import searchScreen from './searchScreen'
 import GamerProfileScreen from './GamerProfileScreen';
 import RankingScreen from './RankingScreen';
 import FriendsScreen from './FriendsScreen';
+import SettingScreen from './SettingScreen';
 
 const TabNav = createBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -42,7 +44,6 @@ function getHeaderTitle(route) {
 
   }
 }
-
 
 
 function TabNavigator({ navigation, route }) {
@@ -131,6 +132,7 @@ function menuNavigator() {
       <MenuStack.Screen name="GamerProfile" component={GamerProfileScreen} />
       <MenuStack.Screen name="Ranking" component={RankingScreen} />
       <MenuStack.Screen name="Friends" component={FriendsScreen} />
+      <MenuStack.Screen name="Settings" component={SettingScreen} />
     </MenuStack.Navigator>
   )
 }
@@ -146,14 +148,39 @@ function loginNavigator() {
         // value previously stored
         setTokenLog(value);
       }
+      
+      const soundvalue = await AsyncStorage.getItem('sound');
+      if(soundvalue == null){
+        global.sounds = true;
+
+        try {
+          // play the file tone.mp3
+          SoundPlayer.playSoundFile('mincrixsong', 'mp3');      
+      
+        } catch (e) {
+          console.log('cannot play the sound file', e)
+        }
+        
+      }else{
+        global.sounds = false;
+      }
+
+      const vibsvalue = await AsyncStorage.getItem('vibs');
+      if(vibsvalue == null){
+        global.vibs = true;
+      }else{
+        global.vibs = false;
+      }
+
       console.log("eje: " + value)
     } catch (e) {
       // error reading value
       console.log('Mk1:' + error)
     }
-  }
+  }  
 
   getData();
+ 
 
   return (
     <NavigationContainer>

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Layout, Button, Card, Text, Modal, Icon, Divider } from '@ui-kitten/components';
-import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
+import { Button, Card, Text, Modal, } from '@ui-kitten/components';
+import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, ToastAndroid, AppState } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -8,6 +8,10 @@ import PushNotification from 'react-native-push-notification';
 import { useIsFocused } from '@react-navigation/native';
 import GetRetos from '../Managers/GetRetos';
 import { useNetInfo } from "@react-native-community/netinfo";
+import StarsAnimations from '../Resources/StarsAnimations';
+import BoxAnimations from '../Resources/BoxAnimations';
+import SoundPlayer from 'react-native-sound-player';
+
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -22,15 +26,15 @@ export default function GameScreen({ navigation }) {
 
   const net = useNetInfo().isConnected;
   const isFocused = useIsFocused();
-  
+
   //se trae el estado y la posicion del usuario
   const askUserState = async () => {
     try {
 
       const mail = await AsyncStorage.getItem('email');
 
-       
-        await fetch('https://mincrix.com/usergamestate/' + mail)
+
+      await fetch('https://mincrix.com/usergamestate/' + mail)
         .then((response) => response.json())
         .then((json) => {
 
@@ -39,19 +43,50 @@ export default function GameScreen({ navigation }) {
 
         })
         .catch((error) => console.log("err:  " + error))
-        
+
 
     } catch (er) {
       console.log(er);
     }
   }
-  
 
-  if (isFocused) { 
-    
-    if(net)
-    askUserState();
-  }
+
+  if (isFocused) {
+
+    if (net)
+      askUserState();
+          
+  } 
+
+  //para la reproducion de sonidos si la app esta en background
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+     
+        SoundPlayer.resume();      
+      
+      console.log("App has come to the foreground!");
+    } else {
+      SoundPlayer.pause();
+    }
+
+    appState.current = nextAppState;
+    console.log("AppState", appState.current);
+  };
+
+
 
   //almacenar el estado traido del backend
   const storeState = async (value) => {
@@ -129,7 +164,7 @@ export default function GameScreen({ navigation }) {
       scrollAnimation.current.addListener((animation) => {
         myScroll.current &&
           myScroll.current.scrollTo({
-            y: animation.value,           
+            y: animation.value,
             animated: false,
           })
       })
@@ -142,7 +177,7 @@ export default function GameScreen({ navigation }) {
       }).start();
 
       Animated.timing(moveAnim, {
-        toValue: {x:0, y:100 * Position},
+        toValue: { x: 0, y: 100 * Position },
         duration: 10000,
         useNativeDriver: true
       }).start();
@@ -154,7 +189,7 @@ export default function GameScreen({ navigation }) {
     }
   }
 
-  //mover ficha cuando se inicia el juego
+  //mover ficha cuando se inicia el juego EDITAAARRRRR
   const initPosition = async () => {
 
     const pos = await AsyncStorage.getItem('position');
@@ -168,7 +203,7 @@ export default function GameScreen({ navigation }) {
       scrollAnimation.current.addListener((animation) => {
         myScroll.current &&
           myScroll.current.scrollTo({
-            y: animation.value,           
+            y: animation.value,
             animated: false,
           })
       })
@@ -181,7 +216,7 @@ export default function GameScreen({ navigation }) {
       }).start();
 
       Animated.timing(moveAnim, {
-        toValue: {x:0, y:100 * Number(pos)},
+        toValue: { x: 0, y: 100 * Number(pos) },
         duration: 3000,
         useNativeDriver: true
       }).start();
@@ -202,7 +237,7 @@ export default function GameScreen({ navigation }) {
 
     if (estado == "1") {
 
-      if(net){
+      if (net) {
         setVisible(false);
         let number = getRandomInt(1, 7);
         Position = Number(Position) + number;
@@ -212,14 +247,14 @@ export default function GameScreen({ navigation }) {
         await AsyncStorage.setItem('position', Position.toString());
         updataUserState();
         moveFicha();
-      }else{
+      } else {
         showToastWithGravity();
       }
-     
+
 
     } else {
       setVisible(false);
-      setModalestado(true);      
+      setModalestado(true);
     }
 
   }
@@ -231,17 +266,17 @@ export default function GameScreen({ navigation }) {
 
       const mail = await AsyncStorage.getItem('email');
 
-      if(net){
+      if (net) {
 
         await fetch('https://mincrix.com/setusergamestate/' + mail + '/2')
-        .then((response) => response.json())
-        .then((json) => {
+          .then((response) => response.json())
+          .then((json) => {
 
-        })
-        .catch((error) => console.log("err:  " + error))
-      }else{
+          })
+          .catch((error) => console.log("err:  " + error))
+      } else {
         showToastWithGravity();
-      }      
+      }
 
     } catch (er) {
       console.log(er);
@@ -254,16 +289,16 @@ export default function GameScreen({ navigation }) {
 
       const mail = await AsyncStorage.getItem('email');
 
-      if(net){
+      if (net) {
         await fetch('https://mincrix.com/setuseposition/' + mail + '/' + value)
-        .then((response) => response.json())
-        .then((json) => {
+          .then((response) => response.json())
+          .then((json) => {
 
-        })
-        .catch((error) => console.log("err:  " + error))
-      } else{
+          })
+          .catch((error) => console.log("err:  " + error))
+      } else {
         showToastWithGravity()
-      }     
+      }
 
     } catch (er) {
       console.log(er);
@@ -280,7 +315,7 @@ export default function GameScreen({ navigation }) {
             visible={visible}
             backdropStyle={styles.backdrop}
             onBackdropPress={() => setVisible(false)}>
-            <Card disabled={true} footer={cardFooter}  status='success' >
+            <Card disabled={true} footer={cardFooter} status='success' >
               <GetRetos />
             </Card>
           </Modal>
@@ -291,7 +326,7 @@ export default function GameScreen({ navigation }) {
             onBackdropPress={() => setModalestado(false)}>
             <Card disabled={true} status='warning' style={styles.card}  >
               <Text category='h4'> ¡Espera! </Text>
-              <Text category='h6'>No puedes tirar el dado hasta que te aprueben este reto.</Text>              
+              <Text category='h6'>No puedes tirar el dado hasta que te aprueben este reto.</Text>
               <Button size='small' appearance='ghost' onPress={() => setModalestado(false)} >Ok</Button>
             </Card>
           </Modal>
@@ -308,113 +343,9 @@ export default function GameScreen({ navigation }) {
           </TouchableWithoutFeedback>
 
 
-          <Animatable.Image style={{ position: 'absolute', height: 5, width: 5, top: 150, right: 30 }} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={3000} >
-          </Animatable.Image>
+          <StarsAnimations />
 
-          <Animatable.Image style={{ position: 'absolute', height: 7, width: 7, top: 350, right: 60 }} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={4000} >
-          </Animatable.Image>
-
-          <Animatable.Image style={{ position: 'absolute', height: 6, width: 6, top: 450, left: 60 }} source={require('../assets/296.png')} animation="flash" iterationCount="infinite" delay={3000} duration={5000} >
-          </Animatable.Image>
-
-          <Animatable.View style={styles.salida} animation="flash" >
-            <Text style={styles.text} category='h4'>Inicio</Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 1</Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 2 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={5}>
-            <Text style={styles.text} category='h5'> 3 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 4 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 5 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 6 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 7</Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={5}>
-            <Text style={styles.text} category='h5'> 8 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 9 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 10 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={5}>
-            <Text style={styles.text} category='h5'> 11 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 12 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 13</Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 14 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 15 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={6}>
-            <Text style={styles.text} category='h5'> 16 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={5}>
-            <Text style={styles.text} category='h5'> 17 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 18 </Text>
-          </Animatable.View>
-          <Animatable.View style={styles.vPink} animation="pulse" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 19</Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlue} animation="shake" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 20 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vPurple} animation="tada" iterationCount={5}>
-            <Text style={styles.text} category='h5'> 21 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={4}>
-            <Text style={styles.text} category='h5'> 22 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vBlack} animation="wobble" iterationCount={5}>
-            <Text style={styles.text} category='h5'> 23 </Text>
-          </Animatable.View>
-
-          <Animatable.View style={styles.vOrange} animation="swing" iterationCount={3}>
-            <Text style={styles.text} category='h5'> 24 </Text>
-          </Animatable.View>
+          <BoxAnimations />
 
         </ImageBackground>
       </Animated.ScrollView>
@@ -431,93 +362,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-  card:{   
+  card: {
     margin: 1,
     alignItems: 'center',
-  }, 
+  },
   text: {
-    alignSelf: 'flex-start',    
-  },  
+    alignSelf: 'flex-start',
+  },
   image: {
     flex: 1,
     resizeMode: "cover",
     alignItems: 'center',
   },
-  salida: {
-    height: 100,
-    width: 200,
-    borderRadius: 20,
-    backgroundColor: '#000000',
-
-  },
-  vPink: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#ff6699',
-    borderColor: '#ffffff',
-
-    borderWidth: 6,
-    // right:100,     
-  },
-  vBlue: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#00ffff',
-    borderColor: '#ffffff',
-    borderWidth: 6,
-    //right:40,        
-  },
-  vPurple: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#9900ff',
-    borderColor: '#ffffff',
-    borderWidth: 6,
-    //left: 30,      
-  },
-  vRed: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#ff0000',
-    borderColor: '#ffffff',
-    borderWidth: 6,
-    //left: 30,      
-  },
-  vGreen: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#00ff00',
-    borderColor: '#ffffff',
-    borderWidth: 6,
-    //left: 100,      
-  },
-  vBlack: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#000000',
-    borderColor: '#ffffff',
-    borderWidth: 6,
-    //left: 100,      
-  },
-  vOrange: {
-    height: 100,
-    width: 100,
-    borderRadius: 20,
-    backgroundColor: '#F8750F',
-    borderColor: '#ffffff',
-    borderWidth: 6,
-    //left: 100,      
-  },
-  text: {
-    margin: 2,
-  },
-
   backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
