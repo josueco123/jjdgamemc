@@ -7,8 +7,7 @@ export default function FriendsScreen({ route, navigation }) {
 
     const [data, setData] = useState([]);
     const { email } = route.params;  
-    const net = useNetInfo().isConnected;      
-
+    
     useEffect(() => {
 
             fetch('http://mincrix.com/useramigos/' + email, {
@@ -44,7 +43,7 @@ export default function FriendsScreen({ route, navigation }) {
             <Avatar style={styles.avatar} size='medium' source={{ uri: item.avatar }} />
             <View>
                 <Text category='h6'> {item.name} </Text>
-                <Text category='s1'> {item.nickname}  </Text>
+                <Text category='s1'> {item.nickname} Nivel {item.position} </Text>
             </View>
         </TouchableOpacity>
     );

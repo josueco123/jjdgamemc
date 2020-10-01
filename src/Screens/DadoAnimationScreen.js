@@ -22,6 +22,15 @@ export default function DadoAnimationScreen({ route, navigation }) {
 
   const navigateBack = () => {
     //console.log(dadoResult);
+    if(global.sounds){
+    
+      try {
+        // play the file tone.mp3
+        SoundPlayer.playSoundFile('advance', 'wav');   
+      } catch (e) {
+          console.log('cannot play the sound file', e)
+      }
+    }
     navigation.goBack();
   };  
 

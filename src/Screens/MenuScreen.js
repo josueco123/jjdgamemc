@@ -92,10 +92,9 @@ export default function GameScreen({ navigation }) {
       <ImageBackground source={require('../assets/back.png')} style={styles.container}>
 
 
-        <Modal visible={modal}
-          backdropStyle={styles.backdrop}
+        <Modal visible={modal}          
           onBackdropPress={() => setModal(false)}>
-          <Card disabled={true} status='danger'>
+          <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¿Estas Seguro? </Text>
             <Text category='h6'>¿Deseas salir y cerrar sesión?</Text>
             <View style={styles.close}>
@@ -206,6 +205,22 @@ const styles = StyleSheet.create({
     padding: 25,
     paddingVertical: 8,
     marginVertical: 5,
+  },
+  card: {
+    margin: 5,
+    borderRadius: 20,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderTopColor: '#ff6699',
+    borderTopWidth: 3,
   },
   images: {
     width: 50,

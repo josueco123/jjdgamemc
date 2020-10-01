@@ -115,7 +115,7 @@ export default function ProfileScreen({ navigation }) {
           <Modal visible={modal}
             backdropStyle={styles.backdrop}
             onBackdropPress={() => setModal(false)}>
-            <Card disabled={true} status='danger'>
+            <Card disabled={true} style={styles.card}>
               <Text category='h4'> ¡Espera! </Text>
               <Text category='h6'>Todavía no puedes subir un reto.</Text>
               <Button size='small' appearance='ghost' onPress={() => setModal(false)} >Ok</Button>
@@ -143,8 +143,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   card: {
-    flex: 1,
-    margin: 2,
+    margin: 5,
+    borderRadius: 20,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderTopColor: '#ff6699',
+    borderTopWidth: 3,
   },
   layouretos: {
     justifyContent: 'center',

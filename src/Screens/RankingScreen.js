@@ -34,7 +34,7 @@ export default function RankingScreen({ navigation }) {
             </View>
             <Avatar style={styles.avatar} shape='square' size='medium' source={{ uri: item.avatar }} />
             <View>
-                <Text category='h6'> {item.name} Casilla {item.position} </Text>
+                <Text category='h6'> {item.name} Nivel {item.position} </Text>
                 <Text category='s1'> {item.nickname}  </Text>
             </View>
         </View>

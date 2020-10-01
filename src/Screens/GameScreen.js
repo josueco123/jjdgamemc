@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Card, Text, Modal, } from '@ui-kitten/components';
-import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, ToastAndroid, AppState } from 'react-native';
+import { Button, Card, Text, Divider, Icon, Modal } from '@ui-kitten/components';
+import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, Alert, ToastAndroid, AppState, BackHandler } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import LottieView from 'lottie-react-native';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
 import PushNotification from 'react-native-push-notification';
@@ -11,6 +12,7 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import StarsAnimations from '../Resources/StarsAnimations';
 import BoxAnimations from '../Resources/BoxAnimations';
 import SoundPlayer from 'react-native-sound-player';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 function getRandomInt(min, max) {
@@ -18,7 +20,6 @@ function getRandomInt(min, max) {
 }
 
 let Position;
-let lastPosition = 0;
 global.firstExecute = true;
 
 export default function GameScreen({ navigation }) {
@@ -26,6 +27,8 @@ export default function GameScreen({ navigation }) {
 
   const net = useNetInfo().isConnected;
   const isFocused = useIsFocused();
+
+  const [leave, setLeave] = useState(false);
 
   //se trae el estado y la posicion del usuario
   const askUserState = async () => {
@@ -38,9 +41,10 @@ export default function GameScreen({ navigation }) {
         .then((response) => response.json())
         .then((json) => {
 
-          storeState(json)
-          console.log("es: " + json.estado)
+          storeState(json);
 
+          //console.log("es: " + json.estado)
+          console.log("pos: " + json.position)
         })
         .catch((error) => console.log("err:  " + error))
 
@@ -55,13 +59,14 @@ export default function GameScreen({ navigation }) {
 
     if (net)
       askUserState();
-          
-  } 
+
+  }
 
   //para la reproducion de sonidos si la app esta en background
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
+
     AppState.addEventListener("change", _handleAppStateChange);
 
     return () => {
@@ -74,18 +79,14 @@ export default function GameScreen({ navigation }) {
       appState.current.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
-     
-        SoundPlayer.resume();      
-      
-      console.log("App has come to the foreground!");
+      SoundPlayer.resume();
+
     } else {
       SoundPlayer.pause();
     }
 
     appState.current = nextAppState;
-    console.log("AppState", appState.current);
   };
-
 
 
   //almacenar el estado traido del backend
@@ -138,6 +139,9 @@ export default function GameScreen({ navigation }) {
     );
   };
 
+  //los modals de la intro explicativa
+  const [intro1, setIntro1] = useState(false);
+
   //  el card que contiene los retos
   const [visible, setVisible] = useState(false);
   const [modalestado, setModalestado] = useState(false);
@@ -159,34 +163,29 @@ export default function GameScreen({ navigation }) {
   //mover la ficha a una posision determinada
   const moveFicha = () => {
 
-    if (lastPosition < Position) {
+    scrollAnimation.current.addListener((animation) => {
+      myScroll.current &&
+        myScroll.current.scrollTo({
+          y: animation.value,
+          animated: false,
+        })
+    })
 
-      scrollAnimation.current.addListener((animation) => {
-        myScroll.current &&
-          myScroll.current.scrollTo({
-            y: animation.value,
-            animated: false,
-          })
-      })
+    Animated.timing(scrollAnimation.current, {
+      toValue: 100 * Position,
+      duration: 10000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
 
-      Animated.timing(scrollAnimation.current, {
-        toValue: 100 * Position,
-        duration: 10000,
-        useNativeDriver: true,
-        easing: Easing.linear,
-      }).start();
+    Animated.timing(moveAnim, {
+      toValue: { x: 0, y: 100 * Position },
+      duration: 10000,
+      useNativeDriver: true
+    }).start();
 
-      Animated.timing(moveAnim, {
-        toValue: { x: 0, y: 100 * Position },
-        duration: 10000,
-        useNativeDriver: true
-      }).start();
 
-      console.log("last: " + lastPosition);
-      console.log("Posicion: " + Position);
-      lastPosition = Position;
-      updateUserPosition(Position);
-    }
+    updateUserPosition(Position);
   }
 
   //mover ficha cuando se inicia el juego EDITAAARRRRR
@@ -199,6 +198,12 @@ export default function GameScreen({ navigation }) {
     global.id = mail;
 
     if (global.firstExecute) {
+
+      if (Number(pos) != 0) {
+        setIntro1(false);
+      } else {
+        setIntro1(true);
+      }
 
       scrollAnimation.current.addListener((animation) => {
         myScroll.current &&
@@ -222,9 +227,9 @@ export default function GameScreen({ navigation }) {
       }).start();
 
       Position = Number(pos);
-      lastPosition = Number(pos);
-      console.log("execution test ");
+      console.log("test");
       global.firstExecute = false;
+
     }
   }
   initPosition();
@@ -234,23 +239,26 @@ export default function GameScreen({ navigation }) {
   const getUserState = async () => {
 
     const estado = await AsyncStorage.getItem('estado');
+    const pos = await AsyncStorage.getItem('position');
 
+    setVisible(false);  
+    setIntro1(false)  
     if (estado == "1") {
 
       if (net) {
-        setVisible(false);
+
         let number = getRandomInt(1, 7);
-        Position = Number(Position) + number;
+        Position = Number(pos) + number;
         console.log("Pos3: " + Position);
         navigation.navigate('DadoAnimation', { dadoResult: number });
         await AsyncStorage.setItem('estado', "2");
         await AsyncStorage.setItem('position', Position.toString());
+        global.pos = Position;
         updataUserState();
         moveFicha();
       } else {
         showToastWithGravity();
       }
-
 
     } else {
       setVisible(false);
@@ -305,6 +313,31 @@ export default function GameScreen({ navigation }) {
     }
   }
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        
+        setVisible(false);
+        setIntro1(false);
+        setLeave(true);
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
+
+  const arrowIcon = (props) => (
+    <Icon {...props} name='arrow-right' />
+  );
+
+  const closeApp = () =>{
+    BackHandler.exitApp();
+  }
+
   return (
     <>
       <Animated.ScrollView ref={myScroll}>
@@ -312,24 +345,61 @@ export default function GameScreen({ navigation }) {
         <ImageBackground source={require('../assets/back.png')} style={styles.image}>
 
           <Modal
-            visible={visible}
-            backdropStyle={styles.backdrop}
+            visible={visible}            
             onBackdropPress={() => setVisible(false)}>
-            <Card disabled={true} footer={cardFooter} status='success' >
-              <GetRetos />
-            </Card>
+            <View style={styles.centeredView}>
+              <Card disabled={true} footer={cardFooter} style={styles.card} >
+                <GetRetos />
+              </Card>
+            </View>
           </Modal>
 
           <Modal
             visible={modalestado}
-            backdropStyle={styles.backdrop}
             onBackdropPress={() => setModalestado(false)}>
-            <Card disabled={true} status='warning' style={styles.card}  >
-              <Text category='h4'> ¡Espera! </Text>
-              <Text category='h6'>No puedes tirar el dado hasta que te aprueben este reto.</Text>
-              <Button size='small' appearance='ghost' onPress={() => setModalestado(false)} >Ok</Button>
-            </Card>
+            <View style={styles.centeredView}>
+              <Card disabled={true} style={styles.card} >
+                <Text category='h4'> ¡Espera! </Text>
+                <Text category='h6'>No puedes tirar el dado hasta que te aprueben este reto.</Text>
+                <Button size='small' appearance='ghost' onPress={() => setModalestado(false)} >Ok</Button>
+              </Card>
+            </View>
           </Modal>
+
+          <Modal
+            visible={intro1}
+            onBackdropPress={() => setIntro1(true)}>
+            <View style={styles.centeredView}>
+              <Card disabled={true} style={styles.card}>
+                <Text category='h2'> Bienvenido a MINCRIX</Text>
+                <LottieView
+                  autoPlay={true}
+                  source={require('../animations/17252-colorful-confetti.json')}
+                  loop={true} />
+                <Divider />
+                <Text category='h6'>tatatatat .</Text>
+                <Text category='s2'>Nota: toca la ficha para ver el reto o tirar el dado.</Text>
+                <Button style={styles.button} appearance='ghost' accessoryLeft={arrowIcon} onPress={getUserState} >Tirar dado</Button>
+              </Card>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={leave}
+            onBackdropPress={() => setLeave(false)}>
+            <View style={styles.centeredView}>
+              <Card disabled={true} style={styles.card}>
+                <Text category='h2'> ¿Estas Seguro?</Text>                               
+                <Text category='h6'>¿Deseas salir del juego</Text>
+                <View style={styles.close}>
+                <Button size='medium' appearance='ghost' onPress={() => setLeave(false)} >No</Button>
+                <Button size='medium' appearance='ghost' onPress={closeApp} >Sí</Button>
+                </View>               
+                
+              </Card>
+            </View>
+          </Modal>
+
 
           <TouchableWithoutFeedback onPress={() => setVisible(true)}>
             <Animatable.View style={[
@@ -341,7 +411,6 @@ export default function GameScreen({ navigation }) {
 
             </Animatable.View>
           </TouchableWithoutFeedback>
-
 
           <StarsAnimations />
 
@@ -357,14 +426,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+
+  },
+  button: {
+    margin: 2,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
   },
   footerContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
   card: {
-    margin: 1,
-    alignItems: 'center',
+    margin: 5,
+    borderRadius: 20,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderTopColor: '#ff6699',
+    borderTopWidth: 3,
   },
   text: {
     alignSelf: 'flex-start',
@@ -373,6 +464,7 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "cover",
     alignItems: 'center',
+    justifyContent: 'center',
   },
   backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -395,5 +487,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 20,
     top: 20,
+  },
+  close: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
 });

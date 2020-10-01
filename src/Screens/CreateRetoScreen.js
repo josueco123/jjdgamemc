@@ -140,8 +140,8 @@ export default function CreateRetoScreen({ navigation }) {
 
         <Modal visible={modal1}
           backdropStyle={styles.backdrop}
-          onBackdropPress={() => setModal1(false)} status='danger'>
-          <Card disabled={true}>
+          onBackdropPress={() => setModal1(false)} >
+          <Card disabled={true} status='danger'>
             <Text category='h4'> ¡Hubo un error! </Text>
             <Text category='h6'> No pusiste nada en la descripcion del reto</Text>            
             <Button size='small' appearance='ghost' onPress={() => setModal1(false)} >Ok</Button>

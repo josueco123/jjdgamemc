@@ -170,9 +170,9 @@ function loginNavigator() {
         global.vibs = true;
       }else{
         global.vibs = false;
-      }
+      }      
 
-      console.log("eje: " + value)
+      //console.log("eje: " + value)
     } catch (e) {
       // error reading value
       console.log('Mk1:' + error)

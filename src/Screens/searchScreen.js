@@ -127,7 +127,7 @@ export default function searchScreen({ navigation }) {
             <Modal visible={modal}
                 backdropStyle={styles.backdrop}
                 onBackdropPress={() => setModal(false)}>
-                <Card disabled={true} status='danger'>
+                <Card disabled={true} style={styles.card}>
                     <Text category='h4' > ¡Espera!</Text>
                     <Text category='h6'>ve a la pestaña de perfil para ver el tuyo</Text>
                     <Button size='small' appearance='ghost' onPress={() => setModal(false)} >Ok</Button>
@@ -155,6 +155,22 @@ const styles = StyleSheet.create({
         height: 75,
         marginHorizontal: 3
     },
+    card: {
+        margin: 5,
+        borderRadius: 20,
+        backgroundColor: "#000000",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderTopColor: '#ff6699',
+        borderTopWidth: 3,
+      },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },

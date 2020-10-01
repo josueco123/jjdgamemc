@@ -45,7 +45,7 @@ export default class GetMyRetos extends Component {
                             <Text category='h3' status='primary'> {data.titulo}</Text>
                             <Divider />
                             <Text category='h5'>{data.descripcion}</Text>
-                            <Text category='s2'>no olvides tomar una foto y subirla a tu perfil</Text>
+                            <Text category='s2'>No olvides tomar una foto y subirla a tu perfil</Text>
                         </>
                     )}
             </>

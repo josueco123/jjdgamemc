@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, Image, ImageBackground, Vibration, View } from 'react-native';
+import { StyleSheet, Image, ImageBackground, Vibration, View, ToastAndroid } from 'react-native';
 import { Text, Button, Toggle, Modal, Card } from '@ui-kitten/components';
 import SoundPlayer from 'react-native-sound-player';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export default function SettingScreen({ navigation }) {
 
     const [sounds, setSounds] = useState(global.sounds);
     const [vibs, setVibs] = useState(global.vibs);    
     const [modal, setModal] = useState(false);
+    const [confirm, setConfirm] = useState(false);
+
+    const net = useNetInfo().isConnected;    
 
     const onCheckedSounds = async (isChecked) => {
         setSounds(isChecked);
@@ -37,15 +41,38 @@ export default function SettingScreen({ navigation }) {
 
         if(isChecked){
             Vibration.vibrate(1000);
-            await AsyncStorage.setItem('vibs', "1"); 
+            await AsyncStorage.removeItem('vibs');             
         }else{
-            await AsyncStorage.removeItem('vibs'); 
+            await AsyncStorage.setItem('vibs', "1"); 
         }
         
     }  
 
-    const restartLevel = () => {
+    const showToastWithGravity = () => {
+        ToastAndroid.showWithGravity(
+          "Has perdido la conexion a internet",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+      };
 
+    const restartLevel = async () => {
+
+        if (net) {
+
+            await fetch('https://mincrix.com/restartposition/' + global.id)
+              .then((response) => response.json())
+              .then((json) => {
+    
+              })
+              .catch((error) => console.log("err:  " + error))
+          } else {
+            showToastWithGravity();
+          }
+          await AsyncStorage.setItem('position', '0');
+          global.firstExecute = true;
+          setModal(false);  
+          setConfirm(true);        
     }
 
     return (
@@ -68,15 +95,25 @@ export default function SettingScreen({ navigation }) {
 
             <Button size='small' style={styles.button} onPress={() => setModal(true)}> Reiniciar Juego </Button>
 
-            <Modal visible={modal}
-                backdropStyle={styles.backdrop}
+            <Modal visible={modal}                
                 onBackdropPress={() => setModal(false)}>
-                <Card disabled={true} status='danger'>
+                <Card disabled={true} style={styles.card}>
                     <Text category='h4'> ¿Estas Seguro? </Text>
                     <Text category='h6'>¿Deseas perder tu avance en el juego y volver al inicio?</Text>
                     <View style={styles.close}>
                         <Button size='medium' appearance='ghost' onPress={() => setModal(false)} >No</Button>
                         <Button size='medium' appearance='ghost' onPress={restartLevel} >Sí</Button>
+                    </View>
+                </Card>
+            </Modal>
+
+            <Modal visible={confirm}                
+                onBackdropPress={() => setConfirm(false)}>
+                <Card disabled={true} style={styles.card}>
+                    <Text category='h4'> ¡Listo! </Text>
+                    <Text category='h6'> Has vuelto al inicio</Text>
+                    <View style={styles.close}>
+                        <Button size='medium' appearance='ghost' onPress={() => setConfirm(false)} >Ok</Button>                        
                     </View>
                 </Card>
             </Modal>
@@ -106,6 +143,23 @@ const styles = StyleSheet.create({
         borderTopColor: '#ff6699',
 
     },
+
+    card: {
+        margin: 5,
+        borderRadius: 20,
+        backgroundColor: "#000000",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderTopColor: '#ff6699',
+        borderTopWidth: 3,
+      },
 
     toggle: {
         margin: 15

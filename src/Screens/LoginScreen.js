@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ImageBackground, StyleSheet, Alert, BackHandler } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ImageBackground, StyleSheet, Alert, View, Linking } from 'react-native';
 import { Layout, Button, Icon, Modal, Card, Text, CheckBox } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-community/async-storage';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-community/google-signin';
@@ -18,6 +18,8 @@ export default function LoginScreen({ navigation }) {
   const [checked, setChecked] = useState(true);
   const [policy, setPolicy] = useState(false);
 
+  const policies = "https://mincrix.com/politicasdedatos";
+  const terms = "https://mincrix.com/terminosycondiciones";
 
 
   const startSession = async () => {
@@ -229,6 +231,23 @@ export default function LoginScreen({ navigation }) {
     <Icon name='facebook' {...props} />
   );
 
+  const OpenURLButton = ({ url, children }) => {
+    const handlePress = useCallback(async () => {
+      // Checking if the link is supported for links with custom URL scheme.
+      const supported = await Linking.canOpenURL(url);
+  
+      if (supported) {
+        // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+        // by some browser in the mobile
+        await Linking.openURL(url);
+      } else {
+        Alert.alert(`Don't know how to open this URL: ${url}`);
+      }
+    }, [url]);
+  
+    return <Button style={styles.policy} appearance='ghost' size='small' onPress={handlePress} > {children} </Button>;
+  };
+
   return (
 
     <ImageBackground source={require('../assets/inicio.png')} style={styles.image}>
@@ -244,13 +263,17 @@ export default function LoginScreen({ navigation }) {
         onChange={accepted}
         style={styles.check}
         status='primary'>
-        al acceder confirmas que aceptas nuestras condiciones y politicas de datos.
+        al acceder confirmas que aceptas nuestras condiciones y políticas de datos.
         </CheckBox>
 
+        <View style={styles.viewpoly}>
+        <OpenURLButton url={policies}>ver políticas</OpenURLButton>
+        <OpenURLButton url={terms}>ver terminos</OpenURLButton>
+        </View>
         <Modal visible={modal}
             backdropStyle={styles.backdrop}
             onBackdropPress={() => setModal(false)}>
-            <Card disabled={true} status='danger'>
+            <Card disabled={true} style={styles.card}>
               <Text category='h4'> ¡Espera! </Text>
               <Text category='h6'>No puedes entrar sin conexion internet</Text>
               <Button size='small' appearance='ghost' onPress={() => setModal(false)} >Ok</Button>
@@ -260,9 +283,9 @@ export default function LoginScreen({ navigation }) {
       <Modal visible={policy}
         backdropStyle={styles.backdrop}
         onBackdropPress={() => setPolicy(false)}>
-        <Card disabled={true} status='danger'>
+        <Card disabled={true} style={styles.card}>
           <Text category='h4'> ¡Espera! </Text>
-          <Text category='h6'>Debes aceptar nuestros terminos y politicas para continuar</Text>
+          <Text category='h6'>Debes aceptar nuestros terminos y políticas para continuar</Text>
           <Button size='small' appearance='ghost' onPress={() => setPolicy(false)} >Ok</Button>
         </Card>
       </Modal>
@@ -285,18 +308,42 @@ const styles = StyleSheet.create({
     borderColor: '#1877F2',
     width: 225,
     height: 38,
-    top: 100,
+    top: 80,
   },
   btnstaf: {
     width: 230,
     height: 48,
-    top: 120,
+    top: 100,
+  },
+  card: {
+    margin: 5,
+    borderRadius: 20,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderTopColor: '#ff6699',
+    borderTopWidth: 3,
   },
   backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   check: {
-    top: 160,
+    top: 150,
+  },
+  policy: {
+    top: 170,
+  },
+  viewpoly:{
+    flexDirection: 'row',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
   }
 });
 
