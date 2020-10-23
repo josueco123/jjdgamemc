@@ -165,7 +165,7 @@ export default function WelcomeScreen({ route, navigation }) {
     }  
 
     return (
-        <Layout style={styles.layout} level="2">
+        <Layout style={styles.layout} level="3">
             <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
                 <Text category='h3'>Bienvenido a Mincrix</Text>
             </View>

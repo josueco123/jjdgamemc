@@ -29,6 +29,11 @@ export default function GameScreen({ navigation }) {
   const isFocused = useIsFocused();
 
   const [leave, setLeave] = useState(false);
+  const [posit, setPosit] = useState(0);
+  const [bonus,setBonus] = useState(false);
+
+  const [modalb, setModalb] = useState(false);
+  const [modalb2, setModalb2] = useState(false);
 
   //se trae el estado y la posicion del usuario
   const askUserState = async () => {
@@ -149,12 +154,29 @@ export default function GameScreen({ navigation }) {
 
   const cardFooter = (props) => (
     <View {...props} style={[props.style, styles.footerContainer]}>
-      <Button size='small' onPress={getUserState}>
-        Tirar Dado
-        </Button>
 
+       {bonus ? (
+          <Button size='small' status='success' style={{marginRight: 20}} onPress={omitRetoTouch} >Omitir Reto</Button>
+       ):( <></>)}     
+      
+                  
+      {(posit == 3 || posit == 7) ? (
+        <Button size='small' onPress={changePosition} >
+          Avanzar
+        </Button>
+      ) : (
+          <Button size='small' onPress={getUserState}>
+            Tirar Dado
+          </Button>
+        )}
     </View>
   );
+
+  const omitRetoTouch = () =>{
+
+    setVisible(false);
+    setModalb(true);
+  }
 
   const moveAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const myScroll = useRef();
@@ -184,6 +206,8 @@ export default function GameScreen({ navigation }) {
       useNativeDriver: true
     }).start();
 
+    if(Position == 6)
+    setBonus(true);
 
     updateUserPosition(Position);
   }
@@ -227,6 +251,11 @@ export default function GameScreen({ navigation }) {
       }).start();
 
       Position = Number(pos);
+      setPosit(Position);
+
+      if(Position == 6)
+      setBonus(true);
+
       console.log("test");
       global.firstExecute = false;
 
@@ -234,6 +263,32 @@ export default function GameScreen({ navigation }) {
   }
   initPosition();
 
+  //castigo o premio de cambiar de posicion
+  const changePosition = async () => {
+    
+    setVisible(false);
+    if (net) {
+
+      switch(posit){
+        case 3:  Position = posit + 3;
+        break;
+
+        case 7: Position = posit - 3;
+        break;
+
+      }
+      
+      await AsyncStorage.setItem('estado', "2");
+      await AsyncStorage.setItem('position', Position.toString());
+      global.pos = Position;
+      setPosit(Position);
+      updataUserState("2");
+      moveFicha();
+
+    } else {
+      showToastWithGravity();
+    }
+  }
 
   //hacer el numero aletorio y mostrar el dado 
   const getUserState = async () => {
@@ -241,8 +296,10 @@ export default function GameScreen({ navigation }) {
     const estado = await AsyncStorage.getItem('estado');
     const pos = await AsyncStorage.getItem('position');
 
-    setVisible(false);  
-    setIntro1(false)  
+    setVisible(false);
+    setIntro1(false)
+
+    
     if (estado == "1") {
 
       if (net) {
@@ -254,7 +311,8 @@ export default function GameScreen({ navigation }) {
         await AsyncStorage.setItem('estado', "2");
         await AsyncStorage.setItem('position', Position.toString());
         global.pos = Position;
-        updataUserState();
+        setPosit(Position);
+        updataUserState("2");
         moveFicha();
       } else {
         showToastWithGravity();
@@ -268,7 +326,7 @@ export default function GameScreen({ navigation }) {
   }
 
   //actualizar el estado de jugador
-  const updataUserState = async () => {
+  const updataUserState = async (value) => {
 
     try {
 
@@ -276,7 +334,7 @@ export default function GameScreen({ navigation }) {
 
       if (net) {
 
-        await fetch('https://mincrix.com/setusergamestate/' + mail + '/2')
+        await fetch('https://mincrix.com/setusergamestate/' + mail + '/'+ value)
           .then((response) => response.json())
           .then((json) => {
 
@@ -313,10 +371,20 @@ export default function GameScreen({ navigation }) {
     }
   }
 
+  //omitir reto
+  const valeReto = () =>{
+
+    setModalb(false);
+    setBonus(false);
+    setModalb2(true);
+    updataUserState("1");
+  }
+
+  //backhandler
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        
+
         setVisible(false);
         setIntro1(false);
         setLeave(true);
@@ -330,22 +398,18 @@ export default function GameScreen({ navigation }) {
     }, [])
   );
 
-  const arrowIcon = (props) => (
-    <Icon {...props} name='arrow-right' />
-  );
-
-  const closeApp = () =>{
+  const closeApp = () => {
     BackHandler.exitApp();
   }
 
   return (
     <>
-      <Animated.ScrollView ref={myScroll}>
+      <Animated.ScrollView ref={myScroll} >
 
-        <ImageBackground source={require('../assets/back.png')} style={styles.image}>
+        <View style={styles.container}>
 
           <Modal
-            visible={visible}            
+            visible={visible}
             onBackdropPress={() => setVisible(false)}>
             <View style={styles.centeredView}>
               <Card disabled={true} footer={cardFooter} style={styles.card} >
@@ -377,9 +441,10 @@ export default function GameScreen({ navigation }) {
                   source={require('../animations/17252-colorful-confetti.json')}
                   loop={true} />
                 <Divider />
-                <Text category='h6'>tatatatat .</Text>
-                <Text category='s2'>Nota: toca la ficha para ver el reto o tirar el dado.</Text>
-                <Button style={styles.button} appearance='ghost' accessoryLeft={arrowIcon} onPress={getUserState} >Tirar dado</Button>
+                <Text category='h6'>Explicacion of purpus</Text>
+                <Divider />
+                <Text category='s2'>Nota: siempre toca tu ficha para ver el reto o tirar el dado.</Text>
+                <Button style={styles.button} appearance='ghost' onPress={() => setIntro1(false)} >Ok</Button>
               </Card>
             </View>
           </Modal>
@@ -389,17 +454,46 @@ export default function GameScreen({ navigation }) {
             onBackdropPress={() => setLeave(false)}>
             <View style={styles.centeredView}>
               <Card disabled={true} style={styles.card}>
-                <Text category='h2'> ¿Estas Seguro?</Text>                               
-                <Text category='h6'>¿Deseas salir del juego</Text>
+                <Text category='h2'> ¿Estas Seguro?</Text>
+                <Text category='h6'>¿Deseas salir del juego?</Text>
                 <View style={styles.close}>
-                <Button size='medium' appearance='ghost' onPress={() => setLeave(false)} >No</Button>
-                <Button size='medium' appearance='ghost' onPress={closeApp} >Sí</Button>
-                </View>               
-                
+                  <Button size='medium' appearance='ghost' onPress={() => setLeave(false)} >No</Button>
+                  <Button size='medium' appearance='ghost' onPress={closeApp} >Sí</Button>
+                </View>
+
               </Card>
             </View>
           </Modal>
 
+          
+          <Modal
+            visible={modalb}
+            onBackdropPress={() => setModalb(false)}>
+            <View style={styles.centeredView}>
+              <Card disabled={true} style={styles.card}>
+                <Text category='h2'> ¿Estas Seguro?</Text>
+                <Text category='h6'>¿Deseas utilizar tu vale y omitir este reto?</Text>
+                <View style={styles.close}>
+                  <Button size='medium' appearance='ghost' onPress={() => setModalb(false)} >No</Button>
+                  <Button size='medium' appearance='ghost' onPress={valeReto}>Sí</Button>
+                </View>
+
+              </Card>
+            </View>
+          </Modal>
+
+
+          <Modal
+            visible={modalb2}
+            onBackdropPress={() => setModalb2(false)}>
+            <View style={styles.centeredView}>
+              <Card disabled={true} style={styles.card}>
+                <Text category='h2'> Perfecto</Text>
+                <Text category='h6'>Ya puedes volver a tirar el dado</Text>                              
+                  <Button size='medium' appearance='ghost' onPress={() => setModalb2(false)}>ok</Button>                
+              </Card>
+            </View>
+          </Modal>
 
           <TouchableWithoutFeedback onPress={() => setVisible(true)}>
             <Animatable.View style={[
@@ -416,7 +510,7 @@ export default function GameScreen({ navigation }) {
 
           <BoxAnimations />
 
-        </ImageBackground>
+          </View>
       </Animated.ScrollView>
     </>
   );
@@ -425,8 +519,9 @@ export default function GameScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#170F36",
   },
   button: {
     margin: 2,
@@ -454,7 +549,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    borderTopColor: '#ff6699',
+    borderTopColor: '#00ff00',
     borderTopWidth: 3,
   },
   text: {

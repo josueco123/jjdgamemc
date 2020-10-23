@@ -15,6 +15,7 @@ export default function CreateRetoScreen({ navigation }) {
   const [btnavalible, setBtnavalible] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [modal2, setModal2] = useState(false);
+  const [modal3, setModal3] = useState(false);
 
   const [data, setData] = useState('');
   const net = useNetInfo().isConnected;
@@ -86,13 +87,7 @@ export default function CreateRetoScreen({ navigation }) {
           //alert(JSON.stringify(responseJson));
           console.log(responseJson);
 
-          Alert.alert(
-            "¡Excelente!",
-            "Gracias por enviarnos tu reto, espera un poco por nuestra aprobación",
-            [
-              { text: "OK", onPress: goToProfile }
-            ],
-            { cancelable: false });
+         setModal3(true);
 
         })
         .catch((err) => {
@@ -119,10 +114,10 @@ export default function CreateRetoScreen({ navigation }) {
   return (
 
     <ScrollView>
-      <Layout style={styles.layout} level="3">
+      <Layout style={styles.layout} level="4">
 
 
-        <Layout style={styles.layout} level="1">
+        <Layout style={styles.layout} level="4">
 
           <CameraMenu />
           <Input
@@ -141,7 +136,7 @@ export default function CreateRetoScreen({ navigation }) {
         <Modal visible={modal1}
           backdropStyle={styles.backdrop}
           onBackdropPress={() => setModal1(false)} >
-          <Card disabled={true} status='danger'>
+          <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¡Hubo un error! </Text>
             <Text category='h6'> No pusiste nada en la descripcion del reto</Text>            
             <Button size='small' appearance='ghost' onPress={() => setModal1(false)} >Ok</Button>
@@ -151,11 +146,22 @@ export default function CreateRetoScreen({ navigation }) {
         <Modal visible={modal2}
           backdropStyle={styles.backdrop}
           onBackdropPress={() => setModal2(false)}>
-          <Card disabled={true} status='danger'>
+          <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¡Hubo un error! </Text>
             <Text category='h6'> No subiste ninguna una imagen</Text>
            
             <Button size='small' appearance='ghost' onPress={() => setModal2(false)} >Ok</Button>
+          </Card>
+        </Modal>
+
+        <Modal visible={modal3}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setModal2(true)}>
+          <Card disabled={true} style={styles.card}>
+            <Text category='h4'> ¡Excelente!</Text>
+            <Text category='h6'> Gracias por enviarnos tu reto, espera un poco por nuestra aprobación</Text>
+           
+            <Button size='small' appearance='ghost' onPress={goToProfile} >Ok</Button>
           </Card>
         </Modal>
 
@@ -173,5 +179,21 @@ const styles = StyleSheet.create({
   },
   input: {
     width: 350,
-  }
+  },
+  card: {
+    margin: 5,
+    borderRadius: 20,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderTopColor: '#ff6699',
+    borderTopWidth: 3,
+  },
 })

@@ -6,7 +6,7 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 import { useNetInfo } from "@react-native-community/netinfo";
 
 
-export default function GameScreen({ navigation }) {
+export default function MenuScreen({ navigation }) {
 
   const [modal, setModal] = React.useState(false);
   const net = useNetInfo().isConnected;
@@ -105,7 +105,7 @@ export default function GameScreen({ navigation }) {
         </Modal>
 
         <Text category='h1'>MINCRIX</Text>
-        <Image source={require('../assets/image.png')} style={styles.images} />
+        <Image source={require('../assets/logop.png')} style={styles.images} />
         <Divider />
         <View style={styles.componets}>
           <TouchableOpacity style={styles.button} onPress={gotoFriends}>
@@ -125,7 +125,7 @@ export default function GameScreen({ navigation }) {
         </View>
 
         <View style={styles.componets2}>
-          <TouchableOpacity style={styles.button} >
+          <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('Instructions')} >
             <Icon style={styles.icon} fill='#ff6699' name='info-outline' />
             <Text category='h5'>Instrucciones</Text>
           </TouchableOpacity>
@@ -146,10 +146,6 @@ export default function GameScreen({ navigation }) {
             <Text category='h5'>Donaciones</Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.button} >            
-            <Text category='h5'>Blog</Text>
-          </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} >
           <Text category='h5'>Sobre MINCRIX</Text>

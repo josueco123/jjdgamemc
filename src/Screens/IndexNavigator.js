@@ -19,6 +19,7 @@ import GamerProfileScreen from './GamerProfileScreen';
 import RankingScreen from './RankingScreen';
 import FriendsScreen from './FriendsScreen';
 import SettingScreen from './SettingScreen';
+import InstructionsScreen from './InstructionsScreen';
 
 const TabNav = createBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -133,6 +134,7 @@ function menuNavigator() {
       <MenuStack.Screen name="Ranking" component={RankingScreen} />
       <MenuStack.Screen name="Friends" component={FriendsScreen} />
       <MenuStack.Screen name="Settings" component={SettingScreen} />
+      <MenuStack.Screen name="Instructions" component={InstructionsScreen} />
     </MenuStack.Navigator>
   )
 }

@@ -109,7 +109,7 @@ export default class CameraMenu extends Component {
         return (
 
             <>
-                <Layout style={styles.btncontainer} level="1">
+                <Layout style={styles.btncontainer} level="4">
                     <Button style={styles.button} accessoryLeft={CamIcon} appearance='ghost' onPress={this.launchCamera} > Tomar Foto</Button>
                     <Button style={styles.button} accessoryLeft={AdjIcon} appearance='ghost' onPress={this.launchImageLibrary}>Abrir Galeria</Button>
                 </Layout>
