@@ -60,7 +60,7 @@ export default function SettingScreen({ navigation }) {
 
         if (net) {
 
-            await fetch('https://mincrix.com/restartposition/' + global.id)
+            await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/restartposition/' + global.id)
               .then((response) => response.json())
               .then((json) => {
     

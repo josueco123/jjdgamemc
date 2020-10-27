@@ -10,7 +10,7 @@ export default function FriendsScreen({ route, navigation }) {
     
     useEffect(() => {
 
-            fetch('http://mincrix.com/useramigos/' + email, {
+            fetch('http://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/useramigos/' + email, {
             method: 'GET'
             })
             .then((response) => response.json())

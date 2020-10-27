@@ -17,7 +17,7 @@ export default function searchScreen({ navigation }) {
 
     useEffect(() => {
 
-        fetch('https://mincrix.com/getnicknamegamers', {
+        fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getnicknamegamers', {
             method: 'GET'
         })
             .then((response) => response.json())
@@ -45,7 +45,7 @@ export default function searchScreen({ navigation }) {
     const getUsers = () => {
 
         if (net) {
-            fetch('https://mincrix.com/getnicknamegamers', {
+            fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getnicknamegamers', {
                 method: 'GET'
             })
                 .then((response) => response.json())

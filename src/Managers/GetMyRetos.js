@@ -19,7 +19,7 @@ export default class GetMyRetos extends Component {
 
         try {
 
-            fetch('https://mincrix.com/useretosup/' + global.id)
+            fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/useretosup/' + global.id)
                 .then((response) => response.json())
                 .then((json) => {
                     this.setState({ data: json });

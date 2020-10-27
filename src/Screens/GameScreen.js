@@ -35,6 +35,8 @@ export default function GameScreen({ navigation }) {
   const [modalb, setModalb] = useState(false);
   const [modalb2, setModalb2] = useState(false);
 
+  const [completed, setCompleted] = useState(false);
+
   //se trae el estado y la posicion del usuario
   const askUserState = async () => {
     try {
@@ -42,14 +44,14 @@ export default function GameScreen({ navigation }) {
       const mail = await AsyncStorage.getItem('email');
 
 
-      await fetch('https://mincrix.com/usergamestate/' + mail)
+      await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/usergamestate/' + mail)
         .then((response) => response.json())
         .then((json) => {
 
           storeState(json);
 
           //console.log("es: " + json.estado)
-          console.log("pos: " + json.position)
+          //console.log("pos: " + json.position)
         })
         .catch((error) => console.log("err:  " + error))
 
@@ -109,8 +111,7 @@ export default function GameScreen({ navigation }) {
 
 
     useEffect(() => {
-      messaging().onMessage(async remoteMessage => {
-        console.log(JSON.stringify(remoteMessage))
+      messaging().onMessage(async remoteMessage => {        
 
         PushNotification.localNotification({
           /* Android Only Properties */
@@ -160,9 +161,9 @@ export default function GameScreen({ navigation }) {
        ):( <></>)}     
       
                   
-      {(posit == 3 || posit == 7) ? (
+      {(posit == 5 || posit == 10 || posit == 24 || posit == 35 || posit == 47 || posit == 87 || posit == 101 || posit == 124 || posit == 137) ? (
         <Button size='small' onPress={changePosition} >
-          Avanzar
+          Desplazarse
         </Button>
       ) : (
           <Button size='small' onPress={getUserState}>
@@ -185,29 +186,36 @@ export default function GameScreen({ navigation }) {
   //mover la ficha a una posision determinada
   const moveFicha = () => {
 
-    scrollAnimation.current.addListener((animation) => {
-      myScroll.current &&
-        myScroll.current.scrollTo({
-          y: animation.value,
-          animated: false,
-        })
-    })
 
-    Animated.timing(scrollAnimation.current, {
-      toValue: 100 * Position,
-      duration: 10000,
-      useNativeDriver: true,
-      easing: Easing.linear,
-    }).start();
+    if(posit <= 136){
+      scrollAnimation.current.addListener((animation) => {
+        myScroll.current &&
+          myScroll.current.scrollTo({
+            y: animation.value,
+            animated: false,
+          })
+      })
+  
+      Animated.timing(scrollAnimation.current, {
+        toValue: 100 * Position,
+        duration: 10000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }).start();  
 
+    }
+    
     Animated.timing(moveAnim, {
       toValue: { x: 0, y: 100 * Position },
       duration: 10000,
       useNativeDriver: true
     }).start();
 
-    if(Position == 6)
+    if(Position == 46)
     setBonus(true);
+
+    if(Position > 140)
+    setCompleted(true);
 
     updateUserPosition(Position);
   }
@@ -229,20 +237,25 @@ export default function GameScreen({ navigation }) {
         setIntro1(true);
       }
 
-      scrollAnimation.current.addListener((animation) => {
-        myScroll.current &&
-          myScroll.current.scrollTo({
-            y: animation.value,
-            animated: false,
-          })
-      })
+      if(Number(pos) <= 136 ){
 
-      Animated.timing(scrollAnimation.current, {
-        toValue: 100 * Number(pos),
-        duration: 3000,
-        useNativeDriver: true,
-        easing: Easing.linear,
-      }).start();
+        scrollAnimation.current.addListener((animation) => {
+          myScroll.current &&
+            myScroll.current.scrollTo({
+              y: animation.value,
+              animated: false,
+            })
+        })
+  
+        Animated.timing(scrollAnimation.current, {
+          toValue: 100 * Number(pos),
+          duration: 3000,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        }).start();
+
+      }
+      
 
       Animated.timing(moveAnim, {
         toValue: { x: 0, y: 100 * Number(pos) },
@@ -253,10 +266,12 @@ export default function GameScreen({ navigation }) {
       Position = Number(pos);
       setPosit(Position);
 
-      if(Position == 6)
+      if(Position == 46)
       setBonus(true);
 
-      console.log("test");
+      if(Position > 140)
+      setCompleted(true);
+            
       global.firstExecute = false;
 
     }
@@ -270,10 +285,31 @@ export default function GameScreen({ navigation }) {
     if (net) {
 
       switch(posit){
-        case 3:  Position = posit + 3;
+        case 5:  Position = posit + 3;
         break;
 
-        case 7: Position = posit - 3;
+        case 10: Position = posit - 2;
+        break;
+
+        case 24: Position = posit + 6;
+        break;
+
+        case 35: Position = posit - 15;
+        break;
+
+        case 47: Position = posit - 12;
+        break;
+
+        case 87: Position = posit + 14;
+        break;
+
+        case 101: Position = posit + 2;
+        break;
+
+        case 124: Position = posit - 7;
+        break;
+
+        case 137: Position = posit - 39;
         break;
 
       }
@@ -307,13 +343,16 @@ export default function GameScreen({ navigation }) {
         let number = getRandomInt(1, 7);
         Position = Number(pos) + number;
         console.log("Pos3: " + Position);
-        navigation.navigate('DadoAnimation', { dadoResult: number });
-        await AsyncStorage.setItem('estado', "2");
+        navigation.navigate('DadoAnimation', { dadoResult: number });        
         await AsyncStorage.setItem('position', Position.toString());
         global.pos = Position;
         setPosit(Position);
-        updataUserState("2");
+        if(Position != 46 || Position != 61){
+          updataUserState("2");
+          await AsyncStorage.setItem('estado', "2");
+        }        
         moveFicha();
+
       } else {
         showToastWithGravity();
       }
@@ -334,7 +373,7 @@ export default function GameScreen({ navigation }) {
 
       if (net) {
 
-        await fetch('https://mincrix.com/setusergamestate/' + mail + '/'+ value)
+        await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/setusergamestate/' + mail + '/'+ value)
           .then((response) => response.json())
           .then((json) => {
 
@@ -356,7 +395,7 @@ export default function GameScreen({ navigation }) {
       const mail = await AsyncStorage.getItem('email');
 
       if (net) {
-        await fetch('https://mincrix.com/setuseposition/' + mail + '/' + value)
+        await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/setuseposition/' + mail + '/' + value)
           .then((response) => response.json())
           .then((json) => {
 
@@ -441,7 +480,7 @@ export default function GameScreen({ navigation }) {
                   source={require('../animations/17252-colorful-confetti.json')}
                   loop={true} />
                 <Divider />
-                <Text category='h6'>Explicacion of purpus</Text>
+                <Text category='h6'>Explora tus dones, descubre tu llamado y encuentra tu ministerio mientras juegas y haces estos retos.</Text>
                 <Divider />
                 <Text category='s2'>Nota: siempre toca tu ficha para ver el reto o tirar el dado.</Text>
                 <Button style={styles.button} appearance='ghost' onPress={() => setIntro1(false)} >Ok</Button>
@@ -491,6 +530,22 @@ export default function GameScreen({ navigation }) {
                 <Text category='h2'> Perfecto</Text>
                 <Text category='h6'>Ya puedes volver a tirar el dado</Text>                              
                   <Button size='medium' appearance='ghost' onPress={() => setModalb2(false)}>ok</Button>                
+              </Card>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={completed}
+            onBackdropPress={() => setCompleted(false)}>
+            <View style={styles.centeredView}>
+              <Card disabled={true} style={styles.card}>
+              <LottieView
+                  autoPlay={true}
+                  source={require('../animations/17252-colorful-confetti.json')}
+                  loop={true} />
+                <Text category='h2'> Felicitaciones</Text>
+                <Text category='s1'>Has completado todos los retos que te tocaron, esperamos que hayas tenido una buena experiencia con el juego, pronto volvermos con más retos</Text>                              
+                  <Button size='medium' appearance='ghost' onPress={() => setCompleted(false)}>ok</Button>                
               </Card>
             </View>
           </Modal>
@@ -549,7 +604,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    borderTopColor: '#00ff00',
+    borderTopColor: '#ff6699',
     borderTopWidth: 3,
   },
   text: {

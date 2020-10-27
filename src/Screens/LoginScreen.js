@@ -47,12 +47,12 @@ export default function LoginScreen({ navigation }) {
   
                     //Busqueda del usuario en la base de Datos
   
-                    await fetch('https://www.mincrix.com/userbyemail/' + result.email.toString(), {
+                    await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/userbyemail/' + result.email.toString(), {
                       method: 'GET'
                     })
                       .then((response) => response.json())
                       .then((responseJson) => {
-                        console.log(responseJson);
+                        //console.log(responseJson);
   
                         if (responseJson == null) {
   
@@ -106,7 +106,7 @@ export default function LoginScreen({ navigation }) {
       const fcmtoken = await AsyncStorage.getItem('tokenfcm');
       const email = await AsyncStorage.getItem('email');
 
-      await fetch('https://www.mincrix.com/savereuserfcmtoken', {
+      await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/savereuserfcmtoken', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -120,7 +120,7 @@ export default function LoginScreen({ navigation }) {
         //If response is in json then in success
         .then((responseJson) => {
           //alert(JSON.stringify(responseJson));
-          console.log(responseJson);
+          //console.log(responseJson);
         })
         //If response is not in json then in error
         .catch((error) => {
@@ -146,7 +146,7 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem('email', value.email)
       await AsyncStorage.setItem('avatar', value.avatar)
       await AsyncStorage.setItem('nickname', value.nickname)
-      await AsyncStorage.setItem('position', value.position)
+      await AsyncStorage.setItem('position', value.position.toString())
       await AsyncStorage.setItem('estado', value.estado)
 
       global.id = value.email;
@@ -172,12 +172,12 @@ export default function LoginScreen({ navigation }) {
           //console.log(JSON.stringify(userInfo));
   
           //Busqueda del usuario en la base de Datos
-          await fetch('https://www.mincrix.com/userbyemail/' + userInfo.user.email.toString(), {
+          await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/userbyemail/' + userInfo.user.email.toString(), {
             method: 'GET'
           })
             .then((response) => response.json())
             .then((responseJson) => {
-              console.log(responseJson);
+              //console.log(responseJson);
   
               if (responseJson == null) {
   

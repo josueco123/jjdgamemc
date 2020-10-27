@@ -1,26 +1,27 @@
 import React from 'react';
 import { StyleSheet,Image, View } from 'react-native';
 import { Text } from '@ui-kitten/components';
+import * as Animatable from 'react-native-animatable';
 
 export default function BoxAnimations() {
 
     return (
         <>
-            <View style={styles.salida}  >
+            <Animatable.View style={styles.salida}  animation="rubberBand" iterationCount={3} >
                 <Text style={styles.text} category='h4'>Inicio</Text>
-            </View>
+            </Animatable.View>
 
-            <View style={styles.vOrange} >
+            <Animatable.View style={styles.vOrange} animation="shake" iterationCount={3} >
                 <Text style={styles.text} category='h5'> 1</Text>
-            </View>
+            </Animatable.View>
 
-            <View style={styles.vGreen} >
+            <Animatable.View style={styles.vGreen} animation="bounce" iterationCount={3} >
                 <Text style={styles.text} category='h5'> 2 </Text>
-            </View>
+            </Animatable.View>
 
-            <View style={styles.vPurple}>
+            <Animatable.View style={styles.vPurple} animation="tada" iterationCount={3}  >
                 <Text style={styles.text} category='h5'> 3 </Text>
-            </View>
+            </Animatable.View>
 
             <View style={styles.vRed}>
                 <Text style={styles.text} category='h5'> 4 </Text>
@@ -589,6 +590,10 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlue}>
                 <Text style={styles.text} category='h5'> 140 </Text>
+            </View>
+
+            <View style={styles.salida}  >
+                <Text style={styles.text} category='h4'>Fin</Text>
             </View>
                      
         </>

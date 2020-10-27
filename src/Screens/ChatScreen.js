@@ -132,7 +132,7 @@ export default function ChatScreen({ navigation }) {
   const getChatMsg = () => {
 
     if (net) {
-      fetch('https://mincrix.com/messgesfromchat', {
+      fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/messgesfromchat', {
         method: 'GET'
       })
         .then((response) => response.json())
@@ -154,8 +154,7 @@ export default function ChatScreen({ navigation }) {
             ))
 
             index++;
-          }
-          console.log(index);
+          }          
         }).catch((error) => {
           console.error(error);
         }).finally(() => {
@@ -177,7 +176,7 @@ export default function ChatScreen({ navigation }) {
     const msg = messages[0].text;
 
     if (net) {
-      await fetch('https://www.mincrix.com/savemessgesforchat', {
+      await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/savemessgesforchat', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -190,8 +189,7 @@ export default function ChatScreen({ navigation }) {
       }).then((response) => response.json())
         //If response is in json then in success
         .then((responseJson) => {
-          //alert(JSON.stringify(responseJson));
-          console.log(responseJson);
+          //alert(JSON.stringify(responseJson));          
         })
         //If response is not in json then in error
         .catch((error) => {

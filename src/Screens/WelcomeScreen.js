@@ -38,7 +38,7 @@ export default function WelcomeScreen({ route, navigation }) {
         } else {
 
             if(net){
-                await fetch('https://mincrix.com/getallnicknames', {
+                await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getallnicknames', {
                 method: 'GET'
             })
                 .then((response) => response.json())
@@ -50,7 +50,7 @@ export default function WelcomeScreen({ route, navigation }) {
                         if (responseJson[i].nickname == nickname) {
                             exist = true;
                         }
-                        console.log(responseJson[i].nickname);
+                        //console.log(responseJson[i].nickname);
                     }
 
 
@@ -69,7 +69,7 @@ export default function WelcomeScreen({ route, navigation }) {
 
                 try {
                     if(net){
-                        await fetch('https://www.mincrix.com/savenewuser', {
+                        await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/savenewuser', {
                             method: 'POST',
                             headers: {
                                 Accept: 'application/json',
@@ -85,7 +85,7 @@ export default function WelcomeScreen({ route, navigation }) {
                             //If response is in json then in success
                             .then((responseJson) => {
                                 //alert(JSON.stringify(responseJson));
-                                console.log(responseJson);
+                                //console.log(responseJson);
     
     
                             })

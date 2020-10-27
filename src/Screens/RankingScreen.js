@@ -9,7 +9,7 @@ export default function RankingScreen({ navigation }) {
 
     useEffect(() => {       
 
-            fetch('https://mincrix.com/getrankiengamers', {
+            fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23k/getrankiengamers', {
                 method: 'GET'
             })
                 .then((response) => response.json())

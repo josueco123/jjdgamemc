@@ -25,7 +25,7 @@ export default function InstructionsScreen({ navigation }) {
                     <View style={styles.inside}>
                         <Animatable.View style={styles.vGreen} animation="tada" iterationCount={2}>
                         </Animatable.View>
-                        <Text category='s1'> Las casillas verdes son los retos grupales, los cuales deberas realizarlos con otros Gamers de MINCRIX</Text>
+                        <Text category='s1'> Las casillas verdes son los retos grupales, los cuales deberas realizarlos con otros jugadores de MINCRIX</Text>
                     </View>
                     <View style={styles.inside}>
                         <Animatable.View style={styles.vBlue} animation="swing" iterationCount={2}>

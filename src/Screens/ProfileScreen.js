@@ -49,7 +49,7 @@ export default function ProfileScreen({ navigation }) {
     getData();
 
     if(net){
-      fetch('https://mincrix.com/getfriendsmail/' + global.id, {
+      fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getfriendsmail/' + global.id, {
         method: 'GET'
       })
         .then((response) => response.json())

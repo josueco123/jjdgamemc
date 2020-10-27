@@ -63,7 +63,7 @@ export default function GamerProfileScreen({ route, navigation }) {
         setIsloading(false);
       });
 
-    fetch('https://mincrix.com/getfriendship/' + email + '/' + nickname, {
+    fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getfriendship/' + email + '/' + nickname, {
       method: 'GET'
     })
       .then((response) => response.json())
@@ -99,7 +99,7 @@ export default function GamerProfileScreen({ route, navigation }) {
 
       if(net){
 
-        await fetch('https://www.mincrix.com/requestfriendship', {
+        await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/requestfriendship', {
         method: 'POST',
         headers: {
           Accept: 'application/json',

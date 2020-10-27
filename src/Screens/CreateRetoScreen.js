@@ -73,7 +73,7 @@ export default function CreateRetoScreen({ navigation }) {
       setBtnavalible(true);
 
       if(net){
-        await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/saveretouser', {
+        await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/saveretouser', {
         'Content-Type': 'multipart/form-data',
       }, [
         // custom content type

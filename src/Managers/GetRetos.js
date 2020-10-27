@@ -18,7 +18,7 @@ export default class GetMyRetos extends Component {
 
         try {
 
-            fetch('https://mincrix.com/showreto/' + global.pos)
+            fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/showreto/' + global.pos)
                 .then((response) => response.json())
                 .then((json) => {
                     this.setState({ data: json });
@@ -42,7 +42,7 @@ export default class GetMyRetos extends Component {
                     <Spinner />
                 ) : (
                         <>
-                            <Text category='h3' status='primary'> {data.titulo}</Text>
+                            <Text category='h3'> {data.titulo}</Text>
                             <Divider />
                             <Text category='h5'>{data.descripcion}</Text>
                             <Text category='s2'>No olvides tomar una foto y subirla a tu perfil</Text>

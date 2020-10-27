@@ -23,7 +23,7 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('Message handled in the background!', JSON.stringify(remoteMessage));
+  //console.log('Message handled in the background!', JSON.stringify(remoteMessage));
   Vibration.vibrate(1000);   
 });
 
@@ -50,7 +50,7 @@ export default class App extends Component {
 
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: async function (token) {
-        console.log('TOKEN:', token);
+        //console.log('TOKEN:', token);
 
         try {
           await AsyncStorage.setItem('tokenfcm', token.token);         
@@ -61,7 +61,7 @@ export default class App extends Component {
 
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
-        console.log('NOTIFICATION:', notification);
+        //console.log('NOTIFICATION:', notification);
         // process the notification
       },
 
