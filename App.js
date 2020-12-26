@@ -53,7 +53,7 @@ export default class App extends Component {
         //console.log('TOKEN:', token);
 
         try {
-          await AsyncStorage.setItem('tokenfcm', token.token);         
+          await AsyncStorage.setItem('tokenfcm', token.token);               
         } catch (error) {
           console.log('msj ' + error)
         }

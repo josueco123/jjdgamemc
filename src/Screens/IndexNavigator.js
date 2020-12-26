@@ -20,12 +20,18 @@ import RankingScreen from './RankingScreen';
 import FriendsScreen from './FriendsScreen';
 import SettingScreen from './SettingScreen';
 import InstructionsScreen from './InstructionsScreen';
+import AboutUsScreen from './AboutUsScreen';
+import MoreGamesScreen from './MoreGamesScreen';
+import NewRetosScreen from './NewRetosScreen';
+import AmigoScreen from './AmigoScreen';
+import TutorialScreen from './TutorialScreen';
 
 const TabNav = createBottomTabNavigator();
 const LoginStack = createStackNavigator();
 const GameStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const MenuStack = createStackNavigator();
+const FriendStack = createStackNavigator();
 
 function getHeaderTitle(route) {
   // If the focused route is not found, we need to assume it's the initial screen
@@ -37,9 +43,11 @@ function getHeaderTitle(route) {
     case 'Game':
       return 'Juego';
     case 'Profile':
-      return 'profile';
-    case 'Chat':
-      return 'Chat';
+      return 'Profile';
+      case 'NewRetos':
+      return 'NewRetos';
+    case 'Friends':
+      return 'Friends';
     case 'Menu':
       return 'Menu';
 
@@ -65,17 +73,19 @@ function TabNavigator({ navigation, route }) {
           } else if (route.name === 'Profile') {
 
             iconName = focused ? 'person' : 'person-outline';
-          } else if (route.name === 'Chat') {
+          } else if (route.name === 'Friends') {
 
-            iconName = focused ? 'message-circle' : 'message-circle-outline';
+            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Menu') {
             iconName = focused ? 'menu' : 'menu-outline';
+          } else if(route.name === 'NewRetos'){
+            iconName = focused ? 'tv' : 'tv-outline';
           }
 
 
           // You can return any component that you like here!
           return <Icon name={iconName} size={size} color={color}
-            style={{ width: 32, height: 32, }} fill='#ff6699' />;
+            style={{ width: 30, height: 30, }} fill='#ff6699' />;
         },
       })}
       tabBarOptions={{
@@ -94,8 +104,13 @@ function TabNavigator({ navigation, route }) {
       }}
 
       />
-      <TabNav.Screen name='Chat' component={ChatScreen} options={{
-        tabBarLabel: 'Chat',
+       <TabNav.Screen name='NewRetos' component={NewRetosScreen} options={{
+        tabBarLabel: 'Retos',
+      }}
+
+      />
+      <TabNav.Screen name='Friends' component={friendsNavigator} options={{
+        tabBarLabel: 'Amigos',
       }}
       />
       <TabNav.Screen name='Menu' component={menuNavigator}
@@ -109,7 +124,7 @@ function gameNavigator() {
   return (
     <GameStack.Navigator headerMode="none" >
       <GameStack.Screen name='Game' component={GameScreen} />
-      <GameStack.Screen name="DadoAnimation" component={DadoAnimationScreen} />
+      <GameStack.Screen name="DadoAnimation" component={DadoAnimationScreen} />      
     </GameStack.Navigator>
   )
 }
@@ -117,11 +132,19 @@ function gameNavigator() {
 function profileNavigator() {
   return (
     <ProfileStack.Navigator headerMode="none" >
-      <ProfileStack.Screen name='Profile' component={ProfileScreen}
-      />
-      <ProfileStack.Screen name='CreateReto' component={CreateRetoScreen}
-      />
+      <ProfileStack.Screen name='Profile' component={ProfileScreen}  />
+      <ProfileStack.Screen name='CreateReto' component={CreateRetoScreen}  />
     </ProfileStack.Navigator>
+  )
+}
+
+function friendsNavigator() {
+  return (
+    <FriendStack.Navigator headerMode="none" >
+      <FriendStack.Screen name='Friends' component={AmigoScreen} />
+      <FriendStack.Screen name="GamerProfile" component={GamerProfileScreen} />
+      <FriendStack.Screen name="Buscar" component={searchScreen}  />      
+    </FriendStack.Navigator>
   )
 }
 
@@ -132,9 +155,11 @@ function menuNavigator() {
       <MenuStack.Screen name="Buscar" component={searchScreen} />
       <MenuStack.Screen name="GamerProfile" component={GamerProfileScreen} />
       <MenuStack.Screen name="Ranking" component={RankingScreen} />
-      <MenuStack.Screen name="Friends" component={FriendsScreen} />
+      <MenuStack.Screen name="Chat" component={ChatScreen} />
       <MenuStack.Screen name="Settings" component={SettingScreen} />
       <MenuStack.Screen name="Instructions" component={InstructionsScreen} />
+      <MenuStack.Screen name="AboutUs" component={AboutUsScreen} />
+      <MenuStack.Screen name="MoreGames" component={MoreGamesScreen} />      
     </MenuStack.Navigator>
   )
 }
@@ -202,10 +227,12 @@ function loginNavigator() {
             />
             <LoginStack.Screen name='Welcome' component={WelcomeScreen} />
             <LoginStack.Screen name='Game' component={TabNavigator} />
+            <LoginStack.Screen name='Tutorial' component={TutorialScreen} />
           </LoginStack.Navigator>
         ) : (
             <LoginStack.Navigator headerMode="none" >
               <LoginStack.Screen name='Game' component={TabNavigator} />
+              <LoginStack.Screen name='Tutorial' component={TutorialScreen} />
             </LoginStack.Navigator>
           )}      
     </NavigationContainer>

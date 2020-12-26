@@ -1,30 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Image, ImageBackground, FlatList, View, ToastAndroid } from 'react-native';
-import { List, Text, ListItem, Divider, Avatar } from '@ui-kitten/components';
+import { Text, Avatar } from '@ui-kitten/components';
 
-export default function RankingScreen({ navigation }) {
+export default function RankingScreen({ route, navigation }) {
 
-    const [data, setData] = useState([]);
-   
+    const [gamers, setGamers] = useState([]);
+    const [puesto, setPuesto] = useState([]);
+    const { email } = route.params;
 
-    useEffect(() => {       
 
-            fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23k/getrankiengamers', {
-                method: 'GET'
+    useEffect(() => {
+
+        fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23k/getrankiengamers', {
+            method: 'GET'
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                //console.log(responseJson);
+
+                setGamers(responseJson);
+
+            }).catch((error) => {
+                console.error(error);
+            });
+
+        fetch('https://mincrix.com/las%C3%B1jpoaw4rqwlur4orijqkwj%C3%B1kejrq939rk3jr3irlkaj4oir23/globalpos/' + email, {
+            method: 'GET'
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                //console.log(responseJson);
+
+                setPuesto(responseJson);
+
+            }).catch((error) => {
+                console.error(error);
             })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    //console.log(responseJson);
-
-                    setData(responseJson);
-
-                }).catch((error) => {
-                    console.error(error);
-                });       
 
     }, []);
-
-    
 
     const renderItem = ({ item, index }) => (
 
@@ -40,19 +53,17 @@ export default function RankingScreen({ navigation }) {
         </View>
     );
 
-    const listHeader = () => (
-        <View styles={styles.header}>
-
-        </View>
-    );
-
     return (
-        <ImageBackground source={require('../assets/back.png')} style={styles.container} >
+        <ImageBackground source={require('./imgs/back.png')} style={styles.container} >
             <Text category='h1'>RANKING</Text>
-            <Image source={require('../assets/trophy-153.png')} style={styles.images} />
+            <Image source={require('./imgs/trophy-153.png')} style={styles.images} />
+            <View style={styles.init}> 
+                <Text category='h6'> Tú puesto es el {puesto} </Text>                
+            </View>
+            <Text category='h3' >Los 20 primeros</Text>
             <FlatList
                 style={styles.list}
-                data={data}
+                data={gamers}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
             />
@@ -68,7 +79,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         alignContent: 'center',
-
     },
     images: {
         width: 50,
@@ -77,7 +87,6 @@ const styles = StyleSheet.create({
     },
     list: {
         alignSelf: 'center',
-
     },
     number: {
         alignItems: 'center',
@@ -92,6 +101,11 @@ const styles = StyleSheet.create({
     avatar: {
         borderColor: '#ffffff',
         borderWidth: 2,
+    },
+    init:{
+        borderBottomWidth: 4,
+        borderBottomColor: '#ff6699',
+        margin: 10,
     },
 
 })

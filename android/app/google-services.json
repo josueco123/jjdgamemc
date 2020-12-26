@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "503884796565-4poljb0t1oq99kdaji1647ljc9bv7lhc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mincrix",
+            "certificate_hash": "c63ea5b840f6941d0a514e677df9c930c0954d81"
+          }
+        },
+        {
+          "client_id": "503884796565-rdgt4j86omekiheqk27gsl36p5ifc3bi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mincrix",
+            "certificate_hash": "d662c003f31498796fe9244adb3d594d6ea8fe07"
+          }
+        },
+        {
           "client_id": "503884796565-vs29u6mk2f6tbueq5jtrsukv3b7aiaqv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

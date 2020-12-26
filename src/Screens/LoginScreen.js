@@ -106,7 +106,7 @@ export default function LoginScreen({ navigation }) {
       const fcmtoken = await AsyncStorage.getItem('tokenfcm');
       const email = await AsyncStorage.getItem('email');
 
-      await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/savereuserfcmtoken', {
+      await fetch('https://www.mincrix.com/lasjpoaw4rqwlur4orijqkwjkejrq939rk3jr3irlkaj4oir23/savereuserfcmtoken', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -250,7 +250,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
 
-    <ImageBackground source={require('../assets/inicio.png')} style={styles.image}>
+    <ImageBackground source={require('./imgs/inicio.png')} style={styles.image}>
       <Button onPress={startSession} style={styles.btnfb} accessoryLeft={FacebookIcon}>Acceder con Facebook</Button>
       <GoogleSigninButton
         style={styles.btnstaf}

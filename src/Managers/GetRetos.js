@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { List, Text, Spinner, Divider, Card, Layout, Button, Icon, } from '@ui-kitten/components';
-import { StyleSheet, View, Image } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { Text, Spinner, Divider } from '@ui-kitten/components';
 
 export default class GetMyRetos extends Component {
 

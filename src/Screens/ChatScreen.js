@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Text, Button, Icon, Spinner } from '@ui-kitten/components';
-import { GiftedChat, Bubble, Send, Time, Day } from 'react-native-gifted-chat';
+import { Layout, Text, Button, Icon } from '@ui-kitten/components';
+import { GiftedChat, Bubble, Send, Day } from 'react-native-gifted-chat';
 import { View, StyleSheet, ImageBackground, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import LottieView from 'lottie-react-native';
@@ -33,8 +33,7 @@ export default function ChatScreen({ navigation }) {
         const valueanickname = await AsyncStorage.getItem('nickname')
         if (valueanickname !== null) {
           // value previously stored
-          setNickname(valueanickname);
-          console.log('eeje');
+          setNickname(valueanickname);          
         }
         const valueaid = await AsyncStorage.getItem('email')
         if (valueaid !== null) {
@@ -176,7 +175,7 @@ export default function ChatScreen({ navigation }) {
     const msg = messages[0].text;
 
     if (net) {
-      await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/savemessgesforchat', {
+      await fetch('https://www.mincrix.com/lasjpoaw4rqwlur4orijqkwjkejrq939rk3jr3irlkaj4oir23/savemessgesforchat', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -189,12 +188,12 @@ export default function ChatScreen({ navigation }) {
       }).then((response) => response.json())
         //If response is in json then in success
         .then((responseJson) => {
-          //alert(JSON.stringify(responseJson));          
+          //alert(JSON.stringify(responseJson));                 
         })
         //If response is not in json then in error
         .catch((error) => {
           //alert(JSON.stringify(error));
-          console.log("mistake: " + error);;
+          console.log("mistake: " + error);
         });
       //setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     } else {
@@ -204,11 +203,11 @@ export default function ChatScreen({ navigation }) {
   }
 
   return (
-    <ImageBackground source={require('../assets/back.png')} style={styles.container} >
+    <ImageBackground source={require('./imgs/back.png')} style={styles.container} >
       {loading ? (<LottieView
         autoPlay={true}
         source={require('../animations/15319-navbar-chat.json')}
-        loop={true}
+        loop={true}        
       />) : (
           <GiftedChat
             messages={messages}
@@ -246,5 +245,5 @@ const styles = StyleSheet.create({
   icon: {
     width: 32,
     height: 32,
-  },
+  },  
 });

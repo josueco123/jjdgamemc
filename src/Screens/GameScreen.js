@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Card, Text, Divider, Icon, Modal } from '@ui-kitten/components';
-import { StyleSheet, Animated, Easing, View, ImageBackground, TouchableWithoutFeedback, Alert, ToastAndroid, AppState, BackHandler } from 'react-native';
+import { Button, Card, Text, Divider, Modal } from '@ui-kitten/components';
+import { StyleSheet, Animated, Easing, View, TouchableWithoutFeedback, ToastAndroid, AppState, BackHandler, Dimensions } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LottieView from 'lottie-react-native';
 import messaging from '@react-native-firebase/messaging';
@@ -13,7 +13,7 @@ import StarsAnimations from '../Resources/StarsAnimations';
 import BoxAnimations from '../Resources/BoxAnimations';
 import SoundPlayer from 'react-native-sound-player';
 import { useFocusEffect } from '@react-navigation/native';
-
+import LinearGradient from 'react-native-linear-gradient';
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -24,13 +24,14 @@ global.firstExecute = true;
 
 export default function GameScreen({ navigation }) {
 
+  const window = Dimensions.get("window");
 
   const net = useNetInfo().isConnected;
   const isFocused = useIsFocused();
 
   const [leave, setLeave] = useState(false);
   const [posit, setPosit] = useState(0);
-  const [bonus,setBonus] = useState(false);
+  const [bonus, setBonus] = useState(false);
 
   const [modalb, setModalb] = useState(false);
   const [modalb2, setModalb2] = useState(false);
@@ -111,7 +112,7 @@ export default function GameScreen({ navigation }) {
 
 
     useEffect(() => {
-      messaging().onMessage(async remoteMessage => {        
+      messaging().onMessage(async remoteMessage => {
 
         PushNotification.localNotification({
           /* Android Only Properties */
@@ -156,11 +157,11 @@ export default function GameScreen({ navigation }) {
   const cardFooter = (props) => (
     <View {...props} style={[props.style, styles.footerContainer]}>
 
-       {bonus ? (
-          <Button size='small' status='success' style={{marginRight: 20}} onPress={omitRetoTouch} >Omitir Reto</Button>
-       ):( <></>)}     
-      
-                  
+      {bonus ? (
+        <Button size='small' status='success' style={{ marginRight: 20 }} onPress={omitRetoTouch} >Omitir Reto</Button>
+      ) : (<></>)}
+
+
       {(posit == 5 || posit == 10 || posit == 24 || posit == 35 || posit == 47 || posit == 87 || posit == 101 || posit == 124 || posit == 137) ? (
         <Button size='small' onPress={changePosition} >
           Desplazarse
@@ -173,7 +174,7 @@ export default function GameScreen({ navigation }) {
     </View>
   );
 
-  const omitRetoTouch = () =>{
+  const omitRetoTouch = () => {
 
     setVisible(false);
     setModalb(true);
@@ -187,7 +188,7 @@ export default function GameScreen({ navigation }) {
   const moveFicha = () => {
 
 
-    if(posit <= 136){
+    if (posit <= 132) {
       scrollAnimation.current.addListener((animation) => {
         myScroll.current &&
           myScroll.current.scrollTo({
@@ -195,27 +196,27 @@ export default function GameScreen({ navigation }) {
             animated: false,
           })
       })
-  
+
       Animated.timing(scrollAnimation.current, {
         toValue: 100 * Position,
         duration: 10000,
         useNativeDriver: true,
         easing: Easing.linear,
-      }).start();  
+      }).start();
 
     }
-    
+
     Animated.timing(moveAnim, {
       toValue: { x: 0, y: 100 * Position },
       duration: 10000,
       useNativeDriver: true
     }).start();
 
-    if(Position == 46)
-    setBonus(true);
+    if (Position == 46)
+      setBonus(true);
 
-    if(Position > 140)
-    setCompleted(true);
+    if (Position > 140)
+      setCompleted(true);
 
     updateUserPosition(Position);
   }
@@ -237,7 +238,7 @@ export default function GameScreen({ navigation }) {
         setIntro1(true);
       }
 
-      if(Number(pos) <= 136 ){
+      if (Number(pos) <= 132) {
 
         scrollAnimation.current.addListener((animation) => {
           myScroll.current &&
@@ -246,7 +247,7 @@ export default function GameScreen({ navigation }) {
               animated: false,
             })
         })
-  
+
         Animated.timing(scrollAnimation.current, {
           toValue: 100 * Number(pos),
           duration: 3000,
@@ -255,7 +256,7 @@ export default function GameScreen({ navigation }) {
         }).start();
 
       }
-      
+
 
       Animated.timing(moveAnim, {
         toValue: { x: 0, y: 100 * Number(pos) },
@@ -266,54 +267,92 @@ export default function GameScreen({ navigation }) {
       Position = Number(pos);
       setPosit(Position);
 
-      if(Position == 46)
-      setBonus(true);
+      if (Position == 46)
+        setBonus(true);
 
-      if(Position > 140)
-      setCompleted(true);
-            
+      if (Position > 140)
+        setCompleted(true);
+
+
+      saveFCMtoken();
       global.firstExecute = false;
 
     }
   }
   initPosition();
 
+  //actualiza el token por si hay cambios
+  const saveFCMtoken = async () => {
+
+    try {
+
+      const fcmtoken = await AsyncStorage.getItem('tokenfcm');
+      const email = await AsyncStorage.getItem('email');
+
+      await fetch('https://www.mincrix.com/lasjpoaw4rqwlur4orijqkwjkejrq939rk3jr3irlkaj4oir23/savereuserfcmtoken', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          fcmtoken: fcmtoken,
+        })
+      }).then((response) => response.json())
+        //If response is in json then in success
+        .then((responseJson) => {
+          //alert(JSON.stringify(responseJson));
+          //console.log(responseJson);
+        })
+        //If response is not in json then in error
+        .catch((error) => {
+          //alert(JSON.stringify(error));
+          console.log("mistake: " + error);
+        });
+
+
+    } catch (error) {
+      console.log('Failed to save the data to the storage ' + error.toString());
+    }
+  }
+
   //castigo o premio de cambiar de posicion
   const changePosition = async () => {
-    
+
     setVisible(false);
     if (net) {
 
-      switch(posit){
-        case 5:  Position = posit + 3;
-        break;
+      switch (posit) {
+        case 5: Position = posit + 3;
+          break;
 
         case 10: Position = posit - 2;
-        break;
+          break;
 
         case 24: Position = posit + 6;
-        break;
+          break;
 
         case 35: Position = posit - 15;
-        break;
+          break;
 
         case 47: Position = posit - 12;
-        break;
+          break;
 
         case 87: Position = posit + 14;
-        break;
+          break;
 
         case 101: Position = posit + 2;
-        break;
+          break;
 
         case 124: Position = posit - 7;
-        break;
+          break;
 
         case 137: Position = posit - 39;
-        break;
+          break;
 
       }
-      
+
       await AsyncStorage.setItem('estado', "2");
       await AsyncStorage.setItem('position', Position.toString());
       global.pos = Position;
@@ -335,22 +374,22 @@ export default function GameScreen({ navigation }) {
     setVisible(false);
     setIntro1(false)
 
-    
+
     if (estado == "1") {
 
       if (net) {
 
         let number = getRandomInt(1, 7);
         Position = Number(pos) + number;
-        console.log("Pos3: " + Position);
-        navigation.navigate('DadoAnimation', { dadoResult: number });        
+        //console.log("Pos3: " + Position);
+        navigation.navigate('DadoAnimation', { dadoResult: number });
         await AsyncStorage.setItem('position', Position.toString());
         global.pos = Position;
         setPosit(Position);
-        if(Position != 46 || Position != 61){
+        if (Position != 46 || Position != 61) {
           updataUserState("2");
           await AsyncStorage.setItem('estado', "2");
-        }        
+        }
         moveFicha();
 
       } else {
@@ -373,7 +412,7 @@ export default function GameScreen({ navigation }) {
 
       if (net) {
 
-        await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/setusergamestate/' + mail + '/'+ value)
+        await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/setusergamestate/' + mail + '/' + value)
           .then((response) => response.json())
           .then((json) => {
 
@@ -411,7 +450,7 @@ export default function GameScreen({ navigation }) {
   }
 
   //omitir reto
-  const valeReto = () =>{
+  const valeReto = () => {
 
     setModalb(false);
     setBonus(false);
@@ -441,11 +480,31 @@ export default function GameScreen({ navigation }) {
     BackHandler.exitApp();
   }
 
-  return (
-    <>
-      <Animated.ScrollView ref={myScroll} >
+  const showReto = () => {
+    if (net) {
+      setVisible(true);
+    } else {
+      showToastWithGravity()
+    }
+  }
 
-        <View style={styles.container}>
+  const showTuto = () => {
+    if (net) {
+      setIntro1(false);
+      global.sounds = false;
+      navigation.navigate('Tutorial');
+    } else {
+      showToastWithGravity()
+    }
+  }
+
+  return (
+    
+    <LinearGradient colors={['#170F36', '#2F0837', '#5F2D13']} style={styles.container}>
+      <Animated.ScrollView ref={myScroll} contentContainerStyle={styles.contentContainer} centerContent={true} showsVerticalScrollIndicator={false} >
+
+        
+
 
           <Modal
             visible={visible}
@@ -483,7 +542,10 @@ export default function GameScreen({ navigation }) {
                 <Text category='h6'>Explora tus dones, descubre tu llamado y encuentra tu ministerio mientras juegas y haces estos retos.</Text>
                 <Divider />
                 <Text category='s2'>Nota: siempre toca tu ficha para ver el reto o tirar el dado.</Text>
-                <Button style={styles.button} appearance='ghost' onPress={() => setIntro1(false)} >Ok</Button>
+                <View style={styles.close}>
+                  <Button style={styles.button} size='small' appearance='ghost' onPress={showTuto} >Ver Tutorial</Button>
+                  <Button style={styles.button} size='small' appearance='ghost' onPress={() => setIntro1(false)} >Omitir Tutorial</Button>
+                </View>
               </Card>
             </View>
           </Modal>
@@ -504,7 +566,7 @@ export default function GameScreen({ navigation }) {
             </View>
           </Modal>
 
-          
+
           <Modal
             visible={modalb}
             onBackdropPress={() => setModalb(false)}>
@@ -528,8 +590,8 @@ export default function GameScreen({ navigation }) {
             <View style={styles.centeredView}>
               <Card disabled={true} style={styles.card}>
                 <Text category='h2'> Perfecto</Text>
-                <Text category='h6'>Ya puedes volver a tirar el dado</Text>                              
-                  <Button size='medium' appearance='ghost' onPress={() => setModalb2(false)}>ok</Button>                
+                <Text category='h6'>Ya puedes volver a tirar el dado</Text>
+                <Button size='medium' appearance='ghost' onPress={() => setModalb2(false)}>ok</Button>
               </Card>
             </View>
           </Modal>
@@ -539,18 +601,18 @@ export default function GameScreen({ navigation }) {
             onBackdropPress={() => setCompleted(false)}>
             <View style={styles.centeredView}>
               <Card disabled={true} style={styles.card}>
-              <LottieView
+                <LottieView
                   autoPlay={true}
                   source={require('../animations/17252-colorful-confetti.json')}
                   loop={true} />
                 <Text category='h2'> Felicitaciones</Text>
-                <Text category='s1'>Has completado todos los retos que te tocaron, esperamos que hayas tenido una buena experiencia con el juego, pronto volvermos con más retos</Text>                              
-                  <Button size='medium' appearance='ghost' onPress={() => setCompleted(false)}>ok</Button>                
+                <Text category='s1'>Has completado todos los retos que te tocaron, esperamos que hayas tenido una buena experiencia con el juego, pronto volvermos con más retos</Text>
+                <Button size='medium' appearance='ghost' onPress={() => setCompleted(false)}>ok</Button>
               </Card>
             </View>
           </Modal>
 
-          <TouchableWithoutFeedback onPress={() => setVisible(true)}>
+          <TouchableWithoutFeedback onPress={showReto}>
             <Animatable.View style={[
               styles.ficha,
               {
@@ -565,18 +627,21 @@ export default function GameScreen({ navigation }) {
 
           <BoxAnimations />
 
-          </View>
+
+       
       </Animated.ScrollView>
-    </>
+      </LinearGradient>
+    
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#170F36",
+    justifyContent: "center",       
+  },
+  contentContainer: {
+    alignItems: 'center',
   },
   button: {
     margin: 2,

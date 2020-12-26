@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Text, Icon, Avatar, Button, Card, Modal, Divider } from '@ui-kitten/components';
-import { View, ImageBackground, StyleSheet, ToastAndroid } from 'react-native';
+import React, { useState } from 'react';
+import { Text, Icon, Avatar, Button, Card, Modal } from '@ui-kitten/components';
+import { View, ImageBackground, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import GetMyRetos from '../Managers/GetMyRetos';
 import { useNetInfo } from "@react-native-community/netinfo";
@@ -44,11 +44,11 @@ export default function ProfileScreen({ navigation }) {
   }
 
 
-  if(isFocused){
+  if (isFocused) {
 
     getData();
 
-    if(net){
+    if (net) {
       fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getfriendsmail/' + global.id, {
         method: 'GET'
       })
@@ -60,9 +60,9 @@ export default function ProfileScreen({ navigation }) {
 
         }).catch((error) => {
           console.error(error);
-        });    
+        });
     }
-  }  
+  }
 
   const goToCreateReto = async () => {
 
@@ -84,33 +84,35 @@ export default function ProfileScreen({ navigation }) {
 
   return (
 
-    <ImageBackground source={require('../assets/back.png')} style={styles.topContainer}>
+    <ImageBackground source={require('./imgs/back.png')} style={styles.topContainer}>
 
       {net ? (
         <>
           <Avatar style={styles.avatar} size='giant' source={{ uri: avatar }} />
-
+          
           <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
             <Text category='h4'>{nickname}</Text>
-          </View>
-          <View style={styles.infolater}>
-            <View style={styles.groupLater}>
-              <Text category='h6'> Nivel </Text>
-              <View style={styles.number}>
-                <Text category='h6'> {position}</Text>
+          </View>          
+            <View style={styles.infolater}>
+              <View style={styles.groupLater}>
+                <Text category='h6'> Nivel </Text>
+                <View style={styles.number}>
+                  <Text category='h6'> {position}</Text>
+                </View>
+              </View>
+              <View style={styles.groupLater}>
+                <Text category='h6'> Amigos</Text>
+                <View style={styles.number}>
+                  <Text category='h6'> {friends}</Text>
+                </View>
               </View>
             </View>
-            <View style={styles.groupLater}>
-              <Text category='h6'> Amigos</Text>
-              <View style={styles.number}>
-                <Text category='h6'> {friends}</Text>
-              </View>
-            </View>
-          </View>
-          <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
-          <Text category='h5'> Retos Completados</Text>
-
-          <GetMyRetos />
+            
+            
+            <Button accessoryLeft={imgIcon} appearance='ghost' onPress={goToCreateReto}> Subir Reto</Button>
+            <Text category='h5'> Retos Completados</Text>
+            <GetMyRetos />         
+            
 
           <Modal visible={modal}
             backdropStyle={styles.backdrop}
@@ -130,15 +132,13 @@ export default function ProfileScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  topContainer: {
-    padding: 10,
-    flex: 1,
-    resizeMode: "cover",
+  topContainer: {    
+    flex: 1,    
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  avatar: {
+  avatar: {        
     borderColor: '#ffffff',
     borderWidth: 1,
   },
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  infolater: {
+  infolater: {  
     flexDirection: 'row',
     alignSelf: 'center',
     justifyContent: 'space-between',
@@ -180,6 +180,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
   }
-
-
 });

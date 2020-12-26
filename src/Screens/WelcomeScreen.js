@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Layout, Text, Avatar, Input, Button, Modal, Card } from '@ui-kitten/components';
-import { StyleSheet, Alert, View, ToastAndroid } from 'react-native';
+import { Layout, Text, Avatar, Input, Button, Modal, Card, Spinner } from '@ui-kitten/components';
+import { StyleSheet, View, ToastAndroid } from 'react-native';
 import { useNetInfo } from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -10,7 +10,7 @@ export default function WelcomeScreen({ route, navigation }) {
 
     const [modal1, setModal1] = useState(false);
     const [modal2, setModal2] = useState(false);
-    const [modal3, setModal3] = useState(false);
+    const [btnavalible, setBtnavalible] = useState(false);
 
     const { name } = route.params;
     const { email } = route.params;
@@ -32,44 +32,47 @@ export default function WelcomeScreen({ route, navigation }) {
 
         let exist = false;
 
+       
         if (nickname == '' || nickname.includes(' ') || nickname.length < 3) {
 
             setModal1(true);
+            setBtnavalible(false);
         } else {
 
-            if(net){
+            if (net) {
+                setBtnavalible(true);
+                
                 await fetch('https://mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/getallnicknames', {
-                method: 'GET'
-            })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    //console.log(responseJson);
+                    method: 'GET'
+                })
+                    .then((response) => response.json())
+                    .then((responseJson) => {                        
 
-                    for (var i = 0; i < responseJson.length; i++) {
+                        for (var i = 0; i < responseJson.length; i++) {
 
-                        if (responseJson[i].nickname == nickname) {
-                            exist = true;
+                            if (responseJson[i].nickname == nickname) {
+                                exist = true;
+                            }                           
                         }
-                        //console.log(responseJson[i].nickname);
-                    }
 
 
-                }).catch((error) => {
-                    console.error(error);
-                });
-            }else{
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+            } else {
                 showToastWithGravity();
             }
-            
+
 
             if (exist) {
 
                 setModal2(true);
+                setBtnavalible(false);
             } else {
 
                 try {
-                    if(net){
-                        await fetch('https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/savenewuser', {
+                    if (net) {
+                        await fetch('https://www.mincrix.com/lasjpoaw4rqwlur4orijqkwjkejrq939rk3jr3irlkaj4oir23/savenewuser', {
                             method: 'POST',
                             headers: {
                                 Accept: 'application/json',
@@ -81,43 +84,42 @@ export default function WelcomeScreen({ route, navigation }) {
                                 avatar: avatar,
                                 nickname: nickname
                             })
-                        }).then((response) => response.json())
+                        }).then((response) => response.text())
                             //If response is in json then in success
-                            .then((responseJson) => {
-                                //alert(JSON.stringify(responseJson));
-                                //console.log(responseJson);
-    
-    
+                            .then((responseJson) => {                               
+                                saveData();
                             })
                             //If response is not in json then in error
-                            .catch((error) => {
-                                //alert(JSON.stringify(error));
+                            .catch((error) => {                               
                                 console.log("mistake: " + error);;
                             });
-    
-                        await AsyncStorage.setItem('token', token)
-                        await AsyncStorage.setItem('username', name)
-                        await AsyncStorage.setItem('email', email)
-                        await AsyncStorage.setItem('avatar', avatar)
-                        await AsyncStorage.setItem('nickname', nickname)
-                        await AsyncStorage.setItem('position', "0")
-                        await AsyncStorage.setItem('estado', "1")
-                        global.id = value.email;
-                        saveFCMtoken();
-    
-                        console.log('Data successfully saved ' + name);
-                        setModal3(true);
 
-                    }else{
+                    } else {
                         showToastWithGravity();
                     }
-                   
+
 
                 } catch (error) {
                     console.log('Failed to save the data to the storage ' + error.toString());
                 }
             }
         }
+    }
+
+    const saveData = async () => {
+
+        //console.log("eje");
+        await AsyncStorage.setItem('token', token)
+        await AsyncStorage.setItem('username', name)
+        await AsyncStorage.setItem('email', email)
+        await AsyncStorage.setItem('avatar', avatar)
+        await AsyncStorage.setItem('nickname', nickname)
+        await AsyncStorage.setItem('position', "0")
+        await AsyncStorage.setItem('estado', "2")
+        global.id = email;
+        saveFCMtoken();
+        goToGameScren();
+        
     }
 
     const saveFCMtoken = async () => {
@@ -127,32 +129,29 @@ export default function WelcomeScreen({ route, navigation }) {
             const fcmtoken = await AsyncStorage.getItem('tokenfcm');
             const email = await AsyncStorage.getItem('email');
 
-            if(net){
-                await fetch('https://www.mincrix.com/savereuserfcmtoken', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    fcmtoken: fcmtoken,
-                })
-            }).then((response) => response.json())
-                //If response is in json then in success
-                .then((responseJson) => {
-                    //alert(JSON.stringify(responseJson));
-                    console.log(responseJson);
-                })
-                //If response is not in json then in error
-                .catch((error) => {
-                    //alert(JSON.stringify(error));
-                    console.log("mistake: " + error);;
-                });
-            }else{
+            if (net) {
+                await fetch('https://www.mincrix.com/lasjpoaw4rqwlur4orijqkwjkejrq939rk3jr3irlkaj4oir23/savereuserfcmtoken', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        fcmtoken: fcmtoken,
+                    })
+                }).then((response) => response.json())
+                    //If response is in json then in success
+                    .then((responseJson) => {                        
+                    })
+                    //If response is not in json then in error
+                    .catch((error) => {                        
+                        console.log("mistake: " + error);;
+                    });
+            } else {
                 showToastWithGravity();
             }
-            
+
 
 
         } catch (error) {
@@ -161,8 +160,9 @@ export default function WelcomeScreen({ route, navigation }) {
     }
 
     const goToGameScren = () => {
-        navigation.navigate("Game")
-    }  
+        setBtnavalible(false);
+        navigation.navigate("Game");
+    }
 
     return (
         <Layout style={styles.layout} level="3">
@@ -172,7 +172,7 @@ export default function WelcomeScreen({ route, navigation }) {
             <Text category='h4'>{name}</Text>
 
             {avatar == null ? (
-                <Avatar size='giant' source={require('../assets/comic.png')} />
+                <Avatar size='giant' source={require('./imgs/comic.png')} />
             ) : (
                     <Avatar style={styles.avatar} size='giant' source={{ uri: avatar }} />
                 )}
@@ -185,8 +185,9 @@ export default function WelcomeScreen({ route, navigation }) {
                 value={nickname}
                 onChangeText={nextValue => setNicknme(nextValue)}
             />
-            <Button appearance='ghost' onPress={saveNewUser}>Guardar</Button>
-
+            {btnavalible ? <Spinner /> :
+                <Button disabled={btnavalible} appearance='ghost' onPress={saveNewUser}>Guardar</Button>
+            }
             <Modal visible={modal1}
                 backdropStyle={styles.backdrop}
                 onBackdropPress={() => setModal1(false)}>
@@ -205,16 +206,7 @@ export default function WelcomeScreen({ route, navigation }) {
                     <Text category='h6'>Lo sentimos, por favor intenta escribir otro</Text>
                     <Button size='small' appearance='ghost' onPress={() => setModal2(false)} >Ok</Button>
                 </Card>
-            </Modal>
-
-            <Modal visible={modal3}
-                backdropStyle={styles.backdrop}>
-                <Card disabled={true} status='success'>
-                    <Text category='h4'> ¡Perfecto! </Text>
-                    <Text category='h6'>Todo listo para que inicies a Jugar.</Text>
-                    <Button size='small' appearance='ghost' onPress={goToGameScren} >Ok</Button>
-                </Card>
-            </Modal>
+            </Modal>            
 
         </Layout>
     )

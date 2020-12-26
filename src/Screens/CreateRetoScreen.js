@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Text, Button, Input, Spinner, Icon, Modal, Card } from '@ui-kitten/components';
-import { ScrollView, StyleSheet, Alert, BackHandler, ToastAndroid } from 'react-native';
+import { ScrollView, StyleSheet, BackHandler, ToastAndroid } from 'react-native';
 import { useNetInfo } from "@react-native-community/netinfo";
 import CameraMenu from '../Managers/CameraMenu';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -70,38 +70,47 @@ export default function CreateRetoScreen({ navigation }) {
       setModal2(true);
     } else {
 
-      setBtnavalible(true);
+        
 
-      if(net){
-        await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/lasñjpoaw4rqwlur4orijqkwjñkejrq939rk3jr3irlkaj4oir23/saveretouser', {
-        'Content-Type': 'multipart/form-data',
-      }, [
-        // custom content type
-        { name: 'image', filename: 'image.jpg', type: 'image/jpg', data: RNFetchBlob.wrap(data) },
-        // elements without property `filename` will be sent as plain text
-        { name: 'description', data: description },
-        { name: 'user_id', data: user_id },
-        { name: 'position', data: position },
-      ]).then(response => response.text())
-        .then((responseJson) => {
-          //alert(JSON.stringify(responseJson));
-          console.log(responseJson);
+      if (net) {
+        
 
-         setModal3(true);
+        setBtnavalible(true);    
+        setModal3(true);
+        await AsyncStorage.setItem('estado', "3");
 
-        })
-        .catch((err) => {
-          // ...
-          console.log("mistake: " + err);
-        });
-      }else{
+        await RNFetchBlob.fetch('POST', 'https://www.mincrix.com/lasjpoaw4rqwlur4orijqkwjkejrq939rk3jr3irlkaj4oir23/saveretouser', {
+          'Content-Type': 'multipart/form-data',
+        }, [
+          // custom content type
+          { name: 'image', filename: 'image.jpg', type: 'image/jpg', data: RNFetchBlob.wrap(data) },
+          // elements without property `filename` will be sent as plain text
+          { name: 'description', data: description },
+          { name: 'user_id', data: user_id },
+          { name: 'position', data: position },
+        ]).then(response => response.json())
+          .then((responseJson) => {
+            //alert(JSON.stringify(responseJson));
+            //console.log(responseJson);
+
+            
+
+          })
+          .catch((err) => {
+            // ...
+            console.log("mistake: " + err);
+          });
+      } else {
         showToastWithGravity();
       }
-      
+
     }
   }
 
   const goToProfile = async () => {
+    setModal1(false);
+    setModal2(false);
+    setModal3(false);
     setBtnavalible(false);
     await AsyncStorage.removeItem('pathimg');
     navigation.navigate('Profile');
@@ -113,9 +122,8 @@ export default function CreateRetoScreen({ navigation }) {
 
   return (
 
-    <ScrollView>
-      <Layout style={styles.layout} level="4">
-
+    <Layout style={styles.layout} level="4">
+      <ScrollView contentContainerStyle={styles.contentContainer} centerContent={true} showsVerticalScrollIndicator={false}>
 
         <Layout style={styles.layout} level="4">
 
@@ -138,7 +146,7 @@ export default function CreateRetoScreen({ navigation }) {
           onBackdropPress={() => setModal1(false)} >
           <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¡Hubo un error! </Text>
-            <Text category='h6'> No pusiste nada en la descripcion del reto</Text>            
+            <Text category='h6'> No pusiste nada en la descripcion del reto</Text>
             <Button size='small' appearance='ghost' onPress={() => setModal1(false)} >Ok</Button>
           </Card>
         </Modal>
@@ -149,24 +157,24 @@ export default function CreateRetoScreen({ navigation }) {
           <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¡Hubo un error! </Text>
             <Text category='h6'> No subiste ninguna una imagen</Text>
-           
+
             <Button size='small' appearance='ghost' onPress={() => setModal2(false)} >Ok</Button>
           </Card>
         </Modal>
 
         <Modal visible={modal3}
           backdropStyle={styles.backdrop}
-          onBackdropPress={() => setModal2(true)}>
+          onBackdropPress={() => setModal3(true)}>
           <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¡Excelente!</Text>
             <Text category='h6'> Gracias por enviarnos tu reto, espera un poco por nuestra aprobación</Text>
-           
+
             <Button size='small' appearance='ghost' onPress={goToProfile} >Ok</Button>
           </Card>
         </Modal>
+      </ScrollView>
+    </Layout>
 
-      </Layout>
-    </ScrollView>
   )
 
 }
@@ -175,7 +183,10 @@ const styles = StyleSheet.create({
   layout: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    padding: 10,     
+  },
+  contentContainer: {
+    alignItems: 'center', 
   },
   input: {
     width: 350,

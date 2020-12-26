@@ -108,10 +108,10 @@ export default function searchScreen({ navigation }) {
 
     return (
 
-        <ImageBackground source={require('../assets/back.png')} style={styles.container}>
+        <ImageBackground source={require('./imgs/back.png')} style={styles.container}>
 
-            <View style={{ backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
-                <Text category='h4'>Buscar</Text>
+            <View style={{ margin:10, backgroundColor: '#ff6699', width: 400, alignItems: 'center', }}>
+                <Text category='h4'>Buscar Jugador</Text>
             </View>
 
             <Autocomplete
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        padding: 15
+        padding: 15,
     },
     input: {
         top: 20,

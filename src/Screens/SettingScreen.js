@@ -76,11 +76,11 @@ export default function SettingScreen({ navigation }) {
     }
 
     return (
-        <ImageBackground source={require('../assets/back.png')} style={styles.container} >
+        <ImageBackground source={require('./imgs/back.png')} style={styles.container} >
 
             <Text category='h1'>Configuracion</Text>
 
-            <Image source={require('../assets/image.png')} style={styles.images} />
+            <Image source={require('./imgs/logop.png')} style={styles.images} />
 
             <View style={styles.componets}>                
 

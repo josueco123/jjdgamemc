@@ -26,11 +26,12 @@ export default class CameraMenu extends Component {
         ImagePicker.openCamera({
             useFrontCamera: true,
             cropping: true,
+            width: 700,
+            height: 700,
             includeBase64: true,
-            compressImageQuality: 0.4,
+            compressImageQuality: 0.7,
             mediaType: 'photo',
-          }).then(image => {
-            console.log(image);
+          }).then(image => {            
             this.storeData(image); 
             this.setState({
                 filePath: image,
@@ -48,12 +49,13 @@ export default class CameraMenu extends Component {
        
         ImagePicker.openPicker({
             cropping: true,
-            includeBase64: true,
-            compressImageQuality: 0.4,
+            width: 700,
+            height: 700,
+            includeBase64: true, 
+            compressImageQuality: 0.7,           
             mediaType: 'photo',
             cropping: true
-          }).then(image => {
-            console.log(image);
+          }).then(image => {            
             this.storeData(image); 
             this.setState({
                 filePath: image,
@@ -86,12 +88,12 @@ export default class CameraMenu extends Component {
         if (this.state.fileData) {
             return <Image source={{ uri: 'data:image/jpeg;base64,' + this.state.fileData }}
                 style={styles.images}
-                resizeMode="stretch"
+                resizeMode="contain"
             />
         } else {
-            return <Image source={require('../assets/social-343.png')}
+            return <Image source={require('./img/social-343.png')}
                 style={styles.images} 
-                resizeMode="stretch"
+                resizeMode="contain"
             />
         }
     }
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
     },
     images: {
         width: 350,
-        height: 375,
+        height: 350,
         borderColor: 'black',
         borderWidth: 1,
         marginHorizontal: 3

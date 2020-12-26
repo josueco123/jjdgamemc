@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { List, Text, Spinner, Divider, Card, Layout, Button, Icon, } from '@ui-kitten/components';
-import { StyleSheet, View, Image, Share } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { List, Text, Card } from '@ui-kitten/components';
+import { StyleSheet, View, Image, FlatList } from 'react-native';
 import LottieView from 'lottie-react-native';
 
 
@@ -37,52 +36,42 @@ export default class GetMyRetos extends Component {
 
 
     render() {
-        const { data, isLoading } = this.state;
-
-        const shareIcon = (props) => (
-            <Icon {...props} name='share-outline' />
-        );
-
-        const Footer = (props) => (
-            <View {...props} style={[props.style, styles.footerContainer]}>
-
-            </View>
-        );
+        const { data, isLoading } = this.state;       
 
         const renderItem = ({ item }) => (
             //<ListItem title={item.title}/>
-            <View style={styles.card} >
+            <>
+            <View >
                 <Image source={{ uri: 'https://www.mincrix.com//storage/' + item.image }}
                     style={styles.images}
-                    resizeMode="stretch" />
-                <Card >
-                    <Text category='s1'>  {item.description}</Text>
-                </Card>
+                    resizeMode="stretch" />                
             </View>
+            <Card style={{backgroundColor: 'black',width: 350,}}  >
+            <Text category='s1'>  {item.description}</Text>
+            </Card>
+            </>
         );
 
         return (
             <>
                 {isLoading ? (
-                    <>
-                        <View style={styles.imagelayer} >
+                                                           
                             <LottieView
                                 autoPlay={true}
                                 source={require('../animations/4434-loading.json')}
                                 loop={true}
-                            />
-                        </View>
-                    </>
+                            />                        
+                    
                 ) : (
                         data.length > 0 ?
-                            <View>
-
-                                <List
-                                    style={styles.list}
+                            
+                                <FlatList
+                                    
                                     data={data}
                                     renderItem={renderItem}
+                                    keyExtractor={(item, index) => index.toString()}
                                 />
-                            </View>
+                            
                             : (
                                 <>
                                     <View style={styles.imagelayer} >
@@ -97,23 +86,7 @@ export default class GetMyRetos extends Component {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        top: 20,
-        left: 17,
-        maxHeight: 260,
-        width: 275,
-        zIndex: 20,
-        position: 'absolute',
-    },
-    list: {
-        maxHeight: 250,
-        borderLeftWidth: 40,
-        borderLeftColor: 'black',
-        borderRightColor: 'black',
-        borderRightWidth: 30,
-        borderTopColor: 'black',
-        borderTopWidth: 10,
-    },
+     
     contentContainer: {
         paddingHorizontal: 8,
         paddingVertical: 4,
@@ -122,33 +95,14 @@ const styles = StyleSheet.create({
         marginVertical: 4,
     },
     images: {
-        width: 320,
-        height: 320,
-        borderWidth: 1,
+        width: 350,
+        height: 350,
+        borderWidth: 15,
+        borderColor: 'black',
+    },    
+    imagelayer: {                
+        alignItems: 'center',      
     },
-    bimages: {
-        width: 310,
-        height: 310,
-        borderWidth: 1,
-    },
-    imagelayer: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 355,
-        height: 300,
-    },
-    card: {
-        flex: 1,
-        alignItems: 'stretch',
-        borderRadius: 15,
-    },
-    footerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
-    footerControl: {
-        marginHorizontal: 2,
-    },
+     
 
 });

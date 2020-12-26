@@ -29,7 +29,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 5 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View>            
 
             <View style={styles.vPink} >
@@ -51,7 +51,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 10 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vPurple}>
@@ -72,7 +72,7 @@ export default function BoxAnimations() {
             
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 15 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vOrange} >
@@ -109,7 +109,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 24 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View> 
 
              <View style={styles.vPurple} >
@@ -154,7 +154,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 35 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vOrange} >
@@ -175,7 +175,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 40 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
  
             <View style={styles.vPink} >
@@ -200,12 +200,12 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 46 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View> 
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 47 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vRed} >
@@ -238,7 +238,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 55 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vPink} animation="wobble" iterationCount={4}>
@@ -263,7 +263,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 61 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View> 
 
             <View style={styles.vRed}>
@@ -292,7 +292,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 68 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vRed} >
@@ -317,7 +317,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 74 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View>
 
             <View style={styles.vPurple} >
@@ -346,7 +346,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 81 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vPurple} >
@@ -371,7 +371,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 87 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View>
 
             <View style={styles.vGreen} >
@@ -404,7 +404,7 @@ export default function BoxAnimations() {
             
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 95 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vPurple} animation="tada" iterationCount={5}>
@@ -429,7 +429,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 101 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View>
 
             <View style={styles.vGreen}>
@@ -466,7 +466,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 110 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vRed} >
@@ -491,7 +491,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 116 </Text>
-                <Image source={require('../assets/start-129.png')} style={styles.images} />
+                <Image source={require('./imgs/start-129.png')} style={styles.images} />
             </View>
 
             <View style={styles.vPurple} >
@@ -524,7 +524,7 @@ export default function BoxAnimations() {
                    
             <View style={styles.vBlack} >
                 <Text style={styles.text} category='h5'> 124 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
                      
             <View style={styles.vRed} >
@@ -577,7 +577,7 @@ export default function BoxAnimations() {
 
             <View style={styles.vBlack}>
                 <Text style={styles.text} category='h5'> 137 </Text>
-                <Image source={require('../assets/snake-447.png')} style={styles.images} />
+                <Image source={require('./imgs/snake-447.png')} style={styles.images} />
             </View>
 
             <View style={styles.vRed} >

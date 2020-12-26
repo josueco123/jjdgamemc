@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Layout, Text, Button, Icon, Divider, Modal, Card } from '@ui-kitten/components';
+import { Text, Button, Icon, Modal, Card } from '@ui-kitten/components';
 import { ScrollView, StyleSheet, Image, TouchableOpacity, ImageBackground, View, ToastAndroid, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { GoogleSignin } from '@react-native-community/google-signin';
@@ -55,9 +55,19 @@ export default function MenuScreen({ navigation }) {
 
   }
 
-  const gotoRanking = () => {
+  const gotoRanking = async () => {
     if (net) {
-      navigation.navigate('Ranking');
+
+      try{
+        const value = await AsyncStorage.getItem('email');
+        if (value != null) {
+          navigation.navigate('Ranking',{ email: value });
+        }
+
+      }catch(error){
+
+      }
+      
     } else {
       showToastWithGravity();
     }
@@ -68,8 +78,8 @@ export default function MenuScreen({ navigation }) {
     if (net) {
 
       try {
-        const value = await AsyncStorage.getItem('email')
-        if (value !== null) {
+        const value = await AsyncStorage.getItem('email');
+        if (value != null) {
           // value previously stored
           navigation.navigate('Friends', { email: value });
         }
@@ -81,18 +91,16 @@ export default function MenuScreen({ navigation }) {
     }
   }
 
-  const goToSettins = () =>{
+  const goToSettins = () => {
 
     navigation.navigate('Settings');
   }
 
   return (
 
-    <ScrollView>
-      <ImageBackground source={require('../assets/back.png')} style={styles.container}>
-
-
-        <Modal visible={modal}          
+    <ImageBackground source={require('./imgs/back.png')} style={styles.backimg} >
+      <ScrollView contentContainerStyle={styles.contentContainer} centerContent={true} showsVerticalScrollIndicator={false}>
+        <Modal visible={modal}
           onBackdropPress={() => setModal(false)}>
           <Card disabled={true} style={styles.card}>
             <Text category='h4'> ¿Estas Seguro? </Text>
@@ -105,17 +113,22 @@ export default function MenuScreen({ navigation }) {
         </Modal>
 
         <Text category='h1'>MINCRIX</Text>
-        <Image source={require('../assets/logop.png')} style={styles.images} />
-        <Divider />
+        <Image source={require('./imgs/logop.png')} style={styles.images} />
         <View style={styles.componets}>
-          <TouchableOpacity style={styles.button} onPress={gotoFriends}>
-            <Icon style={styles.icon} fill='#ff6699' name='people-outline' />
-            <Text category='h5'>Amigos</Text>
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Instructions')} >
+            <Icon style={styles.icon} fill='#ff6699' name='info-outline' />
+            <Text category='h5'>Instrucciones</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={gotoSearch} >
             <Icon style={styles.icon} fill='#ff6699' name='search-outline' />
-            <Text category='h5'>Buscar</Text>
+            <Text category='h5'>Buscar Jugador</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Chat')}>
+            <Icon style={styles.icon} fill='#ff6699' name='message-circle-outline' />
+            <Text category='h5'>Chat</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={gotoRanking}>
@@ -125,20 +138,16 @@ export default function MenuScreen({ navigation }) {
         </View>
 
         <View style={styles.componets2}>
-          <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('Instructions')} >
-            <Icon style={styles.icon} fill='#ff6699' name='info-outline' />
-            <Text category='h5'>Instrucciones</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}  onPress={goToSettins}>
+          <TouchableOpacity style={styles.button} onPress={goToSettins}>
             <Icon style={styles.icon} fill='#ff6699' name='settings-outline' />
             <Text category='h5'>Configuración</Text>
           </TouchableOpacity>
-          
 
-          <TouchableOpacity style={styles.button} >
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MoreGames')}>
             <Icon style={styles.icon} fill='#ff6699' name='star-outline' />
-            <Text category='h5'>Mas Juegos</Text>
+            <Text category='h5'>Más Juegos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} >
@@ -147,28 +156,31 @@ export default function MenuScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.button} >
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AboutUs')} >
           <Text category='h5'>Sobre MINCRIX</Text>
         </TouchableOpacity>
-
 
         <TouchableOpacity style={styles.button} onPress={() => setModal(true)}>
           <Text category='h5'>Cerrar Sesión</Text>
         </TouchableOpacity>
+      </ScrollView>
+    </ImageBackground>
 
-      </ImageBackground>
-    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+
+  backimg: {
     flex: 1,
     justifyContent: 'center',
+    padding: 10,
+  },
+  contentContainer: {
     alignItems: 'center',
-    padding: 10
   },
   componets: {
+    alignItems: "center",
     top: 20,
     borderBottomWidth: 3,
     borderTopWidth: 3,
